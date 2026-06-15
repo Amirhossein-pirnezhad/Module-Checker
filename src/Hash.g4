@@ -25,7 +25,7 @@ namePart
 topLevelDecl
     : classDecl
     | functionDecl
-    | varDecl
+    | statement
     ;
 
 // Types
