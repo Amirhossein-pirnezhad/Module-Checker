@@ -1,6 +1,11 @@
 import org.antlr.v4.tool.Grammar;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 public class HashToPromela extends HashBaseVisitor<String> {
+    private int loopCounter = 0;
+    private final Deque<String> continueLabels = new ArrayDeque<>();
 
     @Override
     public String visitProgram(HashParser.ProgramContext ctx) {
@@ -8,11 +13,9 @@ public class HashToPromela extends HashBaseVisitor<String> {
 
         sb.append("active proctype main() {\n");
 
-        for(var decl : ctx.topLevelDecl()) {
+        for (var decl : ctx.topLevelDecl()) {
             String result = visit(decl);
-            if (result != null && !result.isEmpty()) {
-                sb.append("    ").append(result);
-            }
+            sb.append(indent(result));
         }
 
         sb.append("}\n");
@@ -28,7 +31,7 @@ public class HashToPromela extends HashBaseVisitor<String> {
     }
 
     @Override
-    public String visitVarDecl(HashParser.VarDeclContext varDecl){
+    public String visitVarDecl(HashParser.VarDeclContext varDecl) {
         String type = varDecl.typeName().getText();
         String name = varDecl.ID().getText();
 
@@ -231,15 +234,22 @@ public class HashToPromela extends HashBaseVisitor<String> {
     }
 
     private String mapType(String hashType) {
-        switch(hashType) {
-            case "adad": return "int";
-            case "boole": return "bool";
-            case "matn": return "string";
-            case "harf": return "char";
-            case "ashari": return "float";
-            default: return "int";
+        switch (hashType) {
+            case "adad":
+                return "int";
+            case "boole":
+                return "bool";
+            case "matn":
+                return "string";
+            case "harf":
+                return "char";
+            case "ashari":
+                return "float";
+            default:
+                return "int";
         }
     }
+
     @Override
     public String visitStatement(HashParser.StatementContext ctx) {
         if (ctx.block() != null) return visit(ctx.block());
@@ -252,6 +262,7 @@ public class HashToPromela extends HashBaseVisitor<String> {
         if (ctx.continueStmt() != null) return visit(ctx.continueStmt());
         throw new UnsupportedOperationException("Unsupported statement: " + ctx.getText());
     }
+
     @Override
     public String visitBlock(HashParser.BlockContext ctx) {
         StringBuilder sb = new StringBuilder();
@@ -265,15 +276,17 @@ public class HashToPromela extends HashBaseVisitor<String> {
 
         return sb.toString();
     }
+
     @Override
     public String visitAssignmentStmt(HashParser.AssignmentStmtContext ctx) {
         return visit(ctx.assignment()) + ";\n";
     }
+
     @Override
     public String visitAssignment(HashParser.AssignmentContext ctx) {
         String left = ctx.lvalue().getText();
         String op = ctx.assignOp().getText();
-        String right =visit(ctx.expr());
+        String right = visit(ctx.expr());
         switch (op) {
             case "=":
                 return left + " = " + right;
@@ -290,4 +303,64 @@ public class HashToPromela extends HashBaseVisitor<String> {
         }
     }
 
+    @Override
+    public String visitIfStmt(HashParser.IfStmtContext ctx) {
+        String cond = visit(ctx.expr());
+        StringBuilder sb = new StringBuilder();
+        sb.append("if\n");
+        sb.append(":: (").append(cond).append(") ->\n");
+        sb.append(indent(visit(ctx.block(0))));
+        if (ctx.block().size() > 1) {
+            sb.append(":: else ->\n");
+            sb.append(indent(visit(ctx.block(1))));
+        } else {
+            sb.append(":: else -> skip;\n");
+        }
+        sb.append("fi\n");
+
+        return sb.toString();
+    }
+
+    //helper
+    private String indent(String code) {//this has so many usage in block translation so here is the function :>
+        StringBuilder out = new StringBuilder();
+
+        for (String line : code.split("\n")) {
+            if (!line.isBlank()) {
+                out.append("    ").append(line);
+            }
+            out.append("\n");
+        }
+
+        return out.toString();
+    }
+    @Override
+    public String visitWhileStmt(HashParser.WhileStmtContext ctx) {
+        String label = "loopStartNo." + (++loopCounter);
+        continueLabels.push(label);
+        String cond = visit(ctx.expr());
+        String body = visit(ctx.block());
+        continueLabels.pop();
+        StringBuilder sb = new StringBuilder();
+        sb.append(label).append(":\n");
+        sb.append("do\n");
+        sb.append(":: (").append(cond).append(") ->\n");
+        sb.append(indent(body));
+        sb.append(":: else -> break\n");
+        sb.append("od\n");
+        return sb.toString();
+    }
+    @Override
+    public String visitBreakStmt(HashParser.BreakStmtContext ctx) {
+        return "break;\n";
+    }
+    @Override
+    public String visitContinueStmt(HashParser.ContinueStmtContext ctx) {
+        if (continueLabels.isEmpty()) {
+            return "";
+        }
+        return "goto " + continueLabels.peek() + ";\n";
+    }
 }
+
+
