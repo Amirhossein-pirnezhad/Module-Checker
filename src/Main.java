@@ -37,5 +37,18 @@ public class Main {
                 System.out.println(error);
             }
         }
+
+        //for build class and translate hash to Promela
+        HashToPromela translator = new HashToPromela();
+        String outputCode = translator.visit(tree);
+
+        Path outputDir = Paths.get("src/codes");
+
+        Path outputFile = outputDir.resolve("output.pml");
+
+        Files.writeString(outputFile, outputCode);
+
+        System.out.println("Generated file: " + outputFile.toAbsolutePath());
+
     }
 }

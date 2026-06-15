@@ -1,0 +1,54 @@
+adad a = 2 + 6;
+adad b = 10 - 3;
+adad c = 4 * 5;
+adad d = 20 / 4;
+adad e = 17 % 3;
+
+adad f = 2 + 3 * 4;
+adad g = (2 + 3) * 4;
+adad h = 10 - 2 * 3 + 1;
+adad i = 100 / 5 / 2;
+
+boole j = dorost;
+boole k = ghalat;
+boole l = !ghalat;
+boole m = dorost && ghalat;
+boole n = dorost || ghalat;
+
+boole o = 5 > 3;
+boole p = 5 >= 5;
+boole q = 2 < 10;
+boole r = 8 <= 8;
+boole s = 5 == 5;
+boole t = 5 != 3;
+
+adad u = +5;
+adad v = -5;
+adad w = -(2 + 3);
+
+adad x = 2 ** 3;
+adad y = 2 ** 3 ** 2;
+
+adad z;
+adad aa = 42;
+
+matn str1 = "hello";
+harf ch1 = 'a';
+
+adad bb = aa + 5;
+adad cc = bb * aa;
+
+adad dd = ((2 + 3) * (4 + 5));
+
+adad ee = 1 + 2 + 3 + 4 + 5;
+adad ff = 100 - 20 - 10;
+adad gg = 2 * 3 * 4;
+adad hh = 64 / 8 / 2;
+
+boole ii = (5 > 3) && (10 < 20);
+boole jj = (5 == 5) || (2 > 10);
+
+adad kk = 0;
+adad ll = 999999;
+ashari mm = 3.14;
+ashari nn = 10.5 + 2.5;
