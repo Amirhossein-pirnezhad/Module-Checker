@@ -21,8 +21,8 @@ public class HashToPromela extends HashBaseVisitor<String> {
 
     @Override
     public String visitTopLevelDecl(HashParser.TopLevelDeclContext ctx) {
-        if (ctx.varDecl() != null) { //don't check the function and class
-            return visit(ctx.varDecl());
+        if (ctx.statement() != null) { //don't check the function and class
+            return visit(ctx.statement());
         }
         return "";
     }
@@ -239,5 +239,30 @@ public class HashToPromela extends HashBaseVisitor<String> {
             case "ashari": return "float";
             default: return "int";
         }
+    }
+    @Override
+    public String visitStatement(HashParser.StatementContext ctx) {
+        if (ctx.block() != null) return visit(ctx.block());
+        if (ctx.varDecl() != null) return visit(ctx.varDecl());
+        if (ctx.assignmentStmt() != null) return visit(ctx.assignmentStmt());
+        if (ctx.ifStmt() != null) return visit(ctx.ifStmt());
+        if (ctx.whileStmt() != null) return visit(ctx.whileStmt());
+        if (ctx.forStmt() != null) return visit(ctx.forStmt());
+        if (ctx.breakStmt() != null) return visit(ctx.breakStmt());
+        if (ctx.continueStmt() != null) return visit(ctx.continueStmt());
+        throw new UnsupportedOperationException("Unsupported statement: " + ctx.getText());
+    }
+    @Override
+    public String visitBlock(HashParser.BlockContext ctx) {
+        StringBuilder sb = new StringBuilder();
+
+        for (var st : ctx.statement()) {
+            String result = visit(st);
+            if (result != null && !result.isEmpty()) {
+                sb.append(result);
+            }
+        }
+
+        return sb.toString();
     }
 }
