@@ -265,4 +265,29 @@ public class HashToPromela extends HashBaseVisitor<String> {
 
         return sb.toString();
     }
+    @Override
+    public String visitAssignmentStmt(HashParser.AssignmentStmtContext ctx) {
+        return visit(ctx.assignment()) + ";\n";
+    }
+    @Override
+    public String visitAssignment(HashParser.AssignmentContext ctx) {
+        String left = ctx.lvalue().getText();
+        String op = ctx.assignOp().getText();
+        String right =visit(ctx.expr());
+        switch (op) {
+            case "=":
+                return left + " = " + right;
+            case "+=":
+                return left + " + " + right;
+            case "-=":
+                return left + " - " + right;
+            case "*=":
+                return left + " * " + right;
+            case "/=":
+                return left + " / " + right;
+            default:
+                return "";
+        }
+    }
+
 }
