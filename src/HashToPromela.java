@@ -291,13 +291,13 @@ public class HashToPromela extends HashBaseVisitor<String> {
             case "=":
                 return left + " = " + right;
             case "+=":
-                return left + " + " + right;
+                return left + " = " + left + " + " + right;
             case "-=":
-                return left + " - " + right;
+                return left + " = " + left + " - " + right;
             case "*=":
-                return left + " * " + right;
+                return left + " = " + left + " * " + right;
             case "/=":
-                return left + " / " + right;
+                return left + " = " + left + " / " + right;
             default:
                 return "";
         }
@@ -334,6 +334,7 @@ public class HashToPromela extends HashBaseVisitor<String> {
 
         return out.toString();
     }
+
     @Override
     public String visitWhileStmt(HashParser.WhileStmtContext ctx) {
         String label = "loopStartNo." + (++loopCounter);
