@@ -1,44 +1,10 @@
 active proctype main() {
-    int a = 2 + 6;
-    int b = 10 - 3;
-    int c = 4 * 5;
-    int d = 20 / 4;
-    int e = 17 % 3;
-    int f = 2 + 3 * 4;
-    int g = (2 + 3) * 4;
-    int h = 10 - 2 * 3 + 1;
-    int i = 100 / 5 / 2;
-    bool j = true;
-    bool k = false;
-    bool l = !false;
-    bool m = true && false;
-    bool n = true || false;
-    bool o = 5 > 3;
-    bool p = 5 >= 5;
-    bool q = 2 < 10;
-    bool r = 8 <= 8;
-    bool s = 5 == 5;
-    bool t = 5 != 3;
-    int u = +5;
-    int v = -5;
-    int w = -(2 + 3);
-    int x = pow(2, 3);
-    int y = pow(2, pow(3, 2));
-    int z;
-    int aa = 42;
-    string str1 = "hello";
-    char ch1 = 'a';
-    int bb = aa + 5;
-    int cc = bb * aa;
-    int dd = ((2 + 3) * (4 + 5));
-    int ee = 1 + 2 + 3 + 4 + 5;
-    int ff = 100 - 20 - 10;
-    int gg = 2 * 3 * 4;
-    int hh = 64 / 8 / 2;
-    bool ii = (5 > 3) && (10 < 20);
-    bool jj = (5 == 5) || (2 > 10);
-    int kk = 0;
-    int ll = 999999;
-    float mm = 3.14;
-    float nn = 10.5 + 2.5;
+    bool errFlag_1 = false;
+    x = 10;
+    y = a / b;
+    if
+    :: ( errFlag_1 ) ->
+        x = 0;
+    :: else -> skip
+    fi
 }
