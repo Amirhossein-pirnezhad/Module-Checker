@@ -186,7 +186,6 @@ public class HashToPromela extends HashBaseVisitor<String> {
             return visit(ctx.postfixExpr());
 
         String op = ctx.getChild(0).getText();
-
         return op + visit(ctx.unaryExpr());
     }
 
@@ -195,7 +194,14 @@ public class HashToPromela extends HashBaseVisitor<String> {
         String result = visit(ctx.primaryExpr());
 
         if (ctx.postfixIncDec() != null)//ignore the in declaration
-            result += ctx.postfixIncDec().getText();
+            if (ctx.postfixIncDec() != null) {
+                if (ctx.postfixIncDec().PLUS_PLUS() != null) {
+                    result += " = " + result + " + 1";
+                } else {
+                    result += " = " + result + " - 1";
+                }
+                result = "(" + result + ")";
+            }
 
         return result;
     }
@@ -337,7 +343,7 @@ public class HashToPromela extends HashBaseVisitor<String> {
 
     @Override
     public String visitWhileStmt(HashParser.WhileStmtContext ctx) {
-        String label = "loopStartNo." + (++loopCounter);
+        String label = "loopStartNo_" + (++loopCounter); //promela don't allow to use . in label name
         continueLabels.push(label);
         String cond = visit(ctx.expr());
         String body = visit(ctx.block());
@@ -361,6 +367,90 @@ public class HashToPromela extends HashBaseVisitor<String> {
             return "";
         }
         return "goto " + continueLabels.peek() + ";\n";
+    }
+
+    @Override
+    public String visitForStmt(HashParser.ForStmtContext ctx) {
+
+        StringBuilder sb = new StringBuilder();
+
+        String startLabel = "loopStart_" + (++loopCounter);
+
+        continueLabels.push(startLabel);
+
+        if (ctx.forInit() != null) {
+            sb.append(visit(ctx.forInit()));
+        }
+
+        String condition = (ctx.expr() != null) ? visit(ctx.expr()) : "true";
+        String body = visit(ctx.block());
+        sb.append(startLabel).append(":\n").append("do\n").
+                append(":: (").append(condition).append(") ->\n");
+
+        sb.append(indent(body));
+
+        if (ctx.forUpdate() != null) {
+            sb.append(visit(ctx.forUpdate()));
+        }
+
+        sb.append("\n").append(":: else -> break\n").append("od\n");
+
+        continueLabels.pop();
+        return sb.toString();
+    }
+
+    @Override
+    public String visitForInit(HashParser.ForInitContext ctx) {
+        if (ctx.varDeclNoSemi() != null)
+            return visit(ctx.varDeclNoSemi()) + ";\n";
+
+        if (ctx.assignment() != null)
+            return visit(ctx.assignment()) + ";\n";
+
+        return visit(ctx.incDecExpr()) + ";\n";
+    }
+
+    @Override
+    public String visitForUpdate(HashParser.ForUpdateContext ctx) {
+        if (ctx.assignment() != null)
+            return visit(ctx.assignment()) + ";\n";
+        return visit(ctx.incDecExpr()) + ";\n";
+    }
+
+    @Override
+    public String visitVarDeclNoSemi(HashParser.VarDeclNoSemiContext ctx){
+        String type = ctx.typeName().getText();
+        String name = ctx.ID().getText();
+
+        String promelaType = mapType(type);
+
+        if (ctx.expr() != null) {
+            String value = visit(ctx.expr());//visit expression
+            return promelaType + " " + name + " = " + value;
+        } else {
+            return promelaType + " " + name;
+        }
+    }
+
+    @Override
+    public String visitIncDecExpr(HashParser.IncDecExprContext ctx){
+        String result = ctx.lvalue().getText();
+
+        if (ctx.postfixIncDec() != null)
+            if (ctx.postfixIncDec().PLUS_PLUS() != null){
+                result += " = " + result + " + 1";
+            }else{
+                result += " = " + result + " - 1";
+            }
+        else{
+            if (ctx.PLUS_PLUS() != null){
+                result += " = " + result + " + 1";
+            }
+            else{
+                result += " = " + result + " - 1";
+            }
+        }
+        return result;
     }
 }
 
