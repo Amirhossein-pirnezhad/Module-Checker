@@ -371,10 +371,11 @@ public class HashToPromela extends HashBaseVisitor<String> {
 
     @Override
     public String visitForStmt(HashParser.ForStmtContext ctx) {
-
+        //continue in forStmt must goto update for or have two label must be check...
+        //now it has one label on update
         StringBuilder sb = new StringBuilder();
 
-        String startLabel = "loopStart_" + (++loopCounter);
+        String startLabel = "loopUpdate_" + (++loopCounter);
 
         continueLabels.push(startLabel);
 
@@ -384,10 +385,12 @@ public class HashToPromela extends HashBaseVisitor<String> {
 
         String condition = (ctx.expr() != null) ? visit(ctx.expr()) : "true";
         String body = visit(ctx.block());
-        sb.append(startLabel).append(":\n").append("do\n").
+        sb.append("do\n").
                 append(":: (").append(condition).append(") ->\n");
 
         sb.append(indent(body));
+
+        sb.append(startLabel).append(":\n");
 
         if (ctx.forUpdate() != null) {
             sb.append(visit(ctx.forUpdate()));
