@@ -4,7 +4,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class HashToPromela extends HashBaseVisitor<String> {
-    private int loopCounter = 0;
+    private int loopCounter = 0 , exceptionCounter = 0;
     private final Deque<String> continueLabels = new ArrayDeque<>();
 
     @Override
@@ -258,14 +258,15 @@ public class HashToPromela extends HashBaseVisitor<String> {
 
     @Override
     public String visitStatement(HashParser.StatementContext ctx) {
-        if (ctx.block() != null) return visit(ctx.block());
-        if (ctx.varDecl() != null) return visit(ctx.varDecl());
+        if (ctx.block() != null)          return visit(ctx.block());
+        if (ctx.varDecl() != null)        return visit(ctx.varDecl());
         if (ctx.assignmentStmt() != null) return visit(ctx.assignmentStmt());
-        if (ctx.ifStmt() != null) return visit(ctx.ifStmt());
-        if (ctx.whileStmt() != null) return visit(ctx.whileStmt());
-        if (ctx.forStmt() != null) return visit(ctx.forStmt());
-        if (ctx.breakStmt() != null) return visit(ctx.breakStmt());
-        if (ctx.continueStmt() != null) return visit(ctx.continueStmt());
+        if (ctx.ifStmt() != null)         return visit(ctx.ifStmt());
+        if (ctx.whileStmt() != null)      return visit(ctx.whileStmt());
+        if (ctx.forStmt() != null)        return visit(ctx.forStmt());
+        if (ctx.breakStmt() != null)      return visit(ctx.breakStmt());
+        if (ctx.continueStmt() != null)   return visit(ctx.continueStmt());
+        if (ctx.tryStmt() != null)        return visit(ctx.tryStmt());
         throw new UnsupportedOperationException("Unsupported statement: " + ctx.getText());
     }
 
@@ -454,6 +455,27 @@ public class HashToPromela extends HashBaseVisitor<String> {
             }
         }
         return result;
+    }
+    //try catch stmt
+    public String visitTryStmt(HashParser.TryStmtContext ctx){
+        StringBuilder sb = new StringBuilder();
+
+        String errFlag = "errFlag_" + (++exceptionCounter);//or can use exception name in catch
+        sb.append("bool ").append(errFlag).append(" = false;\n");
+        sb.append(visit(ctx.block()));
+
+        sb.append("if\n");
+        sb.append(":: ( ").append(errFlag).append(" ) ->\n");
+        sb.append(indent(visit(ctx.catchClause(0))));//just one exception
+        sb.append(":: else -> skip\n");
+        sb.append("fi\n");
+
+        return sb.toString();
+    }
+
+    @Override
+    public String visitCatchClause(HashParser.CatchClauseContext ctx) {
+        return visit(ctx.block());
     }
 }
 
