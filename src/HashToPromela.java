@@ -317,6 +317,7 @@ public class HashToPromela extends HashBaseVisitor<String> {
         if (ctx.breakStmt() != null) return visit(ctx.breakStmt());
         if (ctx.continueStmt() != null) return visit(ctx.continueStmt());
         if (ctx.tryStmt() != null) return visit(ctx.tryStmt());
+        if (ctx.switchStmt() != null)     return visit(ctx.switchStmt());
         if (ctx.exprStmt() != null) return visit(ctx.exprStmt());
         if (ctx.printStmt() != null)return visit(ctx.printStmt());
         throw new UnsupportedOperationException("Unsupported statement: " + ctx.getText());
@@ -552,6 +553,29 @@ public class HashToPromela extends HashBaseVisitor<String> {
     public String visitPrintStmt(HashParser.PrintStmtContext ctx) {
         String value = visit(ctx.expr());
         return "printf(\"%d\\n\", " + value + ");\n";
+    }
+    @Override
+    public String visitSwitchStmt(HashParser.SwitchStmtContext ctx) {
+        String switchExpr = visit(ctx.expr());
+        StringBuilder sb = new StringBuilder();
+        sb.append("if\n");
+        for (var c : ctx.caseBlock()) {
+            String caseValue = visit(c.expr());
+            sb.append(":: (")
+                    .append(switchExpr)
+                    .append(" == ")
+                    .append(caseValue)
+                    .append(") ->\n");
+            sb.append(indent(visit(c.block())));
+        }
+        if (ctx.defaultBlock() != null) {
+            sb.append(":: else ->\n");
+            sb.append(indent(visit(ctx.defaultBlock().block())));
+        } else {
+            sb.append(":: else -> skip;\n");
+        }
+        sb.append("fi\n");
+        return sb.toString();
     }
 
 
