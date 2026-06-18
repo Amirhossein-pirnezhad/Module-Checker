@@ -314,6 +314,7 @@ public class HashToPromela extends HashBaseVisitor<String> {
         if (ctx.continueStmt() != null) return visit(ctx.continueStmt());
         if (ctx.tryStmt() != null) return visit(ctx.tryStmt());
         if (ctx.exprStmt() != null) return visit(ctx.exprStmt());
+        if (ctx.printStmt() != null)return visit(ctx.printStmt());
         throw new UnsupportedOperationException("Unsupported statement: " + ctx.getText());
     }
 
@@ -541,6 +542,11 @@ public class HashToPromela extends HashBaseVisitor<String> {
     @Override
     public String visitCatchClause(HashParser.CatchClauseContext ctx) {
         return visit(ctx.block());
+    }
+    @Override
+    public String visitPrintStmt(HashParser.PrintStmtContext ctx) {
+        String value = visit(ctx.expr());
+        return "printf(\"%d\\n\", " + value + ");\n";
     }
 
 
