@@ -1,4 +1,3 @@
-import org.antlr.v4.tool.Grammar;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -28,10 +27,21 @@ public class HashToPromela extends HashBaseVisitor<String> {
                 }
             }
         }
+        //phase two Flags
+        sb.append("bool divByZero = false;\n");
+        sb.append("bool inLoop = false;\n");
+        sb.append("bool exitLoop = false;\n");
+        sb.append("bool endReachedFlag = false;\n");
+        sb.append("\n");
+
         sb.append(globalVars);
         sb.append("\n");
         sb.append("active proctype main() {\n");
         sb.append(mainBody);
+        //other flag
+        sb.append("endReached:\n");
+        sb.append("    endReachedFlag = true;\n");
+        sb.append("    skip;\n");
         sb.append("}\n");
 
         return sb.toString();
@@ -49,16 +59,20 @@ public class HashToPromela extends HashBaseVisitor<String> {
     public String visitVarDecl(HashParser.VarDeclContext varDecl) {
         String type = varDecl.typeName().getText();
         String name = varDecl.ID().getText();
-
         String promelaType = mapType(type);
 
+        if (promelaType.isEmpty()) {
+            return "";
+        }
+
         if (varDecl.expr() != null) {
-            String value = visit(varDecl.expr());//visit expression
+            String value = visit(varDecl.expr());
             return promelaType + " " + name + " = " + value + ";\n";
         } else {
             return promelaType + " " + name + ";\n";
         }
     }
+
 
     @Override
     public String visitExpr(HashParser.ExprContext ctx) {
@@ -253,21 +267,15 @@ public class HashToPromela extends HashBaseVisitor<String> {
 
         return ctx.getText();
     }
-
+    //changed to prevent unsupported types in palermo
     private String mapType(String hashType) {
         switch (hashType) {
             case "adad":
                 return "int";
             case "boole":
                 return "bool";
-            case "matn":
-                return "string";
-            case "harf":
-                return "char";
-            case "ashari":
-                return "float";
             default:
-                return "int";
+                return "";
         }
     }
 
@@ -409,13 +417,21 @@ public class HashToPromela extends HashBaseVisitor<String> {
 
     @Override
     public String visitForInit(HashParser.ForInitContext ctx) {
-        if (ctx.varDeclNoSemi() != null)
-            return visit(ctx.varDeclNoSemi()) + ";\n";
+        String result;
 
-        if (ctx.assignment() != null)
-            return visit(ctx.assignment()) + ";\n";
+        if (ctx.varDeclNoSemi() != null) {
+            result = visit(ctx.varDeclNoSemi());
+        } else if (ctx.assignment() != null) {
+            result = visit(ctx.assignment());
+        } else {
+            result = visit(ctx.incDecExpr());
+        }
 
-        return visit(ctx.incDecExpr()) + ";\n";
+        if (result == null || result.isEmpty()) {
+            return "";
+        }
+
+        return result + ";\n";
     }
 
     @Override
@@ -429,11 +445,12 @@ public class HashToPromela extends HashBaseVisitor<String> {
     public String visitVarDeclNoSemi(HashParser.VarDeclNoSemiContext ctx) {
         String type = ctx.typeName().getText();
         String name = ctx.ID().getText();
-
         String promelaType = mapType(type);
-
+        if (promelaType.isEmpty()) {
+            return "";
+        }
         if (ctx.expr() != null) {
-            String value = visit(ctx.expr());//visit expression
+            String value = visit(ctx.expr());
             return promelaType + " " + name + " = " + value;
         } else {
             return promelaType + " " + name;
