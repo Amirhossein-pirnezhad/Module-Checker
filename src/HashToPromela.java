@@ -225,13 +225,17 @@ public class HashToPromela extends HashBaseVisitor<String> {
 
     @Override
     public String visitPowerExpr(HashParser.PowerExprContext ctx) {
-        String left = visit(ctx.unaryExpr());
+        String base = visit(ctx.unaryExpr());
+        if (ctx.powerExpr() == null) {
+            return base;
+        }
+        String exponentText = ctx.powerExpr().getText();
+        if (!exponentText.matches("\\d+")) {
+            return base;
+        }
 
-        if (ctx.powerExpr() == null)
-            return left;
-
-        return "pow(" + left + ", " + visit(ctx.powerExpr()) + ")";
-        //for this I can't find the actual operation in promela and I just trust gpt :))
+        int exponent = Integer.parseInt(exponentText);
+        return expandPower(base, exponent);
     }
 
     @Override
@@ -317,6 +321,7 @@ public class HashToPromela extends HashBaseVisitor<String> {
         if (ctx.printStmt() != null)return visit(ctx.printStmt());
         throw new UnsupportedOperationException("Unsupported statement: " + ctx.getText());
     }
+
 
     @Override
     public String visitBlock(HashParser.BlockContext ctx) {
@@ -606,5 +611,24 @@ public class HashToPromela extends HashBaseVisitor<String> {
         } else {
             return varName + " = " + varName + " - 1";
         }
+    }
+    private String expandPower(String base, int exponent) {
+        if (exponent == 0) {
+            return "1";
+        }
+
+        if (exponent == 1) {
+            return base;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("(");
+        for (int i = 0; i < exponent; i++) {
+            if (i > 0) {
+                sb.append(" * ");
+            }
+            sb.append("(").append(base).append(")");
+        }
+        sb.append(")");
+        return sb.toString();
     }
 }
