@@ -4,21 +4,36 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class HashToPromela extends HashBaseVisitor<String> {
-    private int loopCounter = 0 , exceptionCounter = 0;
+    private int loopCounter = 0, exceptionCounter = 0;
     private final Deque<String> continueLabels = new ArrayDeque<>();
 
     @Override
     public String visitProgram(HashParser.ProgramContext ctx) {
         StringBuilder sb = new StringBuilder();
-
-        sb.append("active proctype main() {\n");
-
+        StringBuilder globalVars = new StringBuilder();
+        StringBuilder mainBody = new StringBuilder();
+        boolean mainStarted = false;
         for (var decl : ctx.topLevelDecl()) {
-            String result = visit(decl);
-            sb.append(indent(result));
-        }
+            if (!mainStarted && isTopLevelVarDecl(decl)) {
+                String result = visit(decl);
+                if (result != null && !result.isEmpty()) {
+                    globalVars.append(result);
+                }
+            } else {
+                mainStarted = true;
 
+                String result = visit(decl);
+                if (result != null && !result.isEmpty()) {
+                    mainBody.append(indent(result));
+                }
+            }
+        }
+        sb.append(globalVars);
+        sb.append("\n");
+        sb.append("active proctype main() {\n");
+        sb.append(mainBody);
         sb.append("}\n");
+
         return sb.toString();
     }
 
@@ -258,15 +273,15 @@ public class HashToPromela extends HashBaseVisitor<String> {
 
     @Override
     public String visitStatement(HashParser.StatementContext ctx) {
-        if (ctx.block() != null)          return visit(ctx.block());
-        if (ctx.varDecl() != null)        return visit(ctx.varDecl());
+        if (ctx.block() != null) return visit(ctx.block());
+        if (ctx.varDecl() != null) return visit(ctx.varDecl());
         if (ctx.assignmentStmt() != null) return visit(ctx.assignmentStmt());
-        if (ctx.ifStmt() != null)         return visit(ctx.ifStmt());
-        if (ctx.whileStmt() != null)      return visit(ctx.whileStmt());
-        if (ctx.forStmt() != null)        return visit(ctx.forStmt());
-        if (ctx.breakStmt() != null)      return visit(ctx.breakStmt());
-        if (ctx.continueStmt() != null)   return visit(ctx.continueStmt());
-        if (ctx.tryStmt() != null)        return visit(ctx.tryStmt());
+        if (ctx.ifStmt() != null) return visit(ctx.ifStmt());
+        if (ctx.whileStmt() != null) return visit(ctx.whileStmt());
+        if (ctx.forStmt() != null) return visit(ctx.forStmt());
+        if (ctx.breakStmt() != null) return visit(ctx.breakStmt());
+        if (ctx.continueStmt() != null) return visit(ctx.continueStmt());
+        if (ctx.tryStmt() != null) return visit(ctx.tryStmt());
         throw new UnsupportedOperationException("Unsupported statement: " + ctx.getText());
     }
 
@@ -328,19 +343,6 @@ public class HashToPromela extends HashBaseVisitor<String> {
         return sb.toString();
     }
 
-    //helper
-    private String indent(String code) {//this has so many usage in block translation so here is the function :>
-        StringBuilder out = new StringBuilder();
-
-        for (String line : code.split("\n")) {
-            if (!line.isBlank()) {
-                out.append("    ").append(line);
-            }
-            out.append("\n");
-        }
-
-        return out.toString();
-    }
 
     @Override
     public String visitWhileStmt(HashParser.WhileStmtContext ctx) {
@@ -358,10 +360,12 @@ public class HashToPromela extends HashBaseVisitor<String> {
         sb.append("od\n");
         return sb.toString();
     }
+
     @Override
     public String visitBreakStmt(HashParser.BreakStmtContext ctx) {
         return "break;\n";
     }
+
     @Override
     public String visitContinueStmt(HashParser.ContinueStmtContext ctx) {
         if (continueLabels.isEmpty()) {
@@ -422,7 +426,7 @@ public class HashToPromela extends HashBaseVisitor<String> {
     }
 
     @Override
-    public String visitVarDeclNoSemi(HashParser.VarDeclNoSemiContext ctx){
+    public String visitVarDeclNoSemi(HashParser.VarDeclNoSemiContext ctx) {
         String type = ctx.typeName().getText();
         String name = ctx.ID().getText();
 
@@ -437,27 +441,27 @@ public class HashToPromela extends HashBaseVisitor<String> {
     }
 
     @Override
-    public String visitIncDecExpr(HashParser.IncDecExprContext ctx){
+    public String visitIncDecExpr(HashParser.IncDecExprContext ctx) {
         String result = ctx.lvalue().getText();
 
         if (ctx.postfixIncDec() != null)
-            if (ctx.postfixIncDec().PLUS_PLUS() != null){
+            if (ctx.postfixIncDec().PLUS_PLUS() != null) {
                 result += " = " + result + " + 1";
-            }else{
+            } else {
                 result += " = " + result + " - 1";
             }
-        else{
-            if (ctx.PLUS_PLUS() != null){
+        else {
+            if (ctx.PLUS_PLUS() != null) {
                 result += " = " + result + " + 1";
-            }
-            else{
+            } else {
                 result += " = " + result + " - 1";
             }
         }
         return result;
     }
+
     //try catch stmt
-    public String visitTryStmt(HashParser.TryStmtContext ctx){
+    public String visitTryStmt(HashParser.TryStmtContext ctx) {
         StringBuilder sb = new StringBuilder();
 
         String errFlag = "errFlag_" + (++exceptionCounter);//or can use exception name in catch
@@ -477,6 +481,23 @@ public class HashToPromela extends HashBaseVisitor<String> {
     public String visitCatchClause(HashParser.CatchClauseContext ctx) {
         return visit(ctx.block());
     }
+
+
+    //helper
+    private String indent(String code) {//this has so many usage in block translation so here is the function :>
+        StringBuilder out = new StringBuilder();
+
+        for (String line : code.split("\n")) {
+            if (!line.isBlank()) {
+                out.append("    ").append(line);
+            }
+            out.append("\n");
+        }
+
+        return out.toString();
+    }
+
+    private boolean isTopLevelVarDecl(HashParser.TopLevelDeclContext ctx) {
+        return ctx.statement() != null && ctx.statement().varDecl() != null;
+    }
 }
-
-
