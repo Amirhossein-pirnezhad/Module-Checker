@@ -424,33 +424,37 @@ public class HashToPromela extends HashBaseVisitor<String> {
 
     @Override
     public String visitForStmt(HashParser.ForStmtContext ctx) {
-        //continue in forStmt must goto update for or have two label must be check...
-        //now it has one label on update
         StringBuilder sb = new StringBuilder();
-
-        String startLabel = "loopUpdate_" + (++loopCounter);
-
-        continueLabels.push(startLabel);
-
+        String updateLabel = "loopUpdate_" + (++loopCounter);
+        continueLabels.push(updateLabel);
+        // init
         if (ctx.forInit() != null) {
-            sb.append(visit(ctx.forInit()));
+            String init = visit(ctx.forInit());
+            if (init != null && !init.isEmpty()) {
+                sb.append(init);
+            }
         }
-
         String condition = (ctx.expr() != null) ? visit(ctx.expr()) : "true";
         String body = visit(ctx.block());
-        sb.append("do\n").
-                append(":: (").append(condition).append(") ->\n");
-
+        sb.append("do\n");
+        sb.append(":: (").append(condition).append(") ->\n");
+        // body
         sb.append(indent(body));
-
-        sb.append(startLabel).append(":\n");
-
+        // update label
+        sb.append(updateLabel).append(":\n");
+        // update
         if (ctx.forUpdate() != null) {
-            sb.append(visit(ctx.forUpdate()));
+            String update = visit(ctx.forUpdate());
+            if (update != null && !update.isEmpty()) {
+                sb.append(indent(update));
+            } else {
+                sb.append("    skip;\n");
+            }
+        } else {
+            sb.append("    skip;\n");
         }
-
-        sb.append("\n").append(":: else -> break\n").append("od\n");
-
+        sb.append(":: else -> break\n");
+        sb.append("od\n");
         continueLabels.pop();
         return sb.toString();
     }
