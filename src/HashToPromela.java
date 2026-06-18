@@ -60,12 +60,24 @@ public class HashToPromela extends HashBaseVisitor<String> {
         String type = varDecl.typeName().getText();
         String name = varDecl.ID().getText();
         String promelaType = mapType(type);
-
         if (promelaType.isEmpty()) {
             return "";
         }
-
         if (varDecl.expr() != null) {
+            String exprText = varDecl.expr().getText();
+            if (isSimpleIncDecText(exprText)) {
+                String varName = getIncDecVarName(exprText);
+                boolean increment = isIncrement(exprText);
+                StringBuilder sb = new StringBuilder();
+                if (isPrefixIncDec(exprText)) {
+                    sb.append(incDecUpdate(varName, increment)).append(";\n");
+                    sb.append(promelaType).append(" ").append(name).append(" = ").append(varName).append(";\n");
+                } else {
+                    sb.append(promelaType).append(" ").append(name).append(" = ").append(varName).append(";\n");
+                    sb.append(incDecUpdate(varName, increment)).append(";\n");
+                }
+                return sb.toString();
+            }
             String value = visit(varDecl.expr());
             return promelaType + " " + name + " = " + value + ";\n";
         } else {
@@ -77,6 +89,19 @@ public class HashToPromela extends HashBaseVisitor<String> {
     @Override
     public String visitExpr(HashParser.ExprContext ctx) {
         return visit(ctx.logicalOrExpr());
+    }
+    @Override
+    public String visitExprStmt(HashParser.ExprStmtContext ctx) {
+        String text = ctx.expr().getText();
+
+        if (isSimpleIncDecText(text)) {
+            String varName = getIncDecVarName(text);
+            boolean increment = isIncrement(text);
+
+            return incDecUpdate(varName, increment) + ";\n";
+        }
+
+        return "";
     }
 
     @Override
@@ -217,20 +242,18 @@ public class HashToPromela extends HashBaseVisitor<String> {
         String op = ctx.getChild(0).getText();
         return op + visit(ctx.unaryExpr());
     }
-
+    //changed to support ++x and x++ in the correct way
     @Override
     public String visitPostfixExpr(HashParser.PostfixExprContext ctx) {
         String result = visit(ctx.primaryExpr());
 
-        if (ctx.postfixIncDec() != null)//ignore the in declaration
-            if (ctx.postfixIncDec() != null) {
-                if (ctx.postfixIncDec().PLUS_PLUS() != null) {
-                    result += " = " + result + " + 1";
-                } else {
-                    result += " = " + result + " - 1";
-                }
-                result = "(" + result + ")";
-            }
+        if (!ctx.postfixPart().isEmpty()) {
+            return result;
+        }
+
+        if (ctx.postfixIncDec() != null) {
+            return result;
+        }
 
         return result;
     }
@@ -290,6 +313,7 @@ public class HashToPromela extends HashBaseVisitor<String> {
         if (ctx.breakStmt() != null) return visit(ctx.breakStmt());
         if (ctx.continueStmt() != null) return visit(ctx.continueStmt());
         if (ctx.tryStmt() != null) return visit(ctx.tryStmt());
+        if (ctx.exprStmt() != null) return visit(ctx.exprStmt());
         throw new UnsupportedOperationException("Unsupported statement: " + ctx.getText());
     }
 
@@ -309,6 +333,22 @@ public class HashToPromela extends HashBaseVisitor<String> {
 
     @Override
     public String visitAssignmentStmt(HashParser.AssignmentStmtContext ctx) {
+        String left = ctx.assignment().lvalue().getText();
+        String op = ctx.assignment().assignOp().getText();
+        String exprText = ctx.assignment().expr().getText();
+        if (op.equals("=") && isSimpleIncDecText(exprText)) {
+            String varName = getIncDecVarName(exprText);
+            boolean increment = isIncrement(exprText);
+            StringBuilder sb = new StringBuilder();
+            if (isPrefixIncDec(exprText)) {
+                sb.append(incDecUpdate(varName, increment)).append(";\n");
+                sb.append(left).append(" = ").append(varName).append(";\n");
+            } else {
+                sb.append(left).append(" = ").append(varName).append(";\n");
+                sb.append(incDecUpdate(varName, increment)).append(";\n");
+            }
+            return sb.toString();
+        }
         return visit(ctx.assignment()) + ";\n";
     }
 
@@ -516,5 +556,45 @@ public class HashToPromela extends HashBaseVisitor<String> {
 
     private boolean isTopLevelVarDecl(HashParser.TopLevelDeclContext ctx) {
         return ctx.statement() != null && ctx.statement().varDecl() != null;
+    }
+
+    private boolean isSimpleIncDecText(String text) {
+        text = text.replaceAll("\\s+", "");
+
+        return text.matches("[a-z][a-zA-Z0-9_]*\\+\\+")
+                || text.matches("[a-z][a-zA-Z0-9_]*--")
+                || text.matches("\\+\\+[a-z][a-zA-Z0-9_]*")
+                || text.matches("--[a-z][a-zA-Z0-9_]*");
+    }
+
+    private String getIncDecVarName(String text) {
+        text = text.replaceAll("\\s+", "");
+
+        if (text.endsWith("++") || text.endsWith("--")) {
+            return text.substring(0, text.length() - 2);
+        }
+
+        if (text.startsWith("++") || text.startsWith("--")) {
+            return text.substring(2);
+        }
+
+        return text;
+    }
+
+    private boolean isIncrement(String text) {
+        return text.contains("++");
+    }
+
+    private boolean isPrefixIncDec(String text) {
+        text = text.replaceAll("\\s+", "");
+        return text.startsWith("++") || text.startsWith("--");
+    }
+
+    private String incDecUpdate(String varName, boolean increment) {
+        if (increment) {
+            return varName + " = " + varName + " + 1";
+        } else {
+            return varName + " = " + varName + " - 1";
+        }
     }
 }
