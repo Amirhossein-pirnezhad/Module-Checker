@@ -5,6 +5,8 @@ import java.util.Deque;
 public class HashToPromela extends HashBaseVisitor<String> {
     private int loopCounter = 0, exceptionCounter = 0;
     private final Deque<String> continueLabels = new ArrayDeque<>();
+    private boolean isDivide = false;
+    private String division = null;
 
     @Override
     public String visitProgram(HashParser.ProgramContext ctx) {
@@ -214,6 +216,11 @@ public class HashToPromela extends HashBaseVisitor<String> {
             String operation =
                     ctx.getChild(2 * i - 1).getText();
 
+            if (operation.equals("/")) isDivide = true;
+            if (isDivide){
+                division = visit(ctx.powerExpr(i));
+            }
+
             sb.append(" ");
             sb.append(operation);
             sb.append(" ");
@@ -308,6 +315,7 @@ public class HashToPromela extends HashBaseVisitor<String> {
 
     @Override
     public String visitStatement(HashParser.StatementContext ctx) {
+        isDivide = false;
         if (ctx.block() != null) return visit(ctx.block());
         if (ctx.varDecl() != null) return visit(ctx.varDecl());
         if (ctx.assignmentStmt() != null) return visit(ctx.assignmentStmt());
@@ -355,6 +363,16 @@ public class HashToPromela extends HashBaseVisitor<String> {
                 sb.append(incDecUpdate(varName, increment)).append(";\n");
             }
             return sb.toString();
+        }
+        visit(ctx.assignment().expr());
+        StringBuilder sb = new StringBuilder();
+        System.out.println("is divide " + isDivide);
+        if (isDivide){
+            sb.append("if\n:: (");
+            sb.append(division + " == 0").append(") -> \n");
+            sb.append("    divByZero = true;\n");
+            sb.append(":: else -> \n");
+            return sb + indent(visit(ctx.assignment()) + ";\n");
         }
         return visit(ctx.assignment()) + ";\n";
     }
