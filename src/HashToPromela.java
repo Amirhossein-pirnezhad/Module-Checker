@@ -410,7 +410,30 @@ public class HashToPromela extends HashBaseVisitor<String> {
     @Override
     public String visitIfStmt(HashParser.IfStmtContext ctx) {
         String cond = visit(ctx.expr());
+        List<String> divisors = findZeroDivisors(ctx.expr());
         StringBuilder sb = new StringBuilder();
+        if (!divisors.isEmpty()) {
+            sb.append("if\n");
+            sb.append(":: (").append(buildZeroCondition(divisors)).append(") ->\n");
+            sb.append("    divByZero = true;\n");
+            if (!exceptionFlags.isEmpty() && !catchLabels.isEmpty()) {
+                sb.append("    ").append(exceptionFlags.peek()).append(" = true;\n");
+                sb.append("    goto ").append(catchLabels.peek()).append(";\n");
+            }
+            sb.append(":: else ->\n");
+            sb.append("    if\n");
+            sb.append("    :: (").append(cond).append(") ->\n");
+            sb.append(indent(indent(visit(ctx.block(0)))));
+            if (ctx.block().size() > 1) {
+                sb.append("    :: else ->\n");
+                sb.append(indent(indent(visit(ctx.block(1)))));
+            } else {
+                sb.append("    :: else -> skip;\n");
+            }
+            sb.append("    fi\n");
+            sb.append("fi\n");
+            return sb.toString();
+        }
         sb.append("if\n");
         sb.append(":: (").append(cond).append(") ->\n");
         sb.append(indent(visit(ctx.block(0))));
@@ -421,21 +444,30 @@ public class HashToPromela extends HashBaseVisitor<String> {
             sb.append(":: else -> skip;\n");
         }
         sb.append("fi\n");
-
         return sb.toString();
     }
 
 
     @Override
     public String visitWhileStmt(HashParser.WhileStmtContext ctx) {
-        String label = "loopStartNo_" + (++loopCounter); //promela don't allow to use . in label name
+        String label = "loopStartNo_" + (++loopCounter);
         continueLabels.push(label);
         String cond = visit(ctx.expr());
         String body = visit(ctx.block());
         continueLabels.pop();
+        List<String> divisors = findZeroDivisors(ctx.expr());
         StringBuilder sb = new StringBuilder();
         sb.append(label).append(":\n");
         sb.append("do\n");
+        if (!divisors.isEmpty()) {
+            sb.append(":: (").append(buildZeroCondition(divisors)).append(") ->\n");
+            sb.append("    divByZero = true;\n");
+            if (!exceptionFlags.isEmpty() && !catchLabels.isEmpty()) {
+                sb.append("    ").append(exceptionFlags.peek()).append(" = true;\n");
+                sb.append("    goto ").append(catchLabels.peek()).append(";\n");
+            }
+            sb.append("    break;\n");
+        }
         sb.append(":: (").append(cond).append(") ->\n");
         sb.append(indent(enterLoopFlags()));
         sb.append(indent(body));
@@ -444,7 +476,6 @@ public class HashToPromela extends HashBaseVisitor<String> {
         sb.append(exitLoopFlags());
         return sb.toString();
     }
-
     @Override
     public String visitBreakStmt(HashParser.BreakStmtContext ctx) {
         return "break;\n";
@@ -471,8 +502,20 @@ public class HashToPromela extends HashBaseVisitor<String> {
             }
         }
         String condition = (ctx.expr() != null) ? visit(ctx.expr()) : "true";
+        List<String> divisors = (ctx.expr() != null)
+                ? findZeroDivisors(ctx.expr())
+                : new ArrayList<>();
         String body = visit(ctx.block());
         sb.append("do\n");
+        if (!divisors.isEmpty()) {
+            sb.append(":: (").append(buildZeroCondition(divisors)).append(") ->\n");
+            sb.append("    divByZero = true;\n");
+            if (!exceptionFlags.isEmpty() && !catchLabels.isEmpty()) {
+                sb.append("    ").append(exceptionFlags.peek()).append(" = true;\n");
+                sb.append("    goto ").append(catchLabels.peek()).append(";\n");
+            }
+            sb.append("    break;\n");
+        }
         sb.append(":: (").append(condition).append(") ->\n");
         sb.append(indent(enterLoopFlags()));
         // body
@@ -847,5 +890,13 @@ public class HashToPromela extends HashBaseVisitor<String> {
         List<String> divisors = findZeroDivisors(ctx.expr());
         String normalStatement = name + " = " + value + ";\n";
         return guardDivisionByZero(normalStatement, divisors);
+    }
+    private String guardConditionByZero(String condition, HashParser.ExprContext expr) {
+        List<String> divisors = findZeroDivisors(expr);
+        if (divisors.isEmpty()) {
+            return condition;
+        }
+        String zeroCondition = buildZeroCondition(divisors);
+        return "!(" + zeroCondition + ") && (" + condition + ")";
     }
 }
