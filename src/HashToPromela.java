@@ -432,10 +432,10 @@ public class HashToPromela extends HashBaseVisitor<String> {
         String body = visit(ctx.block());
         continueLabels.pop();
         StringBuilder sb = new StringBuilder();
-        sb.append(enterLoopFlags());
         sb.append(label).append(":\n");
         sb.append("do\n");
         sb.append(":: (").append(cond).append(") ->\n");
+        sb.append(indent(enterLoopFlags()));
         sb.append(indent(body));
         sb.append(":: else -> break\n");
         sb.append("od\n");
@@ -470,9 +470,9 @@ public class HashToPromela extends HashBaseVisitor<String> {
         }
         String condition = (ctx.expr() != null) ? visit(ctx.expr()) : "true";
         String body = visit(ctx.block());
-        sb.append(enterLoopFlags());
         sb.append("do\n");
         sb.append(":: (").append(condition).append(") ->\n");
+        sb.append(indent(enterLoopFlags()));
         // body
         sb.append(indent(body));
         // update label
@@ -716,17 +716,14 @@ public class HashToPromela extends HashBaseVisitor<String> {
     }
     private String enterLoopFlags() {
         StringBuilder sb = new StringBuilder();
-
         sb.append("activeLoopCount = activeLoopCount + 1;\n");
         sb.append("inLoop = true;\n");
         sb.append("exitLoop = false;\n");
-
         return sb.toString();
     }
 
     private String exitLoopFlags() {
         StringBuilder sb = new StringBuilder();
-
         sb.append("activeLoopCount = activeLoopCount - 1;\n");
         sb.append("exitLoop = true;\n");
         sb.append("if\n");
