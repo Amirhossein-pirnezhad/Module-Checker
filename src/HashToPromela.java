@@ -46,7 +46,7 @@ public class HashToPromela extends HashBaseVisitor<String> {
         sb.append("bool divByZero = false;\n");
         sb.append("bool inLoop = false;\n");
         sb.append("bool exitLoop = false;\n");
-        sb.append("bool endReachedFlag = false;\n");
+        sb.append("bool endReached = false;\n");
         sb.append("int activeLoopCount = 0;\n");
         sb.append("\n");
         sb.append(globalVars);
@@ -56,8 +56,8 @@ public class HashToPromela extends HashBaseVisitor<String> {
             sb.append(indent(globalInitializations.toString()));
         }
         sb.append(mainBody);
-        sb.append("endReached:\n");
-        sb.append("    endReachedFlag = true;\n");
+        sb.append("endReachedLabel:\n");
+        sb.append("    endReached = true;\n");
         sb.append("    skip;\n");
         sb.append("}\n");
         return sb.toString();
