@@ -518,9 +518,20 @@ public class HashToPromela extends HashBaseVisitor<String> {
 
     @Override
     public String visitForUpdate(HashParser.ForUpdateContext ctx) {
-        if (ctx.assignment() != null)
-            return visit(ctx.assignment()) + ";\n";
-        return visit(ctx.incDecExpr()) + ";\n";
+        if (ctx.assignment() != null) {
+            String normalStatement = visit(ctx.assignment()) + ";\n";
+            List<String> divisors = findZeroDivisors(ctx.assignment().expr());
+            String op = ctx.assignment().assignOp().getText();
+            if (op.equals("/=")) {
+                divisors.add(visit(ctx.assignment().expr()));
+            }
+            return guardDivisionByZero(normalStatement, divisors);
+        }
+        String result = visit(ctx.incDecExpr());
+        if (result == null || result.isEmpty()) {
+            return "";
+        }
+        return result + ";\n";
     }
 
     @Override
