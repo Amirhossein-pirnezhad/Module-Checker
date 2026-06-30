@@ -1,7 +1,28 @@
+adad x = 10;
+adad y = 2;
+adad i = 0;
+adad safe = 0;
+
 emtehan {
-    x = 10;
-    y = a / b;
+    safe = x / y;
 }
 gereftar (SefrBood e) {
-    x = 0;
+    safe = 0;
 }
+
+ta (i < 5) {
+    x = x - 1;
+    i = i + 1;
+}
+
+baraye (adad j = 0; j < 3; j = j + 1) {
+    safe = safe + j;
+}
+
+age (x >= 0) bood {
+    safe = safe + 1;
+} vagarna {
+    safe = 0;
+}
+
+bechap(safe);
