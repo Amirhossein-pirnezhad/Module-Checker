@@ -8,6 +8,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
 public class HashToPromela extends HashBaseVisitor<String> {
     private int loopCounter = 0, exceptionCounter = 0;
     private final Deque<String> continueLabels = new ArrayDeque<>();
+    private final Deque<String> exceptionFlags = new ArrayDeque<>();
+    private final Deque<String> catchLabels = new ArrayDeque<>();
 
 
     @Override
@@ -591,15 +593,28 @@ public class HashToPromela extends HashBaseVisitor<String> {
     }
 
     //try catch stmt
+    @Override
     public String visitTryStmt(HashParser.TryStmtContext ctx) {
         StringBuilder sb = new StringBuilder();
-        String errFlag = "errFlag_" + (++exceptionCounter);//or can use exception name in catch
+        int id = ++exceptionCounter;
+        String errFlag = "errFlag_" + id;
+        String catchLabel = "catchCheck_" + id;
         sb.append("bool ").append(errFlag).append(" = false;\n");
-        sb.append(visit(ctx.block()));
+        exceptionFlags.push(errFlag);
+        catchLabels.push(catchLabel);
+        String tryBody = visit(ctx.block());
+        catchLabels.pop();
+        exceptionFlags.pop();
+        sb.append(tryBody);
+        sb.append(catchLabel).append(":\n");
         sb.append("if\n");
-        sb.append(":: ( ").append(errFlag).append(" ) ->\n");
-        sb.append(indent(visit(ctx.catchClause(0))));//just one exception
-        sb.append(":: else -> skip\n");
+        sb.append(":: (").append(errFlag).append(") ->\n");
+        if (ctx.catchClause() != null && !ctx.catchClause().isEmpty()) {
+            sb.append(indent(visit(ctx.catchClause(0))));
+        } else {
+            sb.append("    skip;\n");
+        }
+        sb.append(":: else -> skip;\n");
         sb.append("fi\n");
         return sb.toString();
     }
@@ -780,16 +795,17 @@ public class HashToPromela extends HashBaseVisitor<String> {
         if (divisors.isEmpty()) {
             return normalStatement;
         }
-
         StringBuilder sb = new StringBuilder();
-
         sb.append("if\n");
         sb.append(":: (").append(buildZeroCondition(divisors)).append(") ->\n");
         sb.append("    divByZero = true;\n");
+        if (!exceptionFlags.isEmpty() && !catchLabels.isEmpty()) {
+            sb.append("    ").append(exceptionFlags.peek()).append(" = true;\n");
+            sb.append("    goto ").append(catchLabels.peek()).append(";\n");
+        }
         sb.append(":: else ->\n");
         sb.append(indent(normalStatement));
         sb.append("fi\n");
-
         return sb.toString();
     }
 
