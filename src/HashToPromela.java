@@ -1,25 +1,36 @@
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.ArrayList;
+import java.util.List;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 public class HashToPromela extends HashBaseVisitor<String> {
     private int loopCounter = 0, exceptionCounter = 0;
     private final Deque<String> continueLabels = new ArrayDeque<>();
-    private boolean isDivide = false;
-    private String division = null;
-   private int activeLoopCount = 0;
+
 
     @Override
     public String visitProgram(HashParser.ProgramContext ctx) {
         StringBuilder sb = new StringBuilder();
         StringBuilder globalVars = new StringBuilder();
+        StringBuilder globalInitializations = new StringBuilder();
         StringBuilder mainBody = new StringBuilder();
+
         boolean mainStarted = false;
+
         for (var decl : ctx.topLevelDecl()) {
             if (!mainStarted && isTopLevelVarDecl(decl)) {
-                String result = visit(decl);
-                if (result != null && !result.isEmpty()) {
-                    globalVars.append(result);
+                HashParser.VarDeclContext varDecl = decl.statement().varDecl();
+
+                String globalDecl = globalDeclarationOnly(varDecl);
+                if (globalDecl != null && !globalDecl.isEmpty()) {
+                    globalVars.append(globalDecl);
+                }
+
+                String init = globalInitialization(varDecl);
+                if (init != null && !init.isEmpty()) {
+                    globalInitializations.append(init);
                 }
             } else {
                 mainStarted = true;
@@ -30,27 +41,25 @@ public class HashToPromela extends HashBaseVisitor<String> {
                 }
             }
         }
-        //phase two Flags
         sb.append("bool divByZero = false;\n");
         sb.append("bool inLoop = false;\n");
         sb.append("bool exitLoop = false;\n");
         sb.append("bool endReachedFlag = false;\n");
         sb.append("int activeLoopCount = 0;\n");
         sb.append("\n");
-
         sb.append(globalVars);
         sb.append("\n");
         sb.append("active proctype main() {\n");
+        if (!globalInitializations.isEmpty()) {
+            sb.append(indent(globalInitializations.toString()));
+        }
         sb.append(mainBody);
-        //other flag
         sb.append("endReached:\n");
         sb.append("    endReachedFlag = true;\n");
         sb.append("    skip;\n");
         sb.append("}\n");
-
         return sb.toString();
     }
-
     @Override
     public String visitTopLevelDecl(HashParser.TopLevelDeclContext ctx) {
         if (ctx.statement() != null) { //don't check the function and class
@@ -83,7 +92,14 @@ public class HashToPromela extends HashBaseVisitor<String> {
                 return sb.toString();
             }
             String value = visit(varDecl.expr());
-            return promelaType + " " + name + " = " + value + ";\n";
+            List<String> divisors = findZeroDivisors(varDecl.expr());
+            if (divisors.isEmpty()) {
+                return promelaType + " " + name + " = " + value + ";\n";
+            }
+            StringBuilder sb = new StringBuilder();
+            sb.append(promelaType).append(" ").append(name).append(";\n");
+            sb.append(guardDivisionByZero(name + " = " + value + ";\n", divisors));
+            return sb.toString();
         } else {
             return promelaType + " " + name + ";\n";
         }
@@ -215,13 +231,7 @@ public class HashToPromela extends HashBaseVisitor<String> {
         sb.append(visit(ctx.powerExpr(0)));
 
         for (int i = 1; i < ctx.powerExpr().size(); i++) {
-            String operation =
-                    ctx.getChild(2 * i - 1).getText();
-
-            if (operation.equals("/")) isDivide = true;
-            if (isDivide){
-                division = visit(ctx.powerExpr(i));
-            }
+            String operation = ctx.getChild(2 * i - 1).getText();
 
             sb.append(" ");
             sb.append(operation);
@@ -317,7 +327,7 @@ public class HashToPromela extends HashBaseVisitor<String> {
 
     @Override
     public String visitStatement(HashParser.StatementContext ctx) {
-        isDivide = false;
+
         if (ctx.block() != null) return visit(ctx.block());
         if (ctx.varDecl() != null) return visit(ctx.varDecl());
         if (ctx.assignmentStmt() != null) return visit(ctx.assignmentStmt());
@@ -366,17 +376,12 @@ public class HashToPromela extends HashBaseVisitor<String> {
             }
             return sb.toString();
         }
-        visit(ctx.assignment().expr());
-        StringBuilder sb = new StringBuilder();
-        System.out.println("is divide " + isDivide);
-        if (isDivide){
-            sb.append("if\n:: (");
-            sb.append(division + " == 0").append(") -> \n");
-            sb.append("    divByZero = true;\n");
-            sb.append(":: else -> \n");
-            return sb + indent(visit(ctx.assignment()) + ";\n");
+        String normalStatement = visit(ctx.assignment()) + ";\n";
+        List<String> divisors = findZeroDivisors(ctx.assignment().expr());
+        if (op.equals("/=")) {
+            divisors.add(visit(ctx.assignment().expr()));
         }
-        return visit(ctx.assignment()) + ";\n";
+        return guardDivisionByZero(normalStatement, divisors);
     }
 
     @Override
@@ -492,20 +497,22 @@ public class HashToPromela extends HashBaseVisitor<String> {
 
     @Override
     public String visitForInit(HashParser.ForInitContext ctx) {
-        String result;
-
         if (ctx.varDeclNoSemi() != null) {
-            result = visit(ctx.varDeclNoSemi());
-        } else if (ctx.assignment() != null) {
-            result = visit(ctx.assignment());
-        } else {
-            result = visit(ctx.incDecExpr());
+            return visit(ctx.varDeclNoSemi());
         }
-
+        if (ctx.assignment() != null) {
+            String normalStatement = visit(ctx.assignment()) + ";\n";
+            List<String> divisors = findZeroDivisors(ctx.assignment().expr());
+            String op = ctx.assignment().assignOp().getText();
+            if (op.equals("/=")) {
+                divisors.add(visit(ctx.assignment().expr()));
+            }
+            return guardDivisionByZero(normalStatement, divisors);
+        }
+        String result = visit(ctx.incDecExpr());
         if (result == null || result.isEmpty()) {
             return "";
         }
-
         return result + ";\n";
     }
 
@@ -524,12 +531,32 @@ public class HashToPromela extends HashBaseVisitor<String> {
         if (promelaType.isEmpty()) {
             return "";
         }
-        if (ctx.expr() != null) {
-            String value = visit(ctx.expr());
-            return promelaType + " " + name + " = " + value;
-        } else {
-            return promelaType + " " + name;
+        if (ctx.expr() == null) {
+            return promelaType + " " + name + ";\n";
         }
+        String exprText = ctx.expr().getText();
+        if (isSimpleIncDecText(exprText)) {
+            String varName = getIncDecVarName(exprText);
+            boolean increment = isIncrement(exprText);
+            StringBuilder sb = new StringBuilder();
+            if (isPrefixIncDec(exprText)) {
+                sb.append(incDecUpdate(varName, increment)).append(";\n");
+                sb.append(promelaType).append(" ").append(name).append(" = ").append(varName).append(";\n");
+            } else {
+                sb.append(promelaType).append(" ").append(name).append(" = ").append(varName).append(";\n");
+                sb.append(incDecUpdate(varName, increment)).append(";\n");
+            }
+            return sb.toString();
+        }
+        String value = visit(ctx.expr());
+        List<String> divisors = findZeroDivisors(ctx.expr());
+        if (divisors.isEmpty()) {
+            return promelaType + " " + name + " = " + value + ";\n";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(promelaType).append(" ").append(name).append(";\n");
+        sb.append(guardDivisionByZero(name + " = " + value + ";\n", divisors));
+        return sb.toString();
     }
 
     @Override
@@ -699,5 +726,102 @@ public class HashToPromela extends HashBaseVisitor<String> {
         sb.append("fi\n");
 
         return sb.toString();
+    }
+    private List<String> findZeroDivisors(HashParser.ExprContext expr) {
+        List<String> divisors = new ArrayList<>();
+        collectZeroDivisors(expr, divisors);
+        return divisors;
+    }
+
+    private void collectZeroDivisors(ParseTree node, List<String> divisors) {
+        if (node instanceof HashParser.MultiplicativeExprContext) {
+            HashParser.MultiplicativeExprContext ctx =
+                    (HashParser.MultiplicativeExprContext) node;
+
+            for (int i = 1; i < ctx.powerExpr().size(); i++) {
+                String operation = ctx.getChild(2 * i - 1).getText();
+
+                if (operation.equals("/") || operation.equals("%")) {
+                    divisors.add(visit(ctx.powerExpr(i)));
+                }
+            }
+        }
+
+        for (int i = 0; i < node.getChildCount(); i++) {
+            collectZeroDivisors(node.getChild(i), divisors);
+        }
+    }
+
+    private String buildZeroCondition(List<String> divisors) {
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < divisors.size(); i++) {
+            if (i > 0) {
+                sb.append(" || ");
+            }
+
+            sb.append("(")
+                    .append(divisors.get(i))
+                    .append(" == 0)");
+        }
+
+        return sb.toString();
+    }
+
+    private String guardDivisionByZero(String normalStatement, List<String> divisors) {
+        if (divisors.isEmpty()) {
+            return normalStatement;
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("if\n");
+        sb.append(":: (").append(buildZeroCondition(divisors)).append(") ->\n");
+        sb.append("    divByZero = true;\n");
+        sb.append(":: else ->\n");
+        sb.append(indent(normalStatement));
+        sb.append("fi\n");
+
+        return sb.toString();
+    }
+
+    private String globalDeclarationOnly(HashParser.VarDeclContext ctx) {
+        String type = ctx.typeName().getText();
+        String name = ctx.ID().getText();
+        String promelaType = mapType(type);
+        if (promelaType.isEmpty()) {
+            return "";
+        }
+        return promelaType + " " + name + ";\n";
+    }
+
+    private String globalInitialization(HashParser.VarDeclContext ctx) {
+        String type = ctx.typeName().getText();
+        String name = ctx.ID().getText();
+        String promelaType = mapType(type);
+        if (promelaType.isEmpty()) {
+            return "";
+        }
+        if (ctx.expr() == null) {
+            return "";
+        }
+        String exprText = ctx.expr().getText();
+        if (isSimpleIncDecText(exprText)) {
+            String varName = getIncDecVarName(exprText);
+            boolean increment = isIncrement(exprText);
+            StringBuilder sb = new StringBuilder();
+            if (isPrefixIncDec(exprText)) {
+                sb.append(incDecUpdate(varName, increment)).append(";\n");
+                sb.append(name).append(" = ").append(varName).append(";\n");
+            } else {
+                sb.append(name).append(" = ").append(varName).append(";\n");
+                sb.append(incDecUpdate(varName, increment)).append(";\n");
+            }
+            return sb.toString();
+        }
+        String value = visit(ctx.expr());
+        List<String> divisors = findZeroDivisors(ctx.expr());
+        String normalStatement = name + " = " + value + ";\n";
+        return guardDivisionByZero(normalStatement, divisors);
     }
 }
