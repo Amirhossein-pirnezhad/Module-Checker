@@ -7,6 +7,7 @@ public class HashToPromela extends HashBaseVisitor<String> {
     private final Deque<String> continueLabels = new ArrayDeque<>();
     private boolean isDivide = false;
     private String division = null;
+   private int activeLoopCount = 0;
 
     @Override
     public String visitProgram(HashParser.ProgramContext ctx) {
@@ -34,6 +35,7 @@ public class HashToPromela extends HashBaseVisitor<String> {
         sb.append("bool inLoop = false;\n");
         sb.append("bool exitLoop = false;\n");
         sb.append("bool endReachedFlag = false;\n");
+        sb.append("int activeLoopCount = 0;\n");
         sb.append("\n");
 
         sb.append(globalVars);
@@ -425,12 +427,14 @@ public class HashToPromela extends HashBaseVisitor<String> {
         String body = visit(ctx.block());
         continueLabels.pop();
         StringBuilder sb = new StringBuilder();
+        sb.append(enterLoopFlags());
         sb.append(label).append(":\n");
         sb.append("do\n");
         sb.append(":: (").append(cond).append(") ->\n");
         sb.append(indent(body));
         sb.append(":: else -> break\n");
         sb.append("od\n");
+        sb.append(exitLoopFlags());
         return sb.toString();
     }
 
@@ -461,6 +465,7 @@ public class HashToPromela extends HashBaseVisitor<String> {
         }
         String condition = (ctx.expr() != null) ? visit(ctx.expr()) : "true";
         String body = visit(ctx.block());
+        sb.append(enterLoopFlags());
         sb.append("do\n");
         sb.append(":: (").append(condition).append(") ->\n");
         // body
@@ -480,6 +485,7 @@ public class HashToPromela extends HashBaseVisitor<String> {
         }
         sb.append(":: else -> break\n");
         sb.append("od\n");
+        sb.append(exitLoopFlags());
         continueLabels.pop();
         return sb.toString();
     }
@@ -549,17 +555,14 @@ public class HashToPromela extends HashBaseVisitor<String> {
     //try catch stmt
     public String visitTryStmt(HashParser.TryStmtContext ctx) {
         StringBuilder sb = new StringBuilder();
-
         String errFlag = "errFlag_" + (++exceptionCounter);//or can use exception name in catch
         sb.append("bool ").append(errFlag).append(" = false;\n");
         sb.append(visit(ctx.block()));
-
         sb.append("if\n");
         sb.append(":: ( ").append(errFlag).append(" ) ->\n");
         sb.append(indent(visit(ctx.catchClause(0))));//just one exception
         sb.append(":: else -> skip\n");
         sb.append("fi\n");
-
         return sb.toString();
     }
 
@@ -671,6 +674,30 @@ public class HashToPromela extends HashBaseVisitor<String> {
             sb.append("(").append(base).append(")");
         }
         sb.append(")");
+        return sb.toString();
+    }
+    private String enterLoopFlags() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("activeLoopCount = activeLoopCount + 1;\n");
+        sb.append("inLoop = true;\n");
+        sb.append("exitLoop = false;\n");
+
+        return sb.toString();
+    }
+
+    private String exitLoopFlags() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("activeLoopCount = activeLoopCount - 1;\n");
+        sb.append("exitLoop = true;\n");
+        sb.append("if\n");
+        sb.append(":: (activeLoopCount == 0) ->\n");
+        sb.append("    inLoop = false;\n");
+        sb.append(":: else ->\n");
+        sb.append("    inLoop = true;\n");
+        sb.append("fi\n");
+
         return sb.toString();
     }
 }
