@@ -457,6 +457,7 @@ public class HashToPromela extends HashBaseVisitor<String> {
         continueLabels.pop();
         List<String> divisors = findZeroDivisors(ctx.expr());
         StringBuilder sb = new StringBuilder();
+        sb.append("activeLoopCount = activeLoopCount + 1;\n");
         sb.append(label).append(":\n");
         sb.append("do\n");
         if (!divisors.isEmpty()) {
@@ -506,6 +507,7 @@ public class HashToPromela extends HashBaseVisitor<String> {
                 ? findZeroDivisors(ctx.expr())
                 : new ArrayList<>();
         String body = visit(ctx.block());
+        sb.append("activeLoopCount = activeLoopCount + 1;\n");
         sb.append("do\n");
         if (!divisors.isEmpty()) {
             sb.append(":: (").append(buildZeroCondition(divisors)).append(") ->\n");
@@ -595,11 +597,12 @@ public class HashToPromela extends HashBaseVisitor<String> {
             String varName = getIncDecVarName(exprText);
             boolean increment = isIncrement(exprText);
             StringBuilder sb = new StringBuilder();
+            sb.append(promelaType).append(" ").append(name).append(";\n");
             if (isPrefixIncDec(exprText)) {
                 sb.append(incDecUpdate(varName, increment)).append(";\n");
-                sb.append(promelaType).append(" ").append(name).append(" = ").append(varName).append(";\n");
+                sb.append(name).append(" = ").append(varName).append(";\n");
             } else {
-                sb.append(promelaType).append(" ").append(name).append(" = ").append(varName).append(";\n");
+                sb.append(name).append(" = ").append(varName).append(";\n");
                 sb.append(incDecUpdate(varName, increment)).append(";\n");
             }
             return sb.toString();
@@ -607,7 +610,8 @@ public class HashToPromela extends HashBaseVisitor<String> {
         String value = visit(ctx.expr());
         List<String> divisors = findZeroDivisors(ctx.expr());
         if (divisors.isEmpty()) {
-            return promelaType + " " + name + " = " + value + ";\n";
+            return promelaType + " " + name + ";\n" +
+                    name + " = " + value + ";\n";
         }
         StringBuilder sb = new StringBuilder();
         sb.append(promelaType).append(" ").append(name).append(";\n");
@@ -774,7 +778,6 @@ public class HashToPromela extends HashBaseVisitor<String> {
     }
     private String enterLoopFlags() {
         StringBuilder sb = new StringBuilder();
-        sb.append("activeLoopCount = activeLoopCount + 1;\n");
         sb.append("inLoop = true;\n");
         sb.append("exitLoop = false;\n");
         return sb.toString();
