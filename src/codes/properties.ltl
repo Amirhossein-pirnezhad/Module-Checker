@@ -1,0 +1,15 @@
+ltl safety {
+    [] (!divByZero)
+}
+
+ltl liveness {
+    [] (inLoop -> <> exitLoop)
+}
+
+ltl reachability {
+    !(<> endReached)
+}
+
+ltl invariant {
+    [] (x >= 0)
+}
