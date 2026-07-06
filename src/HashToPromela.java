@@ -894,12 +894,4 @@ public class HashToPromela extends HashBaseVisitor<String> {
         String normalStatement = name + " = " + value + ";\n";
         return guardDivisionByZero(normalStatement, divisors);
     }
-    private String guardConditionByZero(String condition, HashParser.ExprContext expr) {
-        List<String> divisors = findZeroDivisors(expr);
-        if (divisors.isEmpty()) {
-            return condition;
-        }
-        String zeroCondition = buildZeroCondition(divisors);
-        return "!(" + zeroCondition + ") && (" + condition + ")";
-    }
 }

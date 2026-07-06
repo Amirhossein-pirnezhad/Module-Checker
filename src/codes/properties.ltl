@@ -1,0 +1,7 @@
+ltl noDivByZero { [](!divByZero) }
+
+ltl loopExit { [](inLoop -> <>exitLoop) }
+
+ltl reachEnd { !(<>endReached) }
+
+ltl nonNegativeX { [](x >= 0) }
