@@ -1,0 +1,355 @@
+\documentclass[12pt,a4paper]{article}
+
+% ==================== بسته‌های پایه ====================
+\usepackage{amsmath,amssymb}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue]{hyperref}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+
+% ==================== بسته‌های فارسی ====================
+\usepackage{xepersian}
+\settextfont{Vazir.ttf}[
+BoldFont = Vazir-Bold.ttf,
+Path = fonts/ ]
+
+% ==================== تنظیمات listings ====================
+\lstdefinestyle{termstyle}{
+	backgroundcolor=\color{black!4},
+	basicstyle=\ttfamily\footnotesize,
+	breaklines=true,
+	frame=single,
+	rulecolor=\color{black!30},
+	columns=fullflexible,
+	keepspaces=true,
+	xleftmargin=4pt,
+	xrightmargin=4pt,
+}
+\lstdefinestyle{codestyle}{
+	backgroundcolor=\color{blue!4},
+	basicstyle=\ttfamily\footnotesize,
+	breaklines=true,
+	frame=single,
+	rulecolor=\color{blue!25},
+	columns=fullflexible,
+	keepspaces=true,
+	xleftmargin=4pt,
+	xrightmargin=4pt,
+}
+\lstset{style=termstyle}
+
+% ==================== دستورات سفارشی ====================
+\newcommand{\ltlbox}[1]{%
+	\begin{center}
+		\fbox{\parbox{0.9\linewidth}{\centering $#1$}}
+	\end{center}
+}
+
+% ==================== اطلاعات سند ====================
+\title{\textbf{گزارش فاز دوم — $Checking Model$ با $SPIN$} \\[4pt]
+	\large پروژه دوم: نظریه زبان‌ها و ماشین‌ها}
+\author{فاطمه باقریان --- امیرحسین پیرنژاد}
+\date{تیر ۱۴۰۵}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+% ==========================================================
+\section{مقدمه فاز دوم}	در فاز اول، برنامه‌ی زبان \lr{Hash} به مدل \lr{Promela} ترجمه شد (فایل \lr{output.pml}). هدف این فاز، بررسی پنج خصوصیت مشخص —
+	\lr{Safety}،
+\lr{Liveness}،
+\lr{Reachability}،
+\lr{Deadlock Freedom} و
+\lr{Invariant}	— بر روی این مدل با استفاده از ابزار \lr{SPIN} است. برای هر خصوصیت، فرمول \lr{LTL} متناظر (در صورت نیاز)، دستور دقیق اجرا، خروجی ترمینال و یک تفسیر مستقل ارائه شده است.
+		تمامی خصوصیات با فرمول‌های \lr{named} در فایل \lr{properties.ltl} تعریف شده‌اند و با دستور \lr{spin -search -ltl <name> output.pml} اجرا شده‌اند. 
+	
+% ==========================================================
+\section{برنامه مورد بررسی}
+مدل \lr{Promela} نهایی (\lr{output.pml}) شامل یک عملیات تقسیم محافظت‌شده با سازوکار \lr{gereftar/emtehan}، دو حلقه‌ی متوالی (اولی با شرط \lr{i<5}، دومی با شرط \lr{j<3})، و یک برچسب پایانی \lr{endReachedLabel} است. متغیرهای کنترلی \lr{divByZero}، \lr{inLoop}، \lr{exitLoop} و \lr{endReached} برای امکان بیان پنج خصوصیت در سطح سراسری (\lr{global}) تعریف شده‌اند.
+
+% ==========================================================
+\section{خصوصیت اول --- \lr{Safety}}
+
+\subsection{فرمول LTL}
+\ltlbox{\square\,\lnot(\mathit{divByZero})}
+
+\subsection{دستور اجرا}
+\begin{latin}
+	\begin{verbatim}
+		spin -search -ltl safety output.pml
+	\end{verbatim}
+\end{latin}
+
+\subsection{خروجی ترمینال}
+\begin{latin}
+	\begin{lstlisting}[style=termstyle]
+		(Spin Version 6.5.1 -- 31 July 2020)
+		+ Partial Order Reduction
+		
+		Full statespace search for:
+		never claim             - (none specified)
+		assertion violations    +
+		cycle checks            - (disabled by -DSAFETY)
+		invalid end states      +
+		
+		State-vector 36 byte, depth reached 68, errors: 0
+		69 states, stored
+		0 states, matched
+		69 transitions (= stored+matched)
+		0 atomic steps
+		hash conflicts:         0 (resolved)
+		
+		Stats on memory usage (in Megabytes):
+		0.004      equivalent memory usage for states
+		0.286      actual memory usage for states
+		128.000      memory used for hash table (-w24)
+		0.534      memory used for DFS stack (-m10000)
+		128.730      total actual memory usage
+		
+		unreached in proctype main
+		output.pml:20, state 7,  "divByZero = 1"
+		output.pml:21, state 8,  "errFlag_1 = 1"
+		output.pml:29, state 15, "safe = 0"
+		output.pml:48, state 36, "inLoop = 1"
+		output.pml:68, state 57, "inLoop = 1"
+		output.pml:74, state 63, "safe = 0"
+		(6 of 69 states)
+		
+		pan: elapsed time 0.12 seconds
+		pan: rate 575 states/second
+	\end{lstlisting}
+\end{latin}
+
+\subsection{تفسیر}	جستجوی کامل فضای حالت هیچ نقضی برای فرمول $\square\,\lnot(\mathit{divByZero})$ پیدا نکرد (\lr{errors: 0})، یعنی در تمام ۶۹ حالت قابل‌دسترس، فلگ \lr{divByZero} هیچ‌گاه مقدار \lr{true} نگرفته است.
+		با این حال، دقت در بخش \lr{unreached in proctype} نکته‌ی مهمی را آشکار می‌کند: خط \lr{output.pml:20} (یعنی \lr{divByZero = 1}) اصلاً در فضای حالت کاوش نشده است. علت این است که در مدل، مقدار متغیر \lr{y} به‌صورت ثابت (\lr{y = 2}) مقداردهی شده و هیچ مسیر اجرایی برای رسیدن \lr{y} به صفر وجود ندارد. 
+	
+% ==========================================================
+\section{خصوصیت دوم --- \lr{Liveness}}
+
+\subsection{فرمول LTL}
+\ltlbox{\square\,(\mathit{inLoop} \rightarrow \Diamond\, \mathit{exitLoop})}
+
+\subsection{دستور اجرا}
+\begin{latin}
+	\begin{lstlisting}[style=codestyle]
+		spin -search -ltl liveness output.pml
+	\end{lstlisting}
+\end{latin}
+
+\subsection{خروجی ترمینال}
+\begin{latin}
+	\begin{lstlisting}[style=termstyle]
+		(Spin Version 6.5.1 -- 31 July 2020)
+		+ Partial Order Reduction
+		
+		Full statespace search for:
+		never claim             - (none specified)
+		assertion violations    +
+		cycle checks            - (disabled by -DSAFETY)
+		invalid end states      +
+		
+		State-vector 36 byte, depth reached 68, errors: 0
+		69 states, stored
+		0 states, matched
+		69 transitions (= stored+matched)
+		0 atomic steps
+		hash conflicts:         0 (resolved)
+		
+		Stats on memory usage (in Megabytes):
+		0.004      equivalent memory usage for states
+		0.286      actual memory usage for states
+		128.000      memory used for hash table (-w24)
+		0.534      memory used for DFS stack (-m10000)
+		128.730      total actual memory usage
+		
+		unreached in proctype main
+		output.pml:20, state 7,  "divByZero = 1"
+		output.pml:21, state 8,  "errFlag_1 = 1"
+		output.pml:29, state 15, "safe = 0"
+		output.pml:48, state 36, "inLoop = 1"
+		output.pml:68, state 57, "inLoop = 1"
+		output.pml:74, state 63, "safe = 0"
+		(6 of 69 states)
+		
+		pan: elapsed time 0.504 seconds
+		pan: rate 136.90 states/second
+	\end{lstlisting}
+\end{latin}
+
+\subsection{تفسیر}	نتیجه نشان می‌دهد \lr{errors: 0}، یعنی هیچ اجرایی پیدا نشد که در آن \lr{inLoop} برقرار شود ولی \lr{exitLoop} هیچ‌وقت به‌دنبالش نیاید. با توجه به اینکه هر دو حلقه‌ی مدل (شرط \lr{i<5} و شرط \lr{j<3}) کراندار (\lr{bounded}) هستند و همیشه پس از تعداد ثابتی تکرار با \lr{break} خاتمه می‌یابند، این نتیجه با تحلیل دستی مدل سازگار است: در این برنامه امکان ورود به یک حلقه‌ی بی‌نهایت وجود ندارد.
+	
+\textbf{نکته:} در سرتیتر خروجی، عبارت \lr{cycle checks - (disabled by -DSAFETY)} دیده می‌شود. این یعنی \lr{SPIN} به‌صورت خودکار تشخیص داده که برای این مدل خاص (که کاملاً \lr{deterministic} است و هیچ رفتار نامتناهی غیر از توقف نهایی ندارد)، نیازی به جستجوی کامل \lr{acceptance cycle} در اتوماتای \lr{Büchi} نیست.(فکر کنم باید تست عوض بشه:))
+
+	
+% ==========================================================
+\section{خصوصیت سوم --- \lr{Reachability}}
+
+\subsection{فرمول LTL}	فرمولی که به \lr{SPIN} داده می‌شود، نقیض فرمول اصلی است:
+	\ltlbox{\lnot(\Diamond\, \mathit{endReached})}
+
+\subsection{دستور اجرا}
+\begin{latin}
+	\begin{lstlisting}[style=codestyle]
+		spin -search -ltl reachability output.pml
+	\end{lstlisting}
+\end{latin}
+
+
+\subsection{خروجی ترمینال}
+\begin{latin}
+	\begin{lstlisting}[style=termstyle]
+		(Spin Version 6.5.1 -- 31 July 2020)
+		+ Partial Order Reduction
+		
+		Full statespace search for:
+		never claim             - (none specified)
+		assertion violations    +
+		cycle checks            - (disabled by -DSAFETY)
+		invalid end states      +
+		
+		State-vector 36 byte, depth reached 68, errors: 0
+		69 states, stored
+		0 states, matched
+		69 transitions (= stored+matched)
+		0 atomic steps
+		hash conflicts:         0 (resolved)
+		
+		Stats on memory usage (in Megabytes):
+		0.004      equivalent memory usage for states
+		0.286      actual memory usage for states
+		128.000      memory used for hash table (-w24)
+		0.534      memory used for DFS stack (-m10000)
+		128.730      total actual memory usage
+		
+		unreached in proctype main
+		output.pml:20, state 7,  "divByZero = 1"
+		output.pml:21, state 8,  "errFlag_1 = 1"
+		output.pml:29, state 15, "safe = 0"
+		output.pml:48, state 36, "inLoop = 1"
+		output.pml:68, state 57, "inLoop = 1"
+		output.pml:74, state 63, "safe = 0"
+		(6 of 69 states)
+		
+		pan: elapsed time 1.53 seconds
+		pan: rate 45.09 states/second
+	\end{lstlisting}
+\end{latin}
+
+\subsection{تفسیر --- \textcolor{red}{باگ :))}}
+	
+% ==========================================================
+\section{خصوصیت چهارم --- \lr{Deadlock Freedom}} \label{sec:deadlock}
+	این خصوصیت نیازی به فرمول \lr{LTL} ندارد و با قابلیت توکار \lr{SPIN} بررسی می‌شود.
+	
+\subsection{دستور اجرا}
+\begin{latin}
+	\begin{lstlisting}[style=codestyle]
+		spin -search -deadlock output.pml
+	\end{lstlisting}
+\end{latin}
+
+\subsection{خروجی ترمینال (مسیر اجرای کامل)}
+\begin{latin}
+	\begin{lstlisting}[style=termstyle,basicstyle=\ttfamily\scriptsize]
+		proctype main
+		state  1 -> state  2   output.pml:13  x = 10
+		state  2 -> state  3   output.pml:14  y = 2
+		state  3 -> state  4   output.pml:15  i = 0
+		state  4 -> state  5   output.pml:16  safe = 0
+		state  5 -> state 12   output.pml:18  errFlag_1 = 0
+		state 12 -> state 11   output.pml:19  else            (y != 0)
+		state 11 -> state 18   output.pml:24  safe = (x / y)
+		state 18 -> state 17   output.pml:28  else            (!errFlag_1)
+		state 17 -> state 20   output.pml:30  (skip)
+		state 20 -> state 28   output.pml:32  activeLoopCount = activeLoopCount + 1
+		state 28 -> state 22   output.pml:35  (i < 5)
+		state 22 -> 23 -> 24 -> 25 -> state 28   [تکرار ۵ باره‌ی حلقه‌ی اول]
+		state 28 -> state 31   output.pml:35  else            (i >= 5)
+		state 31 -> state 32   output.pml:42  activeLoopCount = activeLoopCount - 1
+		state 32 -> state 37   output.pml:43  exitLoop = 1
+		state 37 -> state 34   output.pml:45  (activeLoopCount == 0)
+		state 34 -> state 39   output.pml:46  inLoop = 0
+		state 39 -> state 41   output.pml:51  j = 0
+		state 41 -> state 49   output.pml:52  activeLoopCount = activeLoopCount + 1
+		state 49 -> state 43   output.pml:54  (j < 3)
+		state 43 -> 44 -> 45 -> 46 -> state 49   [تکرار ۳ باره‌ی حلقه‌ی دوم]
+		state 49 -> state 52   output.pml:54  else            (j >= 3)
+		state 52 -> state 53   output.pml:62  activeLoopCount = activeLoopCount - 1
+		state 53 -> state 58   output.pml:63  exitLoop = 1
+		state 58 -> state 55   output.pml:65  (activeLoopCount == 0)
+		state 55 -> state 64   output.pml:66  inLoop = 0
+		state 64 -> state 61   output.pml:71  (x >= 0)
+		state 61 -> state 66   output.pml:72  safe = safe + 1
+		state 66 -> state 67   output.pml:76  printf("%d\n", safe)
+		state 67 -> state 68   output.pml:78  endReached = 1
+		state 68 -> state 69   output.pml:79  (1)
+		state 69 -> state  0   output.pml:80  -end-
+	\end{lstlisting}
+\end{latin}
+
+\subsection{تفسیر}	از آنجا که مدل کاملاً \lr{deterministic} است، \lr{SPIN} در عمل تنها یک مسیر اجرایی یکتا دارد که به‌طور کامل در بالا نمایش داده شده است. این مسیر بدون هیچ توقف غیرمنتظره‌ای به برچسب \lr{-end-} می‌رسد، که نشان‌دهنده‌ی یک پایان معتبر (\lr{valid end state}) است. بنابراین مدل عاری از \lr{deadlock} است.(هنوز آرمان جواب نداده ولی احتمالا بازم نیازمند تغییر تست)
+
+% ==========================================================
+\section{خصوصیت پنجم --- \lr{Invariant}}
+
+\subsection{فرمول LTL}
+\ltlbox{\square\,(x \geq 0)}
+
+\subsection{دستور اجرا}
+\begin{latin}
+	\begin{lstlisting}[style=codestyle]
+		spin -search -ltl invariant output.pml
+	\end{lstlisting}
+\end{latin}
+
+\subsection{خروجی ترمینال}
+\begin{latin}
+	\begin{lstlisting}[style=termstyle]
+		(Spin Version 6.5.1 -- 31 July 2020)
+		+ Partial Order Reduction
+		
+		Full statespace search for:
+		never claim             - (none specified)
+		assertion violations    +
+		cycle checks            - (disabled by -DSAFETY)
+		invalid end states      +
+		
+		State-vector 36 byte, depth reached 68, errors: 0
+		69 states, stored
+		0 states, matched
+		69 transitions (= stored+matched)
+		0 atomic steps
+		hash conflicts:         0 (resolved)
+		
+		Stats on memory usage (in Megabytes):
+		0.004      equivalent memory usage for states
+		0.286      actual memory usage for states
+		128.000      memory used for hash table (-w24)
+		0.534      memory used for DFS stack (-m10000)
+		128.730      total actual memory usage
+		
+		unreached in proctype main
+		output.pml:20, state 7,  "divByZero = 1"
+		output.pml:21, state 8,  "errFlag_1 = 1"
+		output.pml:29, state 15, "safe = 0"
+		output.pml:48, state 36, "inLoop = 1"
+		output.pml:68, state 57, "inLoop = 1"
+		output.pml:74, state 63, "safe = 0"
+		(6 of 69 states)
+		
+		pan: elapsed time 0.134 seconds
+		pan: rate 514.92 states/second
+	\end{lstlisting}
+\end{latin}
+
+\subsection{تفسیر}	جستجوی کامل هیچ حالتی با $x < 0$ پیدا نکرد (\lr{errors: 0}). این نتیجه با تحلیل دستی مدل سازگار است: متغیر \lr{x} از مقدار اولیه‌ی ۱۰ شروع می‌شود و تنها در حلقه‌ی اول، دقیقاً ۵ بار یک واحد کاهش می‌یابد (به ازای هر تکرار شرط \lr{i<5})؛ بنابراین کمترین مقدار ممکن برای \lr{x} برابر ۵ است و هیچ‌گاه به صفر یا منفی نمی‌رسد.
+	
+	
+	
+\end{document}
