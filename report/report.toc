@@ -1,0 +1,26 @@
+\contentsline {section}{\numberline {1}مقدمه فاز دوم}{2}{section.1}%
+\contentsline {section}{\numberline {2}برنامه مورد بررسی}{2}{section.2}%
+\contentsline {section}{\numberline {3}خصوصیت اول --- \lr {Safety}}{2}{section.3}%
+\contentsline {subsection}{\numberline {3.1}فرمول LTL}{2}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}دستور اجرا}{2}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}خروجی ترمینال}{2}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}تفسیر}{3}{subsection.3.4}%
+\contentsline {section}{\numberline {4}خصوصیت دوم --- \lr {Liveness}}{3}{section.4}%
+\contentsline {subsection}{\numberline {4.1}فرمول LTL}{3}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}دستور اجرا}{3}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}خروجی ترمینال}{3}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}تفسیر}{4}{subsection.4.4}%
+\contentsline {section}{\numberline {5}خصوصیت سوم --- \lr {Reachability}}{4}{section.5}%
+\contentsline {subsection}{\numberline {5.1}فرمول LTL}{4}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}دستور اجرا}{4}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}خروجی ترمینال}{5}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}تفسیر --- \textcolor {red}{باگ :))}}{5}{subsection.5.4}%
+\contentsline {section}{\numberline {6}خصوصیت چهارم --- \lr {Deadlock Freedom}}{5}{section.6}%
+\contentsline {subsection}{\numberline {6.1}دستور اجرا}{5}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}خروجی ترمینال (مسیر اجرای کامل)}{5}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}تفسیر}{6}{subsection.6.3}%
+\contentsline {section}{\numberline {7}خصوصیت پنجم --- \lr {Invariant}}{6}{section.7}%
+\contentsline {subsection}{\numberline {7.1}فرمول LTL}{6}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}دستور اجرا}{6}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}خروجی ترمینال}{6}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}تفسیر}{7}{subsection.7.4}%

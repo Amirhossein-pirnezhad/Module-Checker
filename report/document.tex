@@ -1,0 +1,606 @@
+\documentclass[12pt]{report}
+
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\geometry{a4paper, margin=1in}
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=white,     
+	urlcolor=blue,
+	citecolor=black,
+	filecolor=black,
+	pdfborder={0 0 0}
+}
+
+\usepackage{tcolorbox}
+
+\tcbuselibrary{skins}
+
+\usepackage{xepersian}
+\settextfont{Vazir.ttf}[
+BoldFont = Vazir-Bold.ttf,
+Path = fonts/ ]
+
+
+
+\title{گزارش فاز اول پروژه \\ تبدیل زبان Hash به Promela}
+\author{فاطمه باقریان --- امیرحسین پیرنژاد}
+\date{تیر ماه 1405}
+
+\lstset{
+	basicstyle=\ttfamily\small,
+	keywordstyle=\color{blue},
+	commentstyle=\color{gray},
+	stringstyle=\color{red},
+	breaklines=true,
+	frame=single,
+	language=Java,
+	numbers=left,
+	numberstyle=\tiny\color{gray},
+	showspaces=false,
+	showstringspaces=false,
+	tabsize=4
+}
+
+\definecolor{CustomBackground}{HTML}{1C1C1C}
+\pagecolor{CustomBackground}
+\color{white}
+
+
+\begin{document}
+	
+	\maketitle
+	\tableofcontents
+	\newpage
+	
+	\chapter{مقدمه}
+	
+	\section{ارتباط با نظریه اتوماتا و زبان‌ها}
+	
+	\begin{itemize}
+		\item یک برنامه در حال اجرا را می‌توان به عنوان یک \lr{State Machine} در نظر گرفت - هر وضعیت حافظه یک \lr{State} است و هر دستور، یک \lr{Transition}.
+		\item خواصی که روی برنامه بررسی می‌شوند، با استفاده از \lr{Linear Temporal Logic (LTL)} بیان می‌شوند.
+		\item هر فرمول \lr{LTL} معادل یک \lr{Büchi Automaton} است - یک ماشین حالت محدود که روی کلمات نامتناهی کار می‌کند.
+		\item ابزار \lr{SPIN} این اتوماتا را با مدل سیستم ترکیب کرده و تمام حالت‌های ممکن را جستجو می‌کند.
+	\end{itemize}
+	
+	پس آنچه در این پروژه انجام می‌دهیم، عملاً همان نظریه‌ای است که در کلاس خوانده‌ایم را به صورت عملی و قابل لمس پیاده‌سازی می‌کنیم.
+	
+	\section{زیرمجموعه زبان Hash پشتیبانی شده}
+	
+ زیرمجموعه مورد نظر شامل موارد زیر است:
+	
+	\begin{itemize}
+		\item متغیرهای از نوع \lr{adad} و \lr{boole}
+		\item دستور شرطی \lr{age/bood/vagarna}
+		\item حلقه‌های \lr{ta} و \lr{baraye} به همراه \lr{shekan} و \lr{edame}
+		\item ساختار \lr{gereftar/emtehan} به صورت پایه (یک بلوک \lr{catch} بدون تودرتو)
+		\item عملگرهای محاسباتی و مقایسه‌ای تعریف شده در پروژه اول
+	\end{itemize}
+	
+	
+	\section{محدودیت‌های پیاده‌سازی}
+	
+	\begin{itemize}
+		\item دستور \lr{shekan} تنها از حلقه‌ای که مستقیماً داخل آن است خارج می‌شود، نه از حلقه‌های بیرونی.
+		\item دستور \lr{edame} اجرای بدنه فعلی را متوقف کرده و به شرط حلقه بازمی‌گردد.
+		\item برای \lr{gereftar/emtehan}، تنها یک بلوک \lr{gereftar} پشتیبانی می‌شود و تودرتوی بلوک‌های \lr{emtehan} در این پروژه لازم نیست.
+		\item کلاس‌ها و متدها جزو این زیرمجموعه نیستند.
+	\end{itemize}
+	
+	\section{نحوه عملکرد کل سیستم}
+	
+	فرآیند اجرای پروژه به صورت زیر است:
+	\begin{center}
+		\begin{tabular}{c}
+			\textbf{کد منبع Hash} \\
+			$\downarrow$ \\
+			\lr{Lexer (ANTLR)} - تولید توکن‌ها \\
+			$\downarrow$ \\
+			\lr{Parser (ANTLR)} - تولید درخت نحوی \\
+			$\downarrow$ \\
+			درخت Parse \\
+			$\downarrow$ \\
+			بررسی خطاهای نحوی \\
+			$\downarrow$ \\
+			\lr{Semantic Checker} - بررسی قواعد معنایی \\
+			$\downarrow$ \\
+			\lr{HashToPromela Visitor} - تبدیل به \lr{Promela} \\
+			$\downarrow$ \\
+			فایل \lr{output.pml} - خروجی نهایی
+		\end{tabular}
+	\end{center}
+	
+	در این معماری، ابتدا کد ورودی توسط \lr{Lexer} به توکن‌ها تبدیل می‌شود. سپس \lr{Parser} بر اساس گرامر تعریف شده، درخت نحوی (\lr{Parse Tree}) را تولید می‌کند. پس از اطمینان از عدم وجود خطای نحوی، \lr{Semantic Checker} قواعد معنایی (مانند تعریف متغیرها قبل از استفاده) را بررسی می‌کند. در نهایت، \lr{Visitor} درخت را پیمایش کرده و کد معادل \lr{Promela} تولید می‌کند.
+	
+	\chapter{توضیح کلاس Main}
+	
+	کلاس \lr{Main} نقطه شروع اجرای برنامه است و وظیفه هماهنگی بین بخش‌های مختلف را بر عهده دارد.
+	
+	\section{خواندن ورودی}
+	
+	\setLTR
+	\begin{lstlisting}[language=Java]
+		CharStream input = CharStreams.fromPath(Paths.get(args[0]));
+	\end{lstlisting}
+	\setRTL
+	
+	این خط فایل ورودی که به عنوان آرگومان خط فرمان دریافت شده است را به جریان کاراکتری تبدیل می‌کند. این جریان سپس توسط \lr{Lexer} پردازش می‌شود. استفاده از \lr{Paths.get} و \lr{CharStreams.fromPath} روش استاندارد و امن برای خواندن فایل در \lr{JAVA} است.
+	
+	\section{تولید Lexer و Parser}
+	
+	\setLTR
+	\begin{lstlisting}[language=Java]
+		HashLexer lexer = new HashLexer(input);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		HashParser parser = new HashParser(tokens);
+	\end{lstlisting}
+	\setRTL
+	
+	\begin{itemize}
+		\item $Lexer$: جریان کاراکتری را به توکن‌های معنادار (مانند کلیدواژه‌ها، عملگرها، شناسه‌ها و اعداد) تبدیل می‌کند.
+		\item $Token Stream$: جریان توکن‌ها را به صورتی که \lr{Parser} بتواند از آن استفاده کند، سازماندهی می‌کند.
+		\item $Parser$: بر اساس گرامر تعریف شده در فایل \lr{Hash.g4}، توکن‌ها را تحلیل کرده و درخت نحوی انتزاعی تولید می‌کند.
+	\end{itemize}
+	
+	\section{بررسی خطاهای نحوی}
+	
+	\setLTR
+	\begin{lstlisting}[language=Java]
+		if (parser.getNumberOfSyntaxErrors() > 0) {
+			System.out.println("Syntax errors found. Semantic checking skipped.");
+			return;
+		}
+	\end{lstlisting}
+	\setRTL
+	
+	در صورت وجود خطای نحوی، ادامه پردازش متوقف می‌شود. این کار از تولید خروجی ناقص یا اشتباه جلوگیری می‌کند. خطاهای نحوی ممکن است شامل استفاده از کلیدواژه‌های اشتباه، قرارگیری نادرست پرانتزها، یا ساختارهای غیرمجاز باشند.
+	
+	\section{بررسی معنایی}
+	
+	\setLTR
+	\begin{lstlisting}[language=Java]
+		SemanticChecker checker = new SemanticChecker();
+		checker.collectDef(tree);
+		checker.SemanticCheck(tree);
+	\end{lstlisting}
+	\setRTL
+	
+	در این مرحله، دو عملیات مهم انجام می‌شود:
+	
+	\begin{enumerate}
+		\item \textbf{جمع‌آوری تعاریف}: \lr{collectDef} تمام تعاریف متغیرها، توابع و کلاس‌ها را از درخت استخراج کرده و در یک جدول نماد (\lr{Symbol Table}) ذخیره می‌کند.
+		\item \textbf{بررسی معنایی}: \lr{SemanticCheck} قواعد زیر را بررسی می‌کند:
+		\begin{itemize}
+			\item استفاده از متغیرها قبل از تعریف
+			\item تطابق نوع داده در عملیات‌ها
+			\item تعریف تکراری متغیرها
+			\item استفاده صحیح از ساختارهای شرطی و حلقه‌ها
+			\item و ....
+		\end{itemize}
+	\end{enumerate}
+	
+	اگر خطای معنایی وجود داشته باشد، پیام‌های خطا نمایش داده می‌شوند و برنامه ادامه نمی‌یابد.
+	
+	\section{تولید کد Promela}
+	
+	\setLTR
+	\begin{lstlisting}[language=Java]
+		HashToPromela translator = new HashToPromela();
+		String outputCode = translator.visit(tree);
+	\end{lstlisting}
+	\setRTL
+	
+	در این مرحله، درخت نحوی توسط \lr{Visitor} پیمایش می‌شود و برای هر گره، کد معادل \lr{Promela} تولید می‌گردد. استفاده از \lr{Visitor} به ما امکان می‌دهد تا دقیقاً کنترل کنیم که برای هر نوع گره چه کدی تولید شود.
+	
+	\section{ذخیره خروجی}
+	
+	\setLTR
+	\begin{lstlisting}[language=Java]
+		Path outputDir = Paths.get("src/codes");
+		Path outputFile = outputDir.resolve("output.pml");
+		Files.writeString(outputFile, outputCode);
+	\end{lstlisting}
+	\setRTL
+	
+	کد تولید شده در فایل \lr{output.pml} در پوشه \lr{src/codes} ذخیره می‌شود. این مسیر استاندارد باعث می‌شود که خروجی به راحتی قابل دسترسی و استفاده در فازهای بعدی باشد.
+	
+	\chapter{چرا از Visitor استفاده شده است؟}
+	
+	\section{مقایسه Visitor و Listener}
+	
+	در این پروژه از الگوی \lr{Visitor} به جای \lr{Listener} استفاده شده است. جدول زیر مقایسه جامعی بین این دو الگو ارائه می‌دهد:
+	
+	\begin{table}[h!]
+		\centering
+		\begin{tabular}{|p{4cm}|p{5cm}|p{5cm}|}
+			\hline
+			\textbf{ویژگی} & \textbf{Visitor} & \textbf{Listener} \\
+			\hline
+			مقدار بازگشتی & دارد (می‌تواند هر نوع داده‌ای برگرداند) & ندارد (void) \\
+			کنترل پیمایش & کامل (خودتان تصمیم می‌گیرید چه گره‌هایی را ببینید) & محدود (پیمایش خودکار توسط ANTLR) \\
+			کاربرد اصلی & تولید کد، تبدیل، تحلیل عمیق & تحلیل ساده، جمع‌آوری اطلاعات \\
+			وابستگی به گرامر & کم (هر گره یک متد مجزا دارد) & زیاد (همه در یک متد) \\
+			پیچیدگی پیاده‌سازی & بیشتر (نیاز به مدیریت پیمایش) & کمتر (پیمایش خودکار) \\
+			قابلیت توسعه & بالا (افزودن عملیات جدید بدون تغییر گره‌ها) & متوسط \\
+			\hline
+		\end{tabular}
+		\caption{مقایسه الگوهای Visitor و Listener}
+	\end{table}
+	
+	\section{دلایل اصلی انتخاب Visitor}
+	
+	\begin{enumerate}
+		\item \textbf{تولید مقدار بازگشتی}: مهم‌ترین دلیل، نیاز به تولید کد \lr{Promela} به عنوان خروجی است. در \lr{Visitor}، هر متد می‌تواند یک رشته (یا هر نوع داده دیگری) برگرداند، در حالی که \lr{Listener} خروجی ندارد.
+		
+		\item \textbf{کنترل کامل بر پیمایش}: در \lr{Visitor}، خودمان تصمیم می‌گیریم که چه گره‌هایی را بازدید کنیم و به چه ترتیبی. این ویژگی برای ترجمه دقیق دستورات \lr{Hash} به \lr{Promela} ضروری است، زیرا ترتیب اجرای دستورات و ساختارهای کنترلی باید به درستی حفظ شود.
+		
+		\item \textbf{بهبود قابلیت نگهداری}: با استفاده از \lr{Visitor}، هر قانون گرامر یک متد مجزا دارد که کار اصلاح و توسعه را بسیار ساده‌تر می‌کند. اگر بخواهیم یک دستور جدید اضافه کنیم، فقط یک متد جدید می‌نویسیم.
+		
+		\item \textbf{مدیریت بهتر Context}: در فرآیند ترجمه، نیاز به نگهداری وضعیت‌هایی مانند برچسب‌های حلقه‌ها یا پرچم‌های استثنا داریم. \lr{Visitor} با استفاده از متغیرهای عضو کلاس یا پشته‌ها، این کار را به سادگی امکان‌پذیر می‌کند.
+		
+		\item \textbf{انتخابی بازدید از گره‌ها}: در \lr{Visitor}، می‌توانیم از بازدید برخی گره‌ها صرف‌نظر کنیم یا گره‌های خاصی را چندین بار بازدید کنیم، در حالی که در \lr{Listener} همه گره‌ها دقیقاً یک بار بازدید می‌شوند.
+	\end{enumerate}
+	
+	\section{نمونه‌های عملی از مزایای Visitor}
+	
+	\begin{itemize}
+		\item \textbf{مدیریت تقسیم بر صفر}: در متدهای مختلف (مانند \lr{visitWhileStmt})، می‌توانیم تصمیم بگیریم که قبل از شرط اصلی حلقه، یک شرط اضافی برای بررسی تقسیم بر صفر اضافه کنیم.
+		
+		\item \textbf{مدیریت حلقه‌های تو در تو}: با استفاده از پشته  \lr{continueLabels}، می‌توانیم به راحتی برچسب‌های حلقه‌های تو در تو را مدیریت کنیم. هر بار که وارد یک حلقه جدید می‌شویم، برچسب آن را به پشته اضافه می‌کنیم و پس از خروج، آن را حذف می‌کنیم.
+		
+		\item \textbf{مدیریت استثناها}: در ساختار \lr{try-catch}، با استفاده از پرچم‌های استثنا که روی پشته قرار می‌گیرند، می‌توانیم رفتار استثنا را در \lr{Promela} شبیه‌سازی کنیم.
+	\end{itemize}
+	
+	\chapter{طراحی Translator (HashToPromela)}
+	
+	کلاس \lr{HashToPromela} مسئول اصلی تبدیل کد \lr{Hash} به \lr{Promela} است. \newline این کلاس از \lr{HashBaseVisitor<String>} ارث‌بری کرده و برای هر گره از درخت نحوی، یک رشته خروجی تولید می‌کند.
+	
+	\section{ساختار کلی کلاس}
+	
+	\begin{itemize}
+		\item \textbf{متغیرهای سراسری اضافه شده}: 
+		\begin{itemize}
+			\item \lr{divByZero}: برای بررسی ویژگی Safety (جلوگیری از تقسیم بر صفر)
+			\item \lr{inLoop} و \lr{exitLoop}: برای بررسی ویژگی‌های Liveness
+			\item \lr{endReached}: برای بررسی ویژگی Reachability
+			\item \lr{activeLoopCount}: برای مدیریت حلقه‌های تو در تو
+		\end{itemize}
+		
+		\item \textbf{پشته‌ها}:
+		\begin{itemize}
+			\item \lr{continueLabels}: ذخیره برچسب‌های حلقه‌ها برای دستور \lr{edame}
+			\item \lr{exceptionFlags}: ذخیره پرچم‌های استثنا برای ساختار \lr{try-catch}
+			\item \lr{catchLabels}: ذخیره برچسب‌های بلوک‌های \lr{catch}
+		\end{itemize}
+		
+		\item \textbf{شمارنده‌ها}:
+		\begin{itemize}
+			\item \lr{loopCounter}: تولید برچسب‌های یکتا برای حلقه‌ها
+			\item \lr{exceptionCounter}: تولید شناسه‌های یکتا برای استثناها
+		\end{itemize}
+	\end{itemize}
+	
+	\section{متد visitProgram - نقطه ورود اصلی}
+	
+	این متد مهم‌ترین متد کلاس است و ساختار کلی فایل خروجی را تولید می‌کند:
+	
+	\begin{enumerate}
+		\item \textbf{تعریف متغیرهای کمکی}: در ابتدای خروجی، تمام متغیرهای کمکی که برای بررسی خواص سیستم نیاز هستند، تعریف می‌شوند:
+		\setLTR
+		\begin{lstlisting}[language=Promela]
+			bool divByZero = false;
+			bool inLoop = false;
+			bool exitLoop = false;
+			bool endReached = false;
+			int activeLoopCount = 0;
+		\end{lstlisting}
+		\setRTL
+		
+		\item \textbf{پردازش متغیرهای سراسری}: اعلان‌های سطح بالا که از نوع تعریف متغیر هستند، شناسایی شده و به صورت متغیرهای سراسری در \lr{Promela} تعریف می‌شوند. این کار باعث می‌شود که متغیرها در کل برنامه قابل دسترسی باشند.
+		
+		\item \textbf{تعریف بدنه اصلی}: سایر گره‌های سطح بالا (دستورات، توابع، کلاس‌ها) درون یک پروسه فعال با نام \lr{main} قرار می‌گیرند ، همچنین متغیر های سراسری در این قسمت مقدار دهی میشوند:
+		\setLTR
+		\begin{lstlisting}[language=Promela]
+			active proctype main() {
+				\\ body
+			}
+		\end{lstlisting}
+		\setRTL
+		
+		\item \textbf{افزودن برچسب پایان}:\newline در انتهای بدنه، برچسب \lr{endReachedLabel} و دستور تنظیم \lr{endReached = true} اضافه می‌شود تا بتوان ویژگی \lr{Reachability} را بررسی کرد.
+	\end{enumerate}
+	
+	\section{متد visitVarDecl - ترجمه تعریف متغیرها}
+	
+	این متد وظیفه تبدیل اعلان متغیرها را بر عهده دارد:
+	
+	\begin{enumerate}
+		\item \textbf{نگاشت نوع}: نوع داده \lr{Hash} به نوع معادل در \lr{Promela} تبدیل می‌شود:
+		\begin{itemize}
+			\item \lr{adad} $\rightarrow$ \lr{int}
+			\item \lr{boole} $\rightarrow$ \lr{bool}
+			\item سایر انواع (مانند \lr{matn}، \lr{harf}) پشتیبانی نمی‌شوند
+		\end{itemize}
+		
+		\item \textbf{مدیریت عملگرهای افزایش/کاهش}: اگر عبارت اولیه شامل \lr{x++} یا \lr{++x} باشد، به صورت زیر ترجمه می‌شود(به طور مشابه برای $--$):
+		\begin{itemize}
+			\item برای \lr{x++}: ابتدا مقداردهی با مقدار فعلی، سپس افزایش
+			\item برای \lr{++x}: ابتدا افزایش، سپس مقداردهی با مقدار جدید
+		\end{itemize}
+		
+		\item \textbf{بررسی تقسیم بر صفر}: اگر عبارت شامل عملگر تقسیم باشد، تابع \lr{guardDivisionByZero} فراخوانی می‌شود تا از تقسیم بر صفر جلوگیری کند.
+	\end{enumerate}
+	
+	\section{ترجمه عبارات (Expressions) در HashToPromela}
+	
+	\subsection{روش کلی ترجمه}
+	
+	در کلاس \lr{HashToPromela}، ترجمه عبارات با استفاده از \textbf{الگوی Visitor} و به صورت \textbf{بازگشتی} انجام می‌شود. به این معنی که هر عبارت بزرگ به زیرعبارت‌های کوچکتر تقسیم شده و هر کدام به‌صورت مستقل ترجمه می‌شوند، سپس نتایج با هم ترکیب می‌شوند.
+	
+	\subsection{سلسله‌مراتب ترجمه عبارات}
+	
+	ترجمه عبارات از بالا به پایین و به ترتیب زیر انجام می‌شود:
+	
+	\begin{latin}
+		\begin{tabular}{ll}
+			visitExpr()                    & $\leftarrow$ Entry Point \\
+			visitLogicalOrExpr()          & $\leftarrow$ Logical OR ($||$) \\
+			visitLogicalAndExpr()         & $\leftarrow$ Logical AND ($\&\&$) \\
+			visitEqualityExpr()           & $\leftarrow$ Equality ($==$, $!=$) \\
+			visitRelationalExpr()         & $\leftarrow$ Relational ($<$, $>$, $<=$, $>=$) \\
+			visitAdditiveExpr()           & $\leftarrow$ Addition/Subtraction ($+$, $-$) \\
+			visitMultiplicativeExpr()     & $\leftarrow$ Multiplication/Division ($*$, $/$, $\%$) \\
+			visitPowerExpr()              & $\leftarrow$ Power ($**$) \\
+			visitUnaryExpr()              & $\leftarrow$ Unary ($!$, $-$, $++$, $--$) \\
+			visitPostfixExpr()            & $\leftarrow$ Postfix ($++$, $--$) \\
+			visitPrimaryExpr()            & $\leftarrow$ Primary (Numbers, Variables, Parentheses) \\
+		\end{tabular}
+	\end{latin}
+	
+	\subsection{نحوه اتصال متدها}
+	
+	هر متد Visitor یک رشته برمی‌گرداند و برای زیرعبارت‌ها، متد \lr{visit} مناسب را فراخوانی می‌کند. به عنوان مثال، متد \lr{visitAdditiveExpr} برای ترجمه \lr{(a + b)} به این صورت عمل می‌کند:
+	
+	\begin{enumerate}
+		\item ابتدا \lr{visit(ctx.multiplicativeExpr(0))} را صدا می‌زند که به \lr{"a"} می‌رسد
+		\item عملگر \lr{"+"} را دریافت می‌کند
+		\item سپس \lr{visit(ctx.multiplicativeExpr(1))} را صدا می‌زند که به \lr{"b"} می‌رسد
+		\item در نهایت \lr{"a + b"} را برمی‌گرداند
+	\end{enumerate}
+	
+	\subsection{عملگرهای پشتیبانی‌شده}
+	
+	\begin{table}[h!]
+		\centering
+		\begin{tabular}{|c|c|c|}
+			\hline
+			\textbf{دسته} & \textbf{عملگرهای Hash} & \textbf{معادل Promela} \\
+			\hline
+			حسابی & \lr{+}, \lr{-}, \lr{*}, \lr{/}, \lr{**} & \lr{+}, \lr{-}, \lr{*}, \lr{/}, (ضرب متوالی) \\
+			مقایسه‌ای & \lr{<}, \lr{>}, \lr{<=}, \lr{>=}, \lr{==}, \lr{!=} & همان عملگرها \\
+			منطقی & \lr{\&}, \lr{|}, \lr{!} & \lr{\&\&}, \lr{||}, \lr{!} \\
+			یکانی & \lr{++x}, \lr{$--x$}, \lr{x++}, \lr{$x--$} & \lr{x = x + 1}, \lr{x = x - 1} \\
+			\hline
+		\end{tabular}
+		\caption{عملگرهای پشتیبانی‌شده}
+	\end{table}
+	
+	\subsection{مدیریت عملگرهای خاص}
+	
+	\begin{itemize}
+		\item \textbf{توان (\lr{**})}: با تابع \lr{expandPower} به ضرب متوالی تبدیل می‌شود:
+		\begin{itemize}
+			\item \lr{x**3} $\rightarrow$ \lr{x * x * x}
+		\end{itemize}
+		
+		\item \textbf{افزایش/کاهش (\lr{++}, \lr{--})}: ترتیب ارزیابی پیشوند و پسوند حفظ می‌شود:
+		\begin{itemize}
+			\item \lr{x++} $\rightarrow$ ابتدا مقدار فعلی، سپس افزایش
+			\item \lr{++x} $\rightarrow$ ابتدا افزایش، سپس مقدار جدید
+		\end{itemize}
+		
+		\item \textbf{تقسیم بر صفر}: با تابع \lr{guardDivisionByZero} مدیریت می‌شود
+	\end{itemize}
+	
+	\subsection{مزایای روش Visitor}
+	
+	\begin{itemize}
+		\item \textbf{کد تمیز و خواناتر}: هر عملگر در متد جداگانه
+		\item \textbf{توسعه‌پذیری بالا}: اضافه کردن عملگر جدید با اضافه کردن یک متد
+		\item \textbf{مدیریت خودکار بازگشت}: ANTLR خودش تشخیص می‌دهد کدام متد صدا زده شود
+	\end{itemize}
+	
+	\section{متد visitAssignment - ترجمه انتساب}
+	
+	عملگرهای انتساب ساده و مرکب را پشتیبانی می‌کند:
+	
+	\setLTR
+	\begin{lstlisting}[language=Java]
+		switch (op) {
+			case "=":  return left + " = " + right;
+			case "+=": return left + " = " + left + " + " + right;
+			case "-=": return left + " = " + left + " - " + right;
+			case "*=": return left + " = " + left + " * " + right;
+			case "/=": return left + " = " + left + " / " + right;
+		}
+	\end{lstlisting}
+	\setRTL
+	
+	برای عملگر \lr{/=}، بررسی تقسیم بر صفر اضافه می‌شود.
+	
+	\section{متد visitIfStmt - ترجمه دستور شرطی}
+	
+	دستور شرطی \lr{age/bood/vagarna} به ساختار \lr{if :: ... :: else -> ... fi} در \lr{Promela} تبدیل می‌شود:
+	\setLTR
+	\begin{lstlisting}[language=Promela]
+		if
+		:: (condition) -> 
+		// then block
+		:: else ->
+		// else block (optional)
+		fi
+	\end{lstlisting}
+	\setRTL
+	
+	همچنین، اگر شرط شامل عملیات تقسیم باشد، یک شرط اضافی برای بررسی تقسیم بر صفر قبل از شرط اصلی اضافه می‌شود.
+	
+	\section{متد visitWhileStmt - ترجمه حلقه while}
+	
+	حلقه \lr{ta} به ساختار \lr{do :: ... :: else -> break od} تبدیل می‌شود:
+	
+	\begin{enumerate}
+		\item \textbf{ایجاد برچسب}: یک برچسب یکتا برای شروع حلقه تولید می‌شود (مثلاً \lr{loopStartNo\_1}).
+		\item \textbf{افزایش شمارنده}: \lr{activeLoopCount} یک واحد افزایش می‌یابد.
+		\item \textbf{ترجمه شرط}: شرط حلقه به یک شرط در ساختار \lr{do} تبدیل می‌شود.
+		\item \textbf{مدیریت پرچم‌ها}: قبل از بدنه حلقه، پرچم‌های \lr{inLoop} و \lr{exitLoop} تنظیم می‌شوند.
+		\item \textbf{بررسی تقسیم بر صفر}: یک شرط اضافی برای تشخیص تقسیم بر صفر قبل از شرط اصلی اضافه می‌شود.
+		\item \textbf{پس از خروج}: پس از خروج از حلقه، \lr{activeLoopCount} کاهش یافته و پرچم‌ها به‌روز می‌شوند.
+	\end{enumerate}
+	
+	\section{متد visitForStmt - ترجمه حلقه for}
+	
+	حلقه \lr{baraye} به ساختار زیر در \lr{Promela} تبدیل می‌شود:
+	
+	\setLTR
+	\begin{lstlisting}[language=Promela]
+		// Initialization
+		activeLoopCount = activeLoopCount + 1;
+		do
+		:: (condition) ->
+		// Set flags
+		// Loop body
+		updateLabel:
+		// Update
+		:: else -> break
+		od
+		// Reset flags after exit
+	\end{lstlisting}
+	\setRTL
+	
+	\section{متد visitTryStmt - ترجمه ساختار try-catch}
+	
+	از آنجا که \lr{Promela} از مفهوم استثنا پشتیبانی نمی‌کند، این ساختار با استفاده از پرچم‌ها و برچسب‌ها شبیه‌سازی می‌شود:
+	
+	
+	\begin{enumerate}
+		\item \textbf{تعریف پرچم}: یک پرچم جدید مانند \lr{errFlag\_1} با مقدار \lr{false} تعریف می‌شود.
+		\item \textbf{اجرای بلوک try}: بدنه \lr{emtehan} اجرا می‌شود. در صورت بروز خطا (تقسیم بر صفر)، پرچم به \lr{true} تغییر کرده و به برچسب \lr{catchCheck\_1} پرش می‌شود.
+		\item \textbf{بررسی پرچم}: پس از بلوک \lr{try}، پرچم بررسی می‌شود و اگر \lr{true} باشد، بلوک \lr{catch} اجرا می‌شود.
+	\end{enumerate}
+	
+	\chapter{توابع کمکی مهم}
+	
+	\section{mapType - نگاشت انواع داده}
+	
+	تبدیل انواع داده \lr{Hash} به \lr{Promela}:
+	
+	\setLTR
+	\begin{lstlisting}[language=Java]
+		private String mapType(String hashType) {
+			switch (hashType) {
+				case "adad":  return "int";
+				case "boole": return "bool";
+				default:      return "";
+			}
+		}
+	\end{lstlisting}
+	\setRTL
+	
+	\section{guardDivisionByZero - محافظت از تقسیم بر صفر}
+	
+	این تابع با دریافت لیست مقسوم‌علیه‌های مشکوک، یک ساختار شرطی تولید می‌کند:
+	
+	\setLTR
+	\begin{lstlisting}[language=Promela]
+		if
+		:: (divisor1 == 0 || divisor2 == 0) ->
+		divByZero = true;
+		// اگر در try-catch باشیم
+		errFlag = true;
+		goto catchLabel;
+		:: else ->
+		// دستور اصلی
+		fi
+	\end{lstlisting}
+	\setRTL
+	
+	\section{findZeroDivisors - یافتن مقسوم‌علیه‌های صفر}
+	
+	این تابع با پیمایش بازگشتی درخت عبارت، تمام مقسوم‌علیه‌های عملیات تقسیم یا باقی‌مانده را جمع‌آوری می‌کند. به این صورت که در گره‌های \lr{MultiplicativeExprContext} (شامل ضرب، تقسیم و باقی‌مانده)، عملگرها را بررسی کرده و اگر عملگر \lr{/} یا \lr{\%} باشد، عبارت سمت راست را به عنوان یک مقسوم‌علیه مشکوک به لیست اضافه می‌کند. برای سایر گره‌ها، به صورت بازگشتی به فرزندان رفته و جستجو را ادامه می‌دهد. برای مثال، عبارت \lr{(a / b / c) + (e / d)} خروجی \lr{["b", "c", "d"]} را تولید می‌کند (چون در \lr{a/b/c}، مقسوم‌علیه‌های \lr{b} و \lr{c} هر دو جمع‌آوری می‌شوند). این لیست سپس برای ساخت شرط بررسی صفر بودن مقسوم‌علیه‌ها استفاده می‌شود. این تابع در متدهای \lr{visitVarDecl}، \lr{visitAssignmentStmt}، \lr{visitIfStmt}، \lr{visitWhileStmt} و \lr{visitForStmt} برای محافظت از تقسیم بر صفر به کار می‌رود.
+	
+	\section{expandPower - تبدیل توان}
+	
+	از آنجا که \lr{Promela} از عملگر توان پشتیبانی نمی‌کند، \lr{x**n} به \lr{x*x*x*...} (تکرار n بار) تبدیل می‌شود:
+	
+	\setLTR
+	\begin{lstlisting}[language=Java]
+		private String expandPower(String base, int exponent) {
+			StringBuilder sb = new StringBuilder("(");
+			for (int i = 0; i < exponent; i++) {
+				if (i > 0) sb.append(" * ");
+				sb.append("(").append(base).append(")");
+			}
+			sb.append(")");
+			return sb.toString();
+		}
+	\end{lstlisting}
+	\setRTL
+	
+	\section{indent - فرمت‌بندی خروجی}
+	
+	برای افزایش خوانایی کد خروجی، به هر خط ۴ فاصله اضافه می‌کند:
+	\setLTR
+	\begin{lstlisting}[language=Java]
+		private String indent(String code) {
+			StringBuilder out = new StringBuilder();
+			for (String line : code.split("\n")) {
+				if (!line.isBlank()) {
+					out.append("    ").append(line);
+				}
+				out.append("\n");
+			}
+			return out.toString();
+		}
+	\end{lstlisting}
+	\setRTL
+	
+	\section{enterLoopFlags / exitLoopFlags - مدیریت پرچم‌های حلقه}
+	
+	این توابع کد مربوط به تنظیم و بازنشانی پرچم‌های \lr{inLoop} و \lr{exitLoop} را تولید می‌کنند که برای بررسی ویژگی‌های \lr{Liveness} ضروری هستند.
+	
+	
+	
+	\chapter{نتیجه‌گیری و جمع‌بندی}
+	
+	در این پروژه، یک ترنسلیتور کامل و کارآمد از زبان آموزشی \lr{Hash} به زبان \lr{Promela} طراحی و پیاده‌سازی شد. دستاوردهای اصلی این فاز عبارتند از:
+	
+	\begin{enumerate}
+		\item \textbf{ترجمه دقیق}: تمام ساختارهای زبانی مورد نیاز به درستی به \lr{Promela} ترجمه می‌شوند.
+		
+		\item \textbf{مدیریت خواص سیستم}: با افزودن متغیرهای کمکی مانند \lr{divByZero}، \lr{inLoop} و \lr{endReached}، زیرساخت لازم برای بررسی خواص مختلف در فازهای بعدی فراهم شده است.
+		
+		\item \textbf{پشتیبانی از استثناها}: با وجود اینکه \lr{Promela} از استثنا پشتیبانی نمی‌کند، با استفاده از تکنیک‌های شبیه‌سازی، ساختار \lr{try-catch} پشتیبانی می‌شود.
+		
+		\item \textbf{کد خوانا و قابل نگهداری}: استفاده از الگوی \lr{Visitor} و توابع کمکی مناسب، کد را خوانا، ماژولار و به راحتی قابل توسعه کرده است.
+		
+		\item \textbf{پشتیبانی از عملگرهای پیشرفته}: عملگرهای توان، افزایش/کاهش، و انتساب مرکب به درستی ترجمه می‌شوند.
+	\end{enumerate}
+	
+	خروجی تولید شده در این فاز (فایل \lr{output.pml}) به عنوان ورودی فاز دوم (Model Checking) استفاده خواهد شد. در فاز دوم، با استفاده از ابزار \lr{SPIN}، پنج ویژگی مختلف روی این مدل بررسی می‌شوند تا صحت سیستم تأیید یا رد شود.
+	
+	\begin{itemize}
+		\item \textbf{ویژگی Safety}: جلوگیری از تقسیم بر صفر (\lr{divByZero})
+		\item \textbf{ویژگی Liveness}: خروج از حلقه‌ها (\lr{inLoop} $\rightarrow$ \lr{exitLoop})
+		\item \textbf{ویژگی Reachability}: رسیدن به پایان برنامه (\lr{endReached})
+		\item \textbf{ویژگی Deadlock Freedom}: عدم وقوع بن‌بست
+		\item \textbf{ویژگی Invariant}: همواره غیرمنفی بودن یک متغیر
+	\end{itemize}
+	
+	این پروژه نشان می‌دهد که چگونه مفاهیم تئوری زبان‌ها و ماشین‌ها (اتوماتا، گرامرها، و معناشناسی) در عمل و برای تأیید صحت نرم‌افزارهای واقعی به کار گرفته می‌شوند. توانایی اثبات ریاضی درستی نرم‌افزارها، یکی از مهارت‌های کلیدی در صنعت نرم‌افزار مدرن است.
+	
+\end{document}
