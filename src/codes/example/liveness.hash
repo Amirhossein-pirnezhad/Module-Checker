@@ -1,0 +1,15 @@
+adad x = 10;
+adad y = 2;
+adad i = 0;
+adad safe = 0;
+
+ta (i < 5) {
+    x = x - 1;
+}
+
+baraye (adad j = 0; j < 3; j = j) {
+    safe = safe + j;
+}
+
+
+bechap(safe);

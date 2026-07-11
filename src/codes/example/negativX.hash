@@ -1,0 +1,9 @@
+adad x = 3;
+adad i = 0;
+
+ta (i < 10) {
+    x = x - 1;
+    i = i + 1;
+}
+
+bechap(x);
