@@ -1,0 +1,13 @@
+adad i = 0;
+adad safe = 0;
+adad x = 0;
+
+ta (i < 5) {
+    safe = safe;
+}
+
+baraye (adad j = 0; j < 3; j = j) {
+    safe = safe + j;
+}
+
+bechap(safe);
