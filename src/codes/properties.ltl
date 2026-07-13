@@ -1,7 +1,15 @@
-ltl noDivByZero { [](!divByZero) }
+ltl safety {
+    [] (!divByZero)
+}
 
-ltl loopExit { [](inLoop -> <>exitLoop) }
+ltl liveness {
+    [] (inLoop -> <> exitLoop)
+}
 
-ltl reachEnd { !(<>endReached) }
+ltl reachability {
+    !(<> endReached)
+}
 
-ltl nonNegativeX { [](x >= 0) }
+ltl invariant {
+    [] (x >= 0)
+}

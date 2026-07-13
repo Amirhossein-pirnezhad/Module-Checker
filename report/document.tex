@@ -4,6 +4,10 @@
 \usepackage{xcolor}
 \usepackage{geometry}
 \usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{longtable}
 \usepackage{enumitem}
 \geometry{a4paper, margin=1in}
 \usepackage{hyperref}
@@ -17,7 +21,6 @@
 }
 
 \usepackage{tcolorbox}
-
 \tcbuselibrary{skins}
 
 \usepackage{xepersian}
@@ -27,7 +30,7 @@ Path = fonts/ ]
 
 
 
-\title{گزارش فاز اول پروژه \\ تبدیل زبان Hash به Promela}
+\title{گزارش پروژه \\ تبدیل زبان Hash به Promela}
 \author{فاطمه باقریان --- امیرحسین پیرنژاد}
 \date{تیر ماه 1405}
 
@@ -46,6 +49,135 @@ Path = fonts/ ]
 	tabsize=4
 }
 
+\lstdefinestyle{termstyle}{
+	language={},
+	basicstyle=\ttfamily\small\color{white},  % متن سفید برای پس‌زمینه تیره
+	keywordstyle=\color{cyan},
+	commentstyle=\color{green},
+	stringstyle=\color{yellow},
+	identifierstyle=\color{white},
+	numbers=left,
+	numberstyle=\tiny\color{gray},
+	frame=single,
+	rulecolor=\color{white},
+	breaklines=true,
+}
+
+\lstdefinestyle{codestyle}{
+	backgroundcolor=\color{blue!4},
+	rulecolor=\color{blue!25},
+	columns=fullflexible,
+	keepspaces=true,
+	xleftmargin=4pt,
+	xrightmargin=4pt,
+}
+
+% ==================== تعریف زبان Hash برای Listings ====================
+\lstdefinelanguage{Hash}{
+	morekeywords={adad, boole, age, bood, vagarna, ta, baraye, shekan, edame, gereftar, emtehan, bechap, dorost, nadorost},
+	sensitive=true,
+	morecomment=[l]{//},
+	morecomment=[s]{/*}{*/},
+	morestring=[b]",
+}
+
+% ==================== پالت رنگی تم تیره ====================
+\definecolor{codeBg}{HTML}{2B2B33}
+\definecolor{codeBorder}{HTML}{44475A}
+\definecolor{codeKeyword}{HTML}{FF79C6}
+\definecolor{codeComment}{HTML}{7F849C}
+\definecolor{codeString}{HTML}{F1FA8C}
+\definecolor{codeNumber}{HTML}{8BE9FD}
+\definecolor{codeText}{HTML}{F8F8F2}
+\definecolor{codeLineNo}{HTML}{6272A4}
+
+\definecolor{termBg}{HTML}{1E1E24}
+\definecolor{termBorder}{HTML}{3A3A44}
+\definecolor{termText}{HTML}{D8D8D8}
+\definecolor{termPrompt}{HTML}{8BE9FD}
+\definecolor{termHighlight}{HTML}{FF9E64}
+
+\definecolor{cmdBg}{HTML}{242430}
+\definecolor{cmdBorder}{HTML}{50FA7B}
+
+% ==================== استایل کد Hash ====================
+\lstdefinestyle{hashstyle}{
+	language=Hash,
+	backgroundcolor=\color{codeBg},
+	rulecolor=\color{codeBorder},
+	frame=single,
+	framerule=0.6pt,
+	basicstyle=\ttfamily\small\color{codeText},
+	keywordstyle=\color{codeKeyword}\bfseries,
+	commentstyle=\color{codeComment}\itshape,
+	stringstyle=\color{codeString},
+	numberstyle=\tiny\color{codeLineNo},
+	numbers=left,
+	columns=fullflexible,
+	keepspaces=true,
+	xleftmargin=6pt,
+	xrightmargin=6pt,
+	breaklines=true,
+	showspaces=false,
+	showstringspaces=false,
+	tabsize=4,
+	literate=
+	{۰}{{0}}1 {۱}{{1}}1 {۲}{{2}}1 {۳}{{3}}1 {۴}{{4}}1
+	{۵}{{5}}1 {۶}{{6}}1 {۷}{{7}}1 {۸}{{8}}1 {۹}{{9}}1,
+}
+
+% ==================== استایل دستورات تک‌خطی (مثل spin -search ...) ====================
+\lstdefinestyle{codestyle}{
+	language={},
+	backgroundcolor=\color{cmdBg},
+	rulecolor=\color{cmdBorder},
+	frame=single,
+	framerule=0.6pt,
+	basicstyle=\ttfamily\small\color{codeText},
+	numbers=none,
+	columns=fullflexible,
+	keepspaces=true,
+	xleftmargin=6pt,
+	xrightmargin=6pt,
+	breaklines=true,
+	showspaces=false,
+	showstringspaces=false,
+}
+
+% ==================== استایل خروجی ترمینال ====================
+\lstdefinestyle{termstyle}{
+	language={},
+	backgroundcolor=\color{termBg},
+	rulecolor=\color{termBorder},
+	frame=single,
+	framerule=0.6pt,
+	basicstyle=\ttfamily\small\color{termText},
+	keywordstyle=\color{termPrompt},
+	commentstyle=\color{codeComment}\itshape,
+	stringstyle=\color{termHighlight},
+	identifierstyle=\color{termText},
+	numbers=left,
+	numberstyle=\tiny\color{codeLineNo},
+	columns=fullflexible,
+	keepspaces=true,
+	xleftmargin=6pt,
+	xrightmargin=6pt,
+	breaklines=true,
+	showspaces=false,
+	showstringspaces=false,
+}
+
+% ==================== دستورات سفارشی ====================
+\newcommand{\ltlbox}[1]{%
+	\begin{center}
+		\color{white}
+		\setlength{\fboxsep}{8pt}
+		\fcolorbox{white}{CustomBackground}{
+			\parbox{0.9\linewidth}{\centering $#1$}
+		}
+	\end{center}
+}
+
 \definecolor{CustomBackground}{HTML}{1C1C1C}
 \pagecolor{CustomBackground}
 \color{white}
@@ -57,7 +189,10 @@ Path = fonts/ ]
 	\tableofcontents
 	\newpage
 	
-	\chapter{مقدمه}
+	\chapter*{فاز اول}
+	\addcontentsline{toc}{chapter}{فاز اول}
+	
+	\section{مقدمه}
 	
 	\section{ارتباط با نظریه اتوماتا و زبان‌ها}
 	
@@ -602,5 +737,613 @@ Path = fonts/ ]
 	\end{itemize}
 	
 	این پروژه نشان می‌دهد که چگونه مفاهیم تئوری زبان‌ها و ماشین‌ها (اتوماتا، گرامرها، و معناشناسی) در عمل و برای تأیید صحت نرم‌افزارهای واقعی به کار گرفته می‌شوند. توانایی اثبات ریاضی درستی نرم‌افزارها، یکی از مهارت‌های کلیدی در صنعت نرم‌افزار مدرن است.
+	
+	
+	\chapter*{فاز دوم}
+	\addcontentsline{toc}{chapter}{فاز دوم}
+	\section{مقدمه فاز دوم}
+	در فاز اول، برنامه‌ی زبان \lr{Hash} به مدل \lr{Promela} ترجمه شد (فایل \lr{output.pml}). هدف این فاز، بررسی پنج خصوصیت مشخص —
+	\lr{Safety}،
+	\lr{Liveness}،
+	\lr{Reachability}،
+	\lr{Deadlock Freedom} و
+	\lr{Invariant}
+	— بر روی این مدل با استفاده از ابزار \lr{SPIN} است. برای هر خصوصیت، فرمول \lr{LTL} متناظر (در صورت نیاز)، دستور دقیق اجرا، خروجی ترمینال و یک تفسیر مستقل ارائه شده است.
+	تمامی خصوصیات با فرمول‌های \lr{named} در فایل \lr{properties.ltl} تعریف شده‌اند و با دستور \lr{spin -search -ltl <name> verify.pml} اجرا شده‌اند.
+	
+	\textbf{روش‌شناسی بررسی.} یکی از نکات مهمی که در طول این فاز به آن رسیدیم این است که تأیید یک خصوصیت روی \emph{یک} برنامه‌ی ثابت، به تنهایی کافی نیست. اگر مسیر خطا یا مسیر بحرانی در آن برنامه‌ی خاص از اساس غیرقابل‌دسترس باشد، نتیجه‌ی \lr{errors: 0} که \lr{SPIN} برمی‌گرداند \emph{بدیهی} (\lr{vacuously true}) خواهد بود و چیزی درباره‌ی درستی واقعی مکانیزم تحت بررسی ثابت نمی‌کند. برای پرهیز از این مشکل، برای هر یک از چهار خصوصیت \lr{Safety}، \lr{Liveness}، \lr{Reachability} و \lr{Invariant}، دو سناریو طراحی و اجرا شده است:
+	\begin{itemize}
+		\item \textbf{سناریوی تایید:} روی مدل پایه (برنامه‌ی اصلی فاز اول)، که در آن انتظار می‌رود خصوصیت برقرار باشد.
+		\item \textbf{سناریوی نقض:} روی یک برنامه‌ی طراحی‌شده که مسیر بحرانی در آن واقعاً \lr{reachable} است، تا نشان داده شود \lr{SPIN} می‌تواند نقض واقعی را هم تشخیص دهد (نه اینکه صرفاً همیشه \lr{pass} بدهد).
+	\end{itemize}
+	خصوصیت \lr{Deadlock Freedom} از این قاعده مستثناست؛ دلیل آن در بخش مربوطه توضیح داده شده است.
+	
+	% ==========================================================
+	\section{برنامه‌های مورد بررسی}
+	
+	\subsection{مدل پایه (\lr{output.pml})}
+	مدل \lr{Promela} اصلی که از ترجمه‌ی برنامه‌ی فاز اول به‌دست آمده، شامل یک عملیات تقسیم محافظت‌شده با سازوکار \lr{gereftar/emtehan} (با \lr{y=2} ثابت)، دو حلقه‌ی متوالی و کراندار (اولی با شرط \lr{i<5}، دومی با شرط \lr{j<3})، و یک برچسب پایانی \lr{endReachedLabel} است. متغیرهای کنترلی \lr{divByZero}، \lr{inLoop}، \lr{exitLoop} و \lr{endReached} برای امکان بیان پنج خصوصیت در سطح سراسری (\lr{global}) تعریف شده‌اند.
+	
+	\subsection{برنامه‌های تکمیلی (برای سناریوهای نقض)}
+	برای اینکه هر خصوصیت به‌صورت غیر بدیهی هم بررسی شود، سه برنامه‌ی \lr{Hash} دیگر طراحی و به‌طور جداگانه به \lr{Promela} ترجمه و با \lr{SPIN} بررسی شدند:
+	
+	\textbf{برنامه (الف) --- تقسیم بر صفر مستقیم (برای نقض \lr{Safety}):}
+	\begin{latin}
+		\begin{lstlisting}[style=hashstyle]
+			adad x = 10;
+			adad y = 0;
+			adad safe = 0;
+			
+			emtehan {
+				safe = x / y;
+			}
+			gereftar (SefrBood e) {
+				safe = 0;
+			}
+			
+			bechap(safe);
+		\end{lstlisting}
+	\end{latin}
+	
+	\textbf{برنامه (ب) --- کاهش پیوسته‌ی متغیر (برای نقض \lr{Invariant}):}
+	\begin{latin}
+		\begin{lstlisting}[style=hashstyle]
+			adad x = 3;
+			adad i = 0;
+			
+			ta (i < 10) {
+				x = x - 1;
+				i = i + 1;
+			}
+			
+			bechap(x);
+		\end{lstlisting}
+	\end{latin}
+	
+	\textbf{برنامه (ج-۱) --- حلقه‌ی نامتناهی با متغیر متغیر (برای نقض \lr{Liveness}):}
+	\begin{latin}
+		\begin{lstlisting}[style=hashstyle]
+			adad x = 10;
+			adad y = 2;
+			adad i = 0;
+			adad safe = 0;
+			
+			ta (i < 5) {
+				x = x - 1;
+			}
+			
+			baraye (adad j = 0; j < 3; j = j) {
+				safe = safe + j;
+			}
+			
+			bechap(safe);
+		\end{lstlisting}
+	\end{latin}
+	در این برنامه، شرط حلقه‌ی اول (\lr{i<5}) هیچ‌گاه به \lr{false} نمی‌رسد چون \lr{i} هرگز افزایش نمی‌یابد؛ بنابراین اجرای برنامه برای همیشه در حلقه‌ی اول باقی می‌ماند و به بدنه‌ی حلقه‌ی دوم یا خط \lr{bechap} هرگز نمی‌رسد. نکته‌ی مهم اینجاست که در هر تکرار، \lr{x} یک واحد کم می‌شود؛ یعنی علاوه بر نامتناهی‌بودن حلقه، مقدار متغیر \lr{x} هم هیچ‌گاه تکرار نمی‌شود (به سمت منفی بی‌نهایت می‌رود).
+	
+	\textbf{برنامه (ج-۲) --- حلقه‌ی نامتناهی با \lr{state} ثابت (برای بررسی مکمل \lr{Reachability}):}
+	\begin{latin}
+		\begin{lstlisting}[style=hashstyle]
+			adad i = 0;
+			adad safe = 0;
+			adad x = 0;
+			
+			ta (i < 5) {
+				safe = safe;
+			}
+			
+			baraye (adad j = 0; j < 3; j = j) {
+				safe = safe + j;
+			}
+			
+			bechap(safe);
+		\end{lstlisting}
+	\end{latin}
+	این برنامه هم مثل (ج-۱) در حلقه‌ی اول برای همیشه باقی می‌ماند، با این تفاوت مهم که بدنه‌ی حلقه (\lr{safe = safe;}) هیچ متغیری را واقعاً تغییر نمی‌دهد؛ در نتیجه \lr{state} کلی برنامه پس از اولین تکرار دقیقاً تکرار می‌شود (\lr{self-loop}).
+	
+	% ==========================================================
+	\section{خصوصیت اول --- \lr{Safety}}
+	
+	\subsection{فرمول LTL}
+	\ltlbox{\square\,\lnot(\mathit{divByZero})}
+	معادل آن در \lr{properties.ltl}: \lr{ltl noDivByZero: [] (! (divByZero))}
+	
+	\subsection{چرا فرمول به این شکل است؟}
+	
+	خصوصیت‌های \lr{Safety} معمولاً به صورت
+	$\square\,\neg(\mathit{bad})$
+	بیان می‌شوند، زیرا هدف آن‌ها تضمین این است که سیستم در هیچ‌یک از حالت‌های قابل دسترس خود وارد وضعیت نامطلوب (\lr{bad state}) نشود. در این پروژه، وقوع تقسیم بر صفر به‌عنوان وضعیت نامطلوب در نظر گرفته شده است؛ بنابراین از فرمول
+	
+	\[
+	\square(\neg\,divByZero)
+	\]
+	
+	استفاده شده است.
+	
+	اگر به‌جای عملگر $\square$ از $\Diamond$ استفاده می‌شد، یعنی
+	
+	\[
+	\Diamond(\neg\,divByZero)
+	\]
+	
+	این فرمول تنها بیان می‌کرد که حداقل یک حالت در اجرای سیستم وجود دارد که در آن تقسیم بر صفر رخ نداده است. بدیهی است چنین شرطی حتی در صورتی که سیستم در ادامه اجرا وارد حالت خطا شود نیز برقرار خواهد بود؛ زیرا وجود تنها یک حالت بدون خطا برای صدق این فرمول کافی است.
+	
+	در مقابل، عملگر $\square$ بیان می‌کند که شرط مورد نظر باید در تمام حالت‌های قابل دسترس برقرار باشد. ازاین‌رو، این عملگر انتخاب مناسبی برای بیان ویژگی‌های ایمنی است و تضمین می‌کند که در هیچ مرحله‌ای از اجرای سیستم تقسیم بر صفر رخ نخواهد داد.
+	
+	\subsection{سناریوی تایید --- مدل پایه}
+	
+	\subsubsection{دستور اجرا}
+	\begin{latin}
+		\begin{lstlisting}[style=codestyle]
+			spin -search -ltl noDivByZero verify.pml
+		\end{lstlisting}
+	\end{latin}
+	
+	\subsubsection{خروجی ترمینال}
+	\begin{latin}
+		\begin{lstlisting}[style=termstyle]
+			(Spin Version 6.5.1 -- 31 July 2020)
+			+ Partial Order Reduction
+			
+			Full statespace search for:
+			never claim             + (noDivByZero)
+			assertion violations    + (if within scope of claim)
+			acceptance   cycles     + (fairness disabled)
+			invalid end states      - (disabled by never claim)
+			
+			State-vector 48 byte, depth reached 137, errors: 0
+			69 states, stored
+			1 states, matched
+			70 transitions (= stored+matched)
+			0 atomic steps
+			hash conflicts: 0 (resolved)
+			
+			unreached in proctype main
+			output.pml:20, state 7, "divByZero = 1"
+			output.pml:21, state 8, "errFlag_1 = 1"
+			output.pml:29, state 15, "safe = 0"
+			(6 of 69 states)
+			unreached in claim noDivByZero
+			_spin_nvr.tmp:8, state 10, "-end-"
+			(1 of 10 states)
+			
+			pan: elapsed time 0.003 seconds
+		\end{lstlisting}
+	\end{latin}
+	
+	\subsubsection{تفسیر}
+	جستجوی کامل فضای حالت هیچ نقضی برای فرمول $\square\,\lnot(\mathit{divByZero})$ پیدا نکرد (\lr{errors: 0}). با این حال، بخش \lr{unreached} نشان می‌دهد خط \lr{divByZero = 1} اصلاً کاوش نشده است؛ چون در این مدل \lr{y=2} ثابت است و هیچ مسیری برای رسیدن آن به صفر وجود ندارد. بنابراین این نتیجه به‌تنهایی \textbf{بدیهی} است و برای اطمینان از درستی واقعی گارد تقسیم، سناریوی نقض زیر لازم است.
+	
+	\subsection{سناریوی نقض --- برنامه (الف)}
+	
+	\subsubsection{دستور اجرا}
+	\begin{latin}
+		\begin{lstlisting}[style=codestyle]
+			spin -search -ltl noDivByZero verify.pml
+		\end{lstlisting}
+	\end{latin}
+	
+	\subsubsection{خروجی ترمینال}
+	\begin{latin}
+		\begin{lstlisting}[style=termstyle]
+			pan: ltl formula noDivByZero
+			pan:1: assertion violated !( !( !(divByZero))) (at depth 12)
+			pan: wrote verify.pml.trail
+			
+			(Spin Version 6.5.1 -- 31 July 2020)
+			Warning: Search not completed
+			+ Partial Order Reduction
+			
+			Full statespace search for:
+			never claim             + (noDivByZero)
+			assertion violations    + (if within scope of claim)
+			acceptance   cycles     + (fairness disabled)
+			invalid end states      - (disabled by never claim)
+			
+			State-vector 32 byte, depth reached 12, errors: 1
+			7 states, stored
+			0 states, matched
+			7 transitions (= stored+matched)
+			0 atomic steps
+			hash conflicts: 0 (resolved)
+			
+			pan: elapsed time 0.002 seconds
+		\end{lstlisting}
+	\end{latin}
+	
+	\subsubsection{تفسیر}
+	در این برنامه \lr{y=0} از ابتدا مقداردهی شده، پس شاخه‌ی گارد بلافاصله فعال می‌شود. \lr{SPIN} در عمق ۱۲ (تنها ۷ حالت) یک نقض واقعی برای \lr{noDivByZero} پیدا کرد (\lr{errors: 1})، یعنی \lr{divByZero} به \lr{true} تغییر کرده است. این نتیجه دقیقاً همان چیزی است که انتظار می‌رفت: وقتی مسیر خطرناک واقعاً \lr{reachable} است، \lr{SPIN} آن را تشخیص می‌دهد. مجموع دو سناریو نشان می‌دهد که فلگ \lr{divByZero} در مدل پایه به این دلیل هرگز \lr{true} نشد که مسیر خطا در \emph{آن برنامه‌ی خاص} وجود نداشت، نه به این دلیل که مکانیزم گارد ناقص است.
+	
+	% ==========================================================
+	\section{خصوصیت دوم --- \lr{Liveness}}
+	
+	\subsection{فرمول LTL}
+	\ltlbox{\square\,(\mathit{inLoop} \rightarrow \Diamond\, \mathit{exitLoop})}
+	معادل آن در \lr{properties.ltl}: \lr{ltl loopExit: [] ((! (inLoop)) || (<> (exitLoop)))}
+	\subsection{چرا فرمول به این شکل است؟}
+	
+	خصوصیت‌های \lr{Liveness} معمولاً به صورت
+	$\square(P \rightarrow \Diamond Q)$
+	بیان می‌شوند. مفهوم این فرمول آن است که هرگاه شرط $P$ برقرار شود، سیستم موظف است در ادامه اجرای خود نهایتاً به حالتی برسد که $Q$ برقرار باشد.
+	
+	در پروژه حاضر، پس از ورود به یک حلقه، انتظار می‌رود که اجرای برنامه در نهایت از آن حلقه خارج شود. به همین دلیل از فرمول
+	
+	\[
+	\square(\mathit{inLoop}\rightarrow\Diamond\mathit{exitLoop})
+	\]
+	
+	استفاده شده است.
+	
+	اگر تنها از عملگر $\Diamond$ استفاده می‌شد، مانند
+	
+	\[
+	\Diamond(\mathit{exitLoop})
+	\]
+	
+	این فرمول فقط بیان می‌کرد که «در یکی از مسیرهای اجرا ممکن است از حلقه خارج شویم» و هیچ تضمینی درباره تمام دفعات ورود به حلقه ارائه نمی‌داد. استفاده همزمان از $\square$ و $\Diamond$ تضمین می‌کند که خروج از حلقه برای تمام دفعات ورود به آن در نهایت رخ خواهد داد.
+	
+	\subsection{سناریوی تایید --- مدل پایه}
+	
+	\subsubsection{دستور اجرا}
+	\begin{latin}
+		\begin{lstlisting}[style=codestyle]
+			spin -search -ltl loopExit verify.pml
+		\end{lstlisting}
+	\end{latin}
+	
+	\subsubsection{خروجی ترمینال}
+	\begin{latin}
+		\begin{lstlisting}[style=termstyle]
+			(Spin Version 6.5.1 -- 31 July 2020)
+			+ Partial Order Reduction
+			
+			Full statespace search for:
+			never claim             + (loopExit)
+			assertion violations    + (if within scope of claim)
+			acceptance   cycles     + (fairness disabled)
+			invalid end states      - (disabled by never claim)
+			
+			State-vector 48 byte, depth reached 137, errors: 0
+			110 states, stored (151 visited)
+			77 states, matched
+			228 transitions (= visited+matched)
+			0 atomic steps
+			hash conflicts: 0 (resolved)
+			
+			unreached in proctype main
+			output.pml:20, state 7, "divByZero = 1"
+			output.pml:21, state 8, "errFlag_1 = 1"
+			output.pml:29, state 15, "safe = 0"
+			(6 of 69 states)
+			unreached in claim loopExit
+			_spin_nvr.tmp:19, state 13, "-end-"
+			(1 of 13 states)
+			
+			pan: elapsed time 0.003 seconds
+		\end{lstlisting}
+	\end{latin}
+	
+	\subsubsection{تفسیر}
+	هیچ اجرایی پیدا نشد که در آن \lr{inLoop} برقرار شود ولی \lr{exitLoop} هرگز به‌دنبالش نیاید (\lr{errors: 0}). چون هر دو حلقه‌ی مدل پایه (\lr{i<5} و \lr{j<3}) کراندارند و همیشه با \lr{break} خاتمه می‌یابند، این نتیجه \textbf{تا حدی بدیهی} است: در این برنامه‌ی خاص اساساً امکان ورود به یک حلقه‌ی نامتناهی وجود ندارد. برای بررسی غیر بدیهی، سناریوی نقض زیر با برنامه (ج) طراحی شد.
+	
+	\subsection{سناریوی نقض (تلاش) --- برنامه (ج-۱)}
+	
+	\subsubsection{دستور اجرا}
+	\begin{latin}
+		\begin{lstlisting}[style=codestyle]
+			spin -search -ltl loopExit example/liveness.pml
+		\end{lstlisting}
+	\end{latin}
+	
+	\subsubsection{خروجی ترمینال}
+	\begin{latin}
+		\begin{lstlisting}[style=termstyle]
+			pan: ltl formula loopExit
+			error: max search depth too small
+			
+			(Spin Version 6.5.1 -- 31 July 2020)
+			+ Partial Order Reduction
+			
+			Full statespace search for:
+			never claim             + (loopExit)
+			assertion violations    + (if within scope of claim)
+			acceptance   cycles     + (fairness disabled)
+			invalid end states      - (disabled by never claim)
+			
+			State-vector 44 byte, depth reached 9999, errors: 0
+			9992 states, stored (14984 visited)
+			9986 states, matched
+			24970 transitions (= visited+matched)
+			0 atomic steps
+			hash conflicts: 1 (resolved)
+			
+			unreached in proctype main
+			example/liveness.pml:26, state 15, "activeLoopCount = (activeLoopCount-1)"
+			example/liveness.pml:36, state 25, "activeLoopCount = (activeLoopCount+1)"
+			example/liveness.pml:41, state 29, "safe = (safe+j)"
+			example/liveness.pml:54, state 44, "printf('%d\n',safe)"
+			example/liveness.pml:56, state 45, "endReached = 1"
+			example/liveness.pml:58, state 47, "-end-"
+			(19 of 47 states)
+			unreached in claim loopExit
+			_spin_nvr.tmp:19, state 13, "-end-"
+			(1 of 13 states)
+			
+			pan: elapsed time 0.011 seconds
+			pan: rate 1362181.8 states/second
+		\end{lstlisting}
+	\end{latin}
+	
+	\subsubsection{تفسیر}
+	این اجرا با پیغام \lr{error: max search depth too small} متوقف شد؛ یعنی عمق جستجوی پیش‌فرض \lr{SPIN} (پارامتر \lr{-m}، با مقدار پیش‌فرض ۹۹۹۹) قبل از تکمیل جستجوی تودرتو (\lr{nested DFS}) برای یافتن \lr{accepting cycle} تمام شد. بنابراین \lr{errors: 0} در اینجا \textbf{به‌هیچ‌وجه به معنای تأیید خصوصیت نیست}؛ نتیجه صرفاً \textbf{ناقص} است.
+	
+	با این حال، بخش \lr{unreached} شاهد غیرمستقیم قوی‌ای ارائه می‌دهد: تمام دستورات بعد از حلقه‌ی اول (شامل کل حلقه‌ی دوم، \lr{printf} و برچسب پایانی) در طول ۹۹۹۲ حالت کاوش‌شده هرگز اجرا نشده‌اند. این کاملاً با طراحی برنامه سازگار است: چون \lr{i} هرگز افزایش نمی‌یابد، اجرا برای همیشه در حلقه‌ی اول گیر می‌کند و \lr{inLoop} بدون رسیدن متناظر \lr{exitLoop} برقرار می‌ماند.
+	
+	دلیل فنی رشد بزرگ فضای حالت (۹۹۹۲ حالت به‌جای یک \lr{self-loop} کوچک) هم قابل توضیح است: در بدنه‌ی حلقه در این برنامه، دستور \lr{x = x - 1;} در هر تکرار اجرا می‌شود، پس علاوه بر نامتناهی‌بودن خود حلقه، مقدار \lr{x} هم هرگز تکرار نمی‌شود (هر تکرار یک \lr{state} برداری جدید تولید می‌کند، چون \lr{x} جزئی از بردار حالت است). در نتیجه \lr{SPIN} مجبور است پیش از رسیدن به یک حالت تکراری، مسیر رو به رشدی از حالت‌های یکتا را کاوش کند که در عمل به سقف عمق پیش‌فرض (\lr{-m 9999}) برخورد می‌کند. برای دریافت یک \lr{counterexample} رسمی، لازم است جستجو با عمق بزرگ‌تر تکرار شود؛ این مورد به‌عنوان محدودیت شناخته‌شده و کار آتی ثبت می‌شود.
+	
+	% ==========================================================
+	\section{خصوصیت سوم --- \lr{Reachability}}
+	
+	\subsection{فرمول LTL}
+	فرمولی که به \lr{SPIN} داده می‌شود، نقیض فرمول اصلی است:
+	\ltlbox{\lnot(\Diamond\, \mathit{endReached})}
+	معادل آن در \lr{properties.ltl}: \lr{ltl reachEnd: ! (<> (endReached))}
+	
+	\textbf{نکته‌ی تفسیری مهم:} چون فرمول به‌صورت نقیض داده می‌شود، برخلاف بقیه‌ی خصوصیات، در این مورد \textbf{یافتن یک نقض (\lr{errors: 1})} به معنای \textbf{تایید} \lr{reachability} است (یعنی مسیری به \lr{endReached} واقعاً وجود دارد)، و \textbf{عدم یافتن نقض (\lr{errors: 0})} به معنای آن است که \lr{endReached} در آن مدل خاص \textbf{غیرقابل‌دسترس} است.
+	
+	\subsection{چرا فرمول به این شکل است؟}
+	
+	در SPIN معمولاً خصوصیت‌های دسترس‌پذیری به صورت مستقیم بیان نمی‌شوند، زیرا LTL ذاتاً برای بیان خواصی که باید در تمام مسیرهای اجرا برقرار باشند طراحی شده است.
+	
+	برای بررسی اینکه آیا حالت پایانی برنامه قابل دسترسی است، نقیض این ویژگی نوشته می‌شود:
+	
+	\[
+	\neg\Diamond(\mathit{endReached})
+	\]
+	
+	در صورت نقض این فرمول توسط SPIN، یک مسیر نمونه ارائه می‌شود که در آن متغیر
+	\lr{endReached}
+	فعال شده است. بنابراین شکست این فرمول به معنای آن است که حالت پایانی برنامه واقعاً قابل دستیابی بوده و ویژگی Reachability برقرار است.
+	
+	به همین دلیل در این پروژه از نقیض ویژگی دسترس‌پذیری استفاده شده است.
+	
+	\subsection{سناریوی تایید --- مدل پایه (انتظار: نقض یافت شود)}
+	
+	\subsubsection{دستور اجرا}
+	\begin{latin}
+		\begin{lstlisting}[style=codestyle]
+			spin -search -ltl reachEnd verify.pml
+		\end{lstlisting}
+	\end{latin}
+	
+	\subsubsection{خروجی ترمینال}
+	\begin{latin}
+		\begin{lstlisting}[style=termstyle]
+			pan: ltl formula reachEnd
+			pan:1: assertion violated !(endReached) (at depth 132)
+			pan: wrote verify.pml.trail
+			
+			(Spin Version 6.5.1 -- 31 July 2020)
+			Warning: Search not completed
+			+ Partial Order Reduction
+			
+			Full statespace search for:
+			never claim             + (reachEnd)
+			assertion violations    + (if within scope of claim)
+			acceptance   cycles     + (fairness disabled)
+			invalid end states      - (disabled by never claim)
+			
+			State-vector 48 byte, depth reached 132, errors: 1
+			67 states, stored
+			0 states, matched
+			67 transitions (= stored+matched)
+			0 atomic steps
+			hash conflicts: 0 (resolved)
+			
+			pan: elapsed time 0.003 seconds
+		\end{lstlisting}
+	\end{latin}
+	
+	\subsubsection{تفسیر}
+	\lr{SPIN} در عمق ۱۳۲ یک نقض برای فرمول نقیض‌شده پیدا کرد (\lr{errors: 1})؛ یعنی مسیر اجرایی یافت که در آن \lr{endReached} برقرار می‌شود. طبق نکته‌ی بالا، این نتیجه دقیقاً همان چیزی است که انتظار می‌رفت: مدل پایه یک برنامه‌ی خطی و \lr{deterministic} است که همیشه به انتهای خود می‌رسد، پس برچسب پایانی حتماً باید \lr{reachable} باشد. یافتن این \lr{counterexample} تأیید می‌کند که خصوصیت \lr{Reachability} برقرار است.
+	
+	\subsection{سناریوی مکمل --- برنامه (ج-۲) (انتظار: نقض یافت نشود)}
+	برای اینکه نشان دهیم \lr{SPIN} می‌تواند بین «قابل‌دسترس» و «غیرقابل‌دسترس» تمایز واقعی قائل شود (نه اینکه صرفاً همیشه یک \lr{counterexample} پیدا کند)، همین بررسی روی برنامه (ج-۲) که حلقه‌ی اولش نامتناهی است تکرار شد. توجه شود که این برنامه با برنامه (ج-۱) که برای \lr{Liveness} استفاده شد \textbf{متفاوت} است؛ در (ج-۲) بدنه‌ی حلقه هیچ متغیری را تغییر نمی‌دهد (\lr{safe = safe;})، به همین دلیل \lr{state} برنامه خیلی زود تکرار می‌شود و جستجو، برخلاف (ج-۱)، به‌طور کامل و بدون برخورد به سقف عمق به پایان می‌رسد.
+	
+	\subsubsection{دستور اجرا}
+	\begin{latin}
+		\begin{lstlisting}[style=codestyle]
+			spin -search -ltl reachEnd example/reachability.pml
+		\end{lstlisting}
+	\end{latin}
+	
+	\subsubsection{خروجی ترمینال}
+	\begin{latin}
+		\begin{lstlisting}[style=termstyle]
+			pan: ltl formula reachEnd
+			
+			(Spin Version 6.5.1 -- 31 July 2020)
+			+ Partial Order Reduction
+			
+			Full statespace search for:
+			never claim             + (reachEnd)
+			assertion violations    + (if within scope of claim)
+			acceptance   cycles     + (fairness disabled)
+			invalid end states      - (disabled by never claim)
+			
+			State-vector 44 byte, depth reached 19, errors: 0
+			10 states, stored
+			1 states, matched
+			11 transitions (= stored+matched)
+			0 atomic steps
+			hash conflicts: 0 (resolved)
+			
+			unreached in proctype main
+			example/reachability.pml:24, state 14, "activeLoopCount = (activeLoopCount-1)"
+			example/reachability.pml:39, state 28, "safe = (safe+j)"
+			example/reachability.pml:52, state 43, "printf('%d\n',safe)"
+			example/reachability.pml:54, state 44, "endReached = 1"
+			example/reachability.pml:56, state 46, "-end-"
+			(19 of 46 states)
+			unreached in claim reachEnd
+			_spin_nvr.tmp:28, state 10, "-end-"
+			(1 of 10 states)
+			
+			pan: elapsed time 0.006 seconds
+		\end{lstlisting}
+	\end{latin}
+	
+	\subsubsection{تفسیر}
+	این‌بار جستجو به‌طور کامل تمام شد (بدون خطای عمق، چون خودِ فرمول \lr{reachEnd} با فضای حالت کوچک‌تری قابل رد کردن است) و هیچ نقضی یافت نشد (\lr{errors: 0}). بخش \lr{unreached} به‌وضوح نشان می‌دهد خط \lr{endReached = 1} هرگز اجرا نشده است. این با تحلیل دستی برنامه کاملاً سازگار است: چون حلقه‌ی اول هرگز پایان نمی‌یابد، اجرا هرگز به بخش دوم برنامه یا برچسب پایانی نمی‌رسد. مقایسه‌ی این نتیجه با سناریوی قبلی (مدل پایه) نشان می‌دهد \lr{SPIN} واقعاً بین قابل‌دسترس‌بودن و نبودن \lr{endReached} فرق می‌گذارد، نه اینکه نتیجه‌اش وابسته به یک الگوی ثابت باشد.
+	
+	% ==========================================================
+	\section{خصوصیت چهارم --- \lr{Deadlock Freedom}} \label{sec:deadlock}
+	این خصوصیت نیازی به فرمول \lr{LTL} ندارد و با قابلیت توکار \lr{SPIN} بررسی می‌شود. برخلاف چهار خصوصیت دیگر، اینجا سناریوی نقض طراحی نشده است؛ دلیل آن در پایان این بخش توضیح داده شده.
+	
+	\subsection{دستور اجرا}
+	\begin{latin}
+		\begin{lstlisting}[style=termstyle]
+			spin -search -deadlock verify.pml
+		\end{lstlisting}
+	\end{latin}
+	
+	\subsection{خروجی ترمینال (مسیر اجرای کامل)}
+	از آنجا که مدل پایه کاملاً \lr{deterministic} است، \lr{SPIN} تنها یک مسیر اجرایی یکتا برای \lr{proctype main} می‌یابد:
+	\begin{latin}
+		\begin{lstlisting}[style=termstyle,basicstyle=\ttfamily\scriptsize]
+			proctype main
+			state 1  -> state 2   verify.pml:13  x = 10
+			state 2  -> state 3   verify.pml:14  y = 2
+			state 3  -> state 4   verify.pml:15  i = 0
+			state 4  -> state 5   verify.pml:16  safe = 0
+			state 5  -> state 12  verify.pml:18  errFlag_1 = 0
+			state 12 -> state 11  verify.pml:19  else            (y != 0)
+			state 11 -> state 18  verify.pml:24  safe = (x / y)
+			state 18 -> state 17  verify.pml:28  else            (!errFlag_1)
+			state 20 -> state 28  verify.pml:32  activeLoopCount = activeLoopCount + 1
+			state 28 -> state 22  verify.pml:35  (i < 5)
+			state 28 -> state 31  verify.pml:35  else            (i >= 5)
+			state 39 -> state 41  verify.pml:51  j = 0
+			state 41 -> state 49  verify.pml:52  activeLoopCount = activeLoopCount + 1
+			state 49 -> state 43  verify.pml:54  (j < 3)
+			state 49 -> state 52  verify.pml:54  else            (j >= 3)
+			state 64 -> state 61  verify.pml:71  (x >= 0)
+			state 61 -> state 66  verify.pml:72  safe = safe + 1
+			state 66 -> state 67  verify.pml:76  printf('%d\n', safe)
+			state 67 -> state 68  verify.pml:78  endReached = 1
+			state 68 -> state 69  verify.pml:79  (1)
+			state 69 -> state  0  verify.pml:80  -end-
+		\end{lstlisting}
+	\end{latin}
+	
+	\subsection{تفسیر}
+	مسیر اجرا بدون هیچ توقف غیرمنتظره‌ای به برچسب \lr{-end-} می‌رسد که یک پایان معتبر (\lr{valid end state}) است؛ بنابراین مدل عاری از \lr{deadlock} است.
+	
+	\textbf{چرا سناریوی نقض طراحی نشد؟} طبق قوانین ترجمه‌ی پیاده‌سازی‌شده در ترنسلیتور، هر \lr{if/fi} تولیدشده (چه از \lr{age/vagarna}، چه از گاردهای تقسیم، چه از چک \lr{errFlag}) به‌صورت خودکار یک شاخه‌ی \lr{else -> skip} دارد، و هر \lr{do/od} هم شاخه‌ی \lr{else -> break} صریح دارد. بنابراین به‌صورت \textbf{ساختاری} هیچ حالتی در خروجی این ترنسلیتور وجود ندارد که در آن هیچ \lr{transition}ای فعال نباشد؛ عاری‌بودن از \lr{deadlock} نتیجه‌ی مستقیم این تصمیم طراحی است، نه یک ویژگی تصادفی که فقط با شانس در یک تست خاص برقرار شده باشد. تولید یک نقض واقعی مستلزم دستکاری دستی خروجی \lr{Promela} (مثلاً حذف عمدی یک شاخه‌ی \lr{else}) است که دیگر محصول ترنسلیتور نیست، بلکه یک \lr{Promela} دستی و مصنوعی خواهد بود؛ به همین دلیل چنین سناریویی در این گزارش گنجانده نشد.
+	
+	% ==========================================================
+	\section{خصوصیت پنجم --- \lr{Invariant}}
+	
+	\subsection{فرمول LTL}
+	\ltlbox{\square\,(x \geq 0)}
+	معادل آن در \lr{properties.ltl}: \lr{ltl nonNegativeX: [] ((x>=0))}
+	
+	\subsection{چرا فرمول به این شکل است؟}
+	
+	Invariant یا خصوصیتی است که باید در تمام طول اجرای سیستم برقرار بماند. چنین ویژگی‌هایی نیز همانند خصوصیت‌های ایمنی با عملگر $\square$ بیان می‌شوند.
+	
+	در این پروژه فرض شده است که مقدار متغیر $x$ نباید هیچ‌گاه منفی شود؛ بنابراین فرمول زیر استفاده شده است:
+	
+	\[
+	\square(x \ge 0)
+	\]
+	
+	اگر تنها از عملگر $\Diamond$ استفاده می‌شد، فرمول صرفاً بیان می‌کرد که در یکی از حالت‌های اجرا مقدار متغیر غیرمنفی است، در حالی که هدف invariant تضمین برقرار بودن این شرط در تمام حالات قابل دسترس است.
+	\subsection{سناریوی تایید --- مدل پایه}
+	
+	\subsubsection{دستور اجرا}
+	\begin{latin}
+		\begin{lstlisting}[style=codestyle]
+			spin -search -ltl nonNegativeX verify.pml
+		\end{lstlisting}
+	\end{latin}
+	
+	\subsubsection{خروجی ترمینال}
+	\begin{latin}
+		\begin{lstlisting}[style=termstyle]
+			(Spin Version 6.5.1 -- 31 July 2020)
+			+ Partial Order Reduction
+			
+			Full statespace search for:
+			never claim             + (nonNegativeX)
+			assertion violations    + (if within scope of claim)
+			acceptance   cycles     + (fairness disabled)
+			invalid end states      - (disabled by never claim)
+			
+			State-vector 48 byte, depth reached 137, errors: 0
+			69 states, stored
+			1 states, matched
+			70 transitions (= stored+matched)
+			0 atomic steps
+			hash conflicts: 0 (resolved)
+			
+			unreached in proctype main
+			output.pml:20, state 7, "divByZero = 1"
+			output.pml:21, state 8, "errFlag_1 = 1"
+			output.pml:29, state 15, "safe = 0"
+			(6 of 69 states)
+			unreached in claim nonNegativeX
+			_spin_nvr.tmp:37, state 10, "-end-"
+			(1 of 10 states)
+			
+			pan: elapsed time 0.005 seconds
+		\end{lstlisting}
+	\end{latin}
+	
+	\subsubsection{تفسیر}
+	جستجوی کامل هیچ حالتی با $x < 0$ پیدا نکرد (\lr{errors: 0}). این نتیجه، مثل خصوصیت \lr{Safety}، \textbf{تا حدی بدیهی} است: متغیر \lr{x} از مقدار اولیه‌ی ۱۰ شروع می‌شود و تنها در حلقه‌ی اول، دقیقاً ۵ بار یک واحد کاهش می‌یابد؛ بنابراین کمترین مقدار ممکن برای \lr{x} در این برنامه‌ی خاص برابر ۵ است و ساختاراً هرگز امکان منفی‌شدن وجود ندارد.
+	
+	\subsection{سناریوی نقض --- برنامه (ب)}
+	
+	\subsubsection{دستور اجرا}
+	\begin{latin}
+		\begin{lstlisting}[style=codestyle]
+			spin -search -ltl nonNegativeX verify.pml
+		\end{lstlisting}
+	\end{latin}
+	
+	\subsubsection{خروجی ترمینال}
+	\begin{latin}
+		\begin{lstlisting}[style=termstyle]
+			pan: ltl formula nonNegativeX
+			pan:1: assertion violated !( !((x>=0))) (at depth 44)
+			pan: wrote verify.pml.trail
+			
+			(Spin Version 6.5.1 -- 31 July 2020)
+			Warning: Search not completed
+			+ Partial Order Reduction
+			
+			Full statespace search for:
+			never claim             + (nonNegativeX)
+			assertion violations    + (if within scope of claim)
+			acceptance   cycles     + (fairness disabled)
+			invalid end states      - (disabled by never claim)
+			
+			State-vector 36 byte, depth reached 44, errors: 1
+			23 states, stored
+			0 states, matched
+			23 transitions (= stored+matched)
+			0 atomic steps
+			hash conflicts: 0 (resolved)
+			
+			pan: elapsed time 0.006 seconds
+		\end{lstlisting}
+	\end{latin}
+	
+	\subsubsection{تفسیر}
+	در این برنامه \lr{x} از ۳ شروع می‌شود و در طول ۱۰ تکرار حلقه (\lr{i<10}) به‌طور پیوسته کاهش می‌یابد. \lr{SPIN} در عمق ۴۴ یک نقض واقعی پیدا کرد (\lr{errors: 1})، یعنی مقدار \lr{x} در جایی از اجرا منفی شده است. این تأیید می‌کند که فرمول \lr{[](x>=0)} واقعاً توسط \lr{SPIN} روی مقادیر پویا بررسی می‌شود، نه اینکه نتیجه‌ی مدل پایه به این دلیل بود که \lr{invariant} همیشه برقرار است.
+	
+	% ==========================================================
+	
 	
 \end{document}

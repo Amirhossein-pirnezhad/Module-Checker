@@ -2,3 +2,7 @@
 *.iml
 out/
 *.class
+/report/*
+!/report/*.tex
+!/report/fonts
+!/report/*.pdf
