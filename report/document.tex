@@ -30,7 +30,7 @@ Path = fonts/ ]
 
 
 
-\title{گزارش فاز اول پروژه \\ تبدیل زبان Hash به Promela}
+\title{گزارش فاز پروژه \\ تبدیل زبان Hash به Promela}
 \author{فاطمه باقریان --- امیرحسین پیرنژاد}
 \date{تیر ماه 1405}
 
@@ -51,13 +51,13 @@ Path = fonts/ ]
 
 \lstdefinestyle{termstyle}{
 	language={},
-	basicstyle=\ttfamily\small,
-	keywordstyle=\color{white},
-	commentstyle=\color{white},
-	stringstyle=\color{white},
+	basicstyle=\ttfamily\small\color{white},  % متن سفید برای پس‌زمینه تیره
+	keywordstyle=\color{cyan},
+	commentstyle=\color{green},
+	stringstyle=\color{yellow},
 	identifierstyle=\color{white},
 	numbers=left,
-	numberstyle=\tiny\color{white},
+	numberstyle=\tiny\color{gray},
 	frame=single,
 	rulecolor=\color{white},
 	breaklines=true,
@@ -72,13 +72,99 @@ Path = fonts/ ]
 	xrightmargin=4pt,
 }
 
+% ==================== تعریف زبان Hash برای Listings ====================
+\lstdefinelanguage{Hash}{
+	morekeywords={adad, boole, age, bood, vagarna, ta, baraye, shekan, edame, gereftar, emtehan, bechap, dorost, nadorost},
+	sensitive=true,
+	morecomment=[l]{//},
+	morecomment=[s]{/*}{*/},
+	morestring=[b]",
+}
+
+% ==================== پالت رنگی تم تیره ====================
+\definecolor{codeBg}{HTML}{2B2B33}
+\definecolor{codeBorder}{HTML}{44475A}
+\definecolor{codeKeyword}{HTML}{FF79C6}
+\definecolor{codeComment}{HTML}{7F849C}
+\definecolor{codeString}{HTML}{F1FA8C}
+\definecolor{codeNumber}{HTML}{8BE9FD}
+\definecolor{codeText}{HTML}{F8F8F2}
+\definecolor{codeLineNo}{HTML}{6272A4}
+
+\definecolor{termBg}{HTML}{1E1E24}
+\definecolor{termBorder}{HTML}{3A3A44}
+\definecolor{termText}{HTML}{D8D8D8}
+\definecolor{termPrompt}{HTML}{8BE9FD}
+\definecolor{termHighlight}{HTML}{FF9E64}
+
+\definecolor{cmdBg}{HTML}{242430}
+\definecolor{cmdBorder}{HTML}{50FA7B}
+
+% ==================== استایل کد Hash ====================
 \lstdefinestyle{hashstyle}{
-	backgroundcolor=\color{green!4},
-	rulecolor=\color{green!30},
+	language=Hash,
+	backgroundcolor=\color{codeBg},
+	rulecolor=\color{codeBorder},
+	frame=single,
+	framerule=0.6pt,
+	basicstyle=\ttfamily\small\color{codeText},
+	keywordstyle=\color{codeKeyword}\bfseries,
+	commentstyle=\color{codeComment}\itshape,
+	stringstyle=\color{codeString},
+	numberstyle=\tiny\color{codeLineNo},
+	numbers=left,
 	columns=fullflexible,
 	keepspaces=true,
-	xleftmargin=4pt,
-	xrightmargin=4pt,
+	xleftmargin=6pt,
+	xrightmargin=6pt,
+	breaklines=true,
+	showspaces=false,
+	showstringspaces=false,
+	tabsize=4,
+	literate=
+	{۰}{{0}}1 {۱}{{1}}1 {۲}{{2}}1 {۳}{{3}}1 {۴}{{4}}1
+	{۵}{{5}}1 {۶}{{6}}1 {۷}{{7}}1 {۸}{{8}}1 {۹}{{9}}1,
+}
+
+% ==================== استایل دستورات تک‌خطی (مثل spin -search ...) ====================
+\lstdefinestyle{codestyle}{
+	language={},
+	backgroundcolor=\color{cmdBg},
+	rulecolor=\color{cmdBorder},
+	frame=single,
+	framerule=0.6pt,
+	basicstyle=\ttfamily\small\color{codeText},
+	numbers=none,
+	columns=fullflexible,
+	keepspaces=true,
+	xleftmargin=6pt,
+	xrightmargin=6pt,
+	breaklines=true,
+	showspaces=false,
+	showstringspaces=false,
+}
+
+% ==================== استایل خروجی ترمینال ====================
+\lstdefinestyle{termstyle}{
+	language={},
+	backgroundcolor=\color{termBg},
+	rulecolor=\color{termBorder},
+	frame=single,
+	framerule=0.6pt,
+	basicstyle=\ttfamily\small\color{termText},
+	keywordstyle=\color{termPrompt},
+	commentstyle=\color{codeComment}\itshape,
+	stringstyle=\color{termHighlight},
+	identifierstyle=\color{termText},
+	numbers=left,
+	numberstyle=\tiny\color{codeLineNo},
+	columns=fullflexible,
+	keepspaces=true,
+	xleftmargin=6pt,
+	xrightmargin=6pt,
+	breaklines=true,
+	showspaces=false,
+	showstringspaces=false,
 }
 
 % ==================== دستورات سفارشی ====================
