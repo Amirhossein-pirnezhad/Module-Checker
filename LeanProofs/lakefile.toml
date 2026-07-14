@@ -1,0 +1,6 @@
+name = "LeanProofs"
+version = "0.1.0"
+defaultTargets = ["LeanProofs"]
+
+[[lean_lib]]
+name = "LeanProofs"
