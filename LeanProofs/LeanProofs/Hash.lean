@@ -107,7 +107,7 @@ theorem loopInvariant
     {body : Stmt}
     {P : State -> Prop}
     (bodyPreservesInvariant :
-      ∀ s s1,
+     forall s s1,
         P s ->
         evalExpr b s ≠ 0 ->
         BigStep body s s1 ->
@@ -121,7 +121,7 @@ theorem loopInvariant
   intro s sFinal hP hRun
 
   have aux :
-      ∀ {S : Stmt} {s sFinal : State},
+      forall {S : Stmt} {s sFinal : State},
         BigStep S s sFinal ->
         S = Stmt.while b body ->
         P s ->
@@ -162,6 +162,3 @@ theorem loopInvariant
         exact ihRest rfl hInvAfterBody
 
   exact aux hRun rfl hP
-
-  #check BigStep
-  #check loopInvariant
