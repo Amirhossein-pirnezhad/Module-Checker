@@ -1,0 +1,8 @@
+adad i = 0;
+adad x = 0;
+
+ta (i < 5) {
+    i = i;
+}
+
+bechap(x);
