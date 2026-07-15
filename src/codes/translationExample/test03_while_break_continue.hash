@@ -1,0 +1,20 @@
+adad i = 0;
+adad s = 0;
+
+ta (i < 5) {
+    i = i + 1;
+
+    age (i == 2) bood {
+        edame;
+    } vagarna {
+        s = s + i;
+    }
+
+    age (i == 4) bood {
+        shekan;
+    } vagarna {
+        s = s;
+    }
+}
+
+bechap(s);

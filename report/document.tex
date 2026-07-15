@@ -568,6 +568,64 @@ Path = fonts/ ]
 	
 	برای عملگر \lr{/=}، بررسی تقسیم بر صفر اضافه می‌شود.
 	
+	
+
+	
+    برای بررسی صحت ترجمه assignment و expressionهای حسابی، یک تست ساده با نام \lr{test01\_basic.hash} در نظر گرفته شد.
+    هدف این تست آن است که نشان دهد تعریف متغیرهای عددی، مقداردهی اولیه، assignment و تقدم عملگرهای حسابی به درستی در خروجی \lr{Promela} حفظ می‌شوند.
+    در این مثال، سه متغیر عددی تعریف شده و سپس مقدار متغیر \lr{z} با عبارت \lr{x + y * 3} محاسبه می‌شود.
+    از آنجا که ضرب نسبت به جمع تقدم دارد، انتظار داریم همین ساختار در خروجی حفظ شود.
+
+    کد ورودی \lr{Hash} برای این تست به صورت زیر است:
+
+    \begin{latin}
+    \begin{lstlisting}[style=hashstyle]
+    adad x = 1;
+    adad y = 2;
+    adad z = 0;
+
+    z = x + y * 3;
+
+    bechap(z);
+    \end{lstlisting}
+    \end{latin}
+
+    خروجی تولیدشده توسط مترجم در فایل \lr{output.pml} به صورت زیر است:
+
+    \begin{latin}
+    \begin{lstlisting}[style=codestyle]
+    bool divByZero = false;
+    bool inLoop = false;
+    bool exitLoop = false;
+    bool endReached = false;
+    int activeLoopCount = 0;
+
+    int x;
+    int y;
+    int z;
+
+    active proctype main() {
+        x = 1;
+        y = 2;
+        z = 0;
+        z = x + y * 3;
+        printf("%d\n", z);
+    endReachedLabel:
+        endReached = true;
+        skip;
+    }
+    \end{lstlisting}
+    \end{latin}
+
+    در این خروجی، نوع \lr{adad} به نوع \lr{int} در \lr{Promela} تبدیل شده است.
+    متغیرهای \lr{x}، \lr{y} و \lr{z} به صورت سراسری تعریف شده‌اند و مقداردهی اولیه آن‌ها داخل \lr{active proctype main} انجام شده است.
+    همچنین assignment مربوط به \lr{z} به صورت \lr{z = x + y * 3} تولید شده و معنای expression حفظ شده است.
+    این خروجی نشان می‌دهد که مترجم در این تست، تعریف متغیر، مقداردهی اولیه، assignment و expression حسابی را به درستی ترجمه کرده است.
+
+    متغیرهای کمکی \lr{divByZero}، \lr{inLoop}، \lr{exitLoop}، \lr{endReached} و \lr{activeLoopCount} نیز طبق طراحی کلی مترجم در ابتدای مدل اضافه شده‌اند.
+    این متغیرها اگرچه در این تست ساده مستقیماً فعال نمی‌شوند، اما برای بررسی ویژگی‌های \lr{Safety}، \lr{Liveness} و \lr{Reachability} در فاز دوم استفاده می‌شوند.
+    در انتهای \lr{main} نیز مقدار \lr{endReached} برابر \lr{true} می‌شود تا رسیدن اجرای برنامه به انتها در فاز دوم قابل بررسی باشد.
+	
 	\section{متد visitIfStmt - ترجمه دستور شرطی}
 	
 	دستور شرطی \lr{age/bood/vagarna} به ساختار \lr{if :: ... :: else -> ... fi} در \lr{Promela} تبدیل می‌شود:
@@ -583,6 +641,69 @@ Path = fonts/ ]
 	\setRTL
 	
 	همچنین، اگر شرط شامل عملیات تقسیم باشد، یک شرط اضافی برای بررسی تقسیم بر صفر قبل از شرط اصلی اضافه می‌شود.
+
+	\noindent
+    برای بررسی صحت ترجمه دستور شرطی، تستی با نام \lr{test02\_if\_else.hash} در نظر گرفته شد.
+    هدف این تست آن است که نشان دهد ساختار شرطی \lr{age/bood/vagarna} در زبان \lr{Hash} به درستی به ساختار شرطی \lr{if/fi} در \lr{Promela} تبدیل می‌شود.
+    در این مثال، مقدار متغیر \lr{x} برابر ۳ است و شرط \lr{x > 0} بررسی می‌شود.
+    اگر شرط برقرار باشد، مقدار \lr{y} برابر ۱ می‌شود و در غیر این صورت مقدار آن برابر ۲ قرار می‌گیرد.
+
+    کد ورودی \lr{Hash} برای این تست به صورت زیر است:
+
+    \begin{latin}
+    \begin{lstlisting}[style=hashstyle]
+    adad x = 3;
+    adad y = 0;
+
+    age (x > 0) bood {
+        y = 1;
+    } vagarna {
+        y = 2;
+    }
+
+    bechap(y);
+    \end{lstlisting}
+    \end{latin}
+
+    خروجی تولیدشده توسط مترجم در فایل \lr{output.pml} به صورت زیر است:
+
+    \begin{latin}
+    \begin{lstlisting}[style=codestyle]
+    bool divByZero = false;
+    bool inLoop = false;
+    bool exitLoop = false;
+    bool endReached = false;
+    int activeLoopCount = 0;
+
+    int x;
+    int y;
+
+    active proctype main() {
+        x = 3;
+        y = 0;
+        if
+        :: (x > 0) ->
+            y = 1;
+        :: else ->
+            y = 2;
+        fi
+        printf("%d\n", y);
+    endReachedLabel:
+        endReached = true;
+        skip;
+    }
+    \end{lstlisting}
+    \end{latin}
+
+    در این خروجی، نوع \lr{adad} برای متغیرهای \lr{x} و \lr{y} به نوع \lr{int} در \lr{Promela} تبدیل شده است.
+    همچنین مقداردهی اولیه متغیرها داخل \lr{active proctype main} انجام شده است.
+    ساختار شرطی \lr{age/bood/vagarna} نیز به ساختار guarded command در \lr{Promela} تبدیل شده است؛ به این صورت که شرط \lr{x > 0} در شاخه اول قرار گرفته و در صورت برقرار بودن آن، دستور \lr{y = 1} اجرا می‌شود.
+    شاخه \lr{else} نیز معادل بخش \lr{vagarna} در زبان \lr{Hash} است و در صورت برقرار نبودن شرط، مقدار \lr{y} را برابر ۲ قرار می‌دهد.
+
+    این تست نشان می‌دهد که مترجم می‌تواند ساختار شرطی ساده را بدون تغییر معنایی به \lr{Promela} منتقل کند.
+    همچنین وجود \lr{printf} نشان می‌دهد که دستور \lr{bechap(y)} به خروجی متنی مناسب در \lr{Promela} تبدیل شده است.
+    مانند سایر خروجی‌ها، متغیرهای کمکی \lr{divByZero}، \lr{inLoop}، \lr{exitLoop}، \lr{endReached} و \lr{activeLoopCount} نیز در ابتدای مدل اضافه شده‌اند تا در فاز دوم برای بررسی ویژگی‌های مختلف استفاده شوند.
+    در انتهای \lr{main} نیز مقدار \lr{endReached} برابر \lr{true} می‌شود تا رسیدن برنامه به انتها قابل بررسی باشد.
 	
 	\section{متد visitWhileStmt - ترجمه حلقه while}
 	
@@ -596,6 +717,95 @@ Path = fonts/ ]
 		\item \textbf{بررسی تقسیم بر صفر}: یک شرط اضافی برای تشخیص تقسیم بر صفر قبل از شرط اصلی اضافه می‌شود.
 		\item \textbf{پس از خروج}: پس از خروج از حلقه، \lr{activeLoopCount} کاهش یافته و پرچم‌ها به‌روز می‌شوند.
 	\end{enumerate}
+	
+برای بررسی صحت ترجمه حلقه \lr{ta} و همچنین دستورات \lr{shekan} و \lr{edame}، تست سوم  با نام \lr{test03\_while\_break\_continue.hash}طراحی شد. 
+هدف این تست آن است که نشان دهد حلقه \lr{ta} به ساختار \lr{do/od} در \lr{Promela} تبدیل می‌شود و دستورات \lr{edame} و \lr{shekan} نیز به ترتیب با \lr{goto} و \lr{break} مدل می‌شوند.
+
+نام فایل این تست به صورت زیر است:
+
+در این برنامه، متغیر \lr{i} در هر تکرار یک واحد افزایش می‌یابد. 
+اگر مقدار \lr{i} برابر ۲ شود، دستور \lr{edame} اجرا می‌شود و اجرای باقی بدنه همان تکرار متوقف شده و کنترل به ابتدای حلقه بازمی‌گردد. 
+همچنین اگر مقدار \lr{i} برابر ۴ شود، دستور \lr{shekan} اجرا شده و حلقه خاتمه می‌یابد.
+
+کد ورودی \lr{Hash} برای این تست به صورت زیر است:
+	
+	\begin{latin}
+		\begin{lstlisting}[style=hashstyle]
+			adad i = 0;
+			adad s = 0;
+			
+			ta (i < 5) {
+				i = i + 1;
+				
+				age (i == 2) bood {
+					edame;
+				} vagarna {
+					s = s + i;
+				}
+				
+				age (i == 4) bood {
+					shekan;
+				} vagarna {
+					s = s;
+				}
+			}
+			
+			bechap(s);
+		\end{lstlisting}
+	\end{latin}
+	
+	خروجی تولیدشده توسط مترجم در فایل \lr{output.pml} به صورت زیر است:
+	
+	\begin{latin}
+		\begin{lstlisting}[style=codestyle]
+			bool divByZero = false;
+			bool inLoop = false;
+			bool exitLoop = false;
+			bool endReached = false;
+			int activeLoopCount = 0;
+			
+			int i;
+			int s;
+			
+			active proctype main() {
+				i = 0;
+				s = 0;
+				activeLoopCount = activeLoopCount + 1;
+				loopStartNo_1:
+				do
+				:: (i < 5) ->
+				inLoop = true;
+				exitLoop = false;
+				i = i + 1;
+				if
+				:: (i == 2) ->
+				goto loopStartNo_1;
+				:: else ->
+				s = s + i;
+				fi
+				if
+				:: (i == 4) ->
+				break;
+				:: else ->
+				s = s;
+				fi
+				:: else -> break
+				od
+				activeLoopCount = activeLoopCount - 1;
+				exitLoop = true;
+				if
+				:: (activeLoopCount == 0) ->
+				inLoop = false;
+				:: else ->
+				inLoop = true;
+				fi
+				printf("%d\n", s);
+				endReachedLabel:
+				endReached = true;
+				skip;
+			}
+		\end{lstlisting}
+	\end{latin}
 	
 	\section{متد visitForStmt - ترجمه حلقه for}
 	
