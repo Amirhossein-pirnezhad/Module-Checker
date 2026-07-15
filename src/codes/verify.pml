@@ -1,2 +1,2 @@
-#include "example/livenesserror.pml"
+#include "output.pml"
 #include "properties.ltl"
