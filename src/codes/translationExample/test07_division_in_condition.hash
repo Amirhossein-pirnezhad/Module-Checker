@@ -1,0 +1,11 @@
+adad x = 10;
+adad y = 0;
+adad z = 0;
+
+age (x / y > 1) bood {
+    z = 1;
+} vagarna {
+    z = 2;
+}
+
+bechap(z);

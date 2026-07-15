@@ -1,0 +1,12 @@
+adad x = 10;
+adad y = 0;
+adad safe = 1;
+
+emtehan {
+    safe = x / y;
+}
+gereftar (SefrBood e) {
+    safe = 0;
+}
+
+bechap(safe);

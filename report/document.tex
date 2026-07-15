@@ -827,6 +827,103 @@ Path = fonts/ ]
 	\end{lstlisting}
 	\setRTL
 	
+	برای بررسی صحت ترجمه حلقه \lr{baraye} و رفتار دستور \lr{edame} داخل حلقه \lr{for}، تست چهارم با نام \lr{test04\_for\_continue.hash} طراحی شد. 
+	هدف این تست آن است که نشان دهد حلقه \lr{baraye} به ساختار شامل مقداردهی اولیه، شرط، بدنه، بخش به‌روزرسانی و خروج در \lr{Promela} تبدیل می‌شود. 
+	همچنین این تست بررسی می‌کند که دستور \lr{edame} در حلقه \lr{baraye} برخلاف حلقه \lr{ta} نباید مستقیماً به ابتدای حلقه برود، بلکه باید ابتدا به بخش \lr{update} منتقل شود.
+	
+	
+	در این برنامه، متغیر \lr{x} ابتدا برابر صفر قرار می‌گیرد. 
+	سپس یک حلقه \lr{baraye} با متغیر \lr{j} اجرا می‌شود. 
+	اگر مقدار \lr{j} برابر ۱ شود، دستور \lr{edame} اجرا می‌شود و در نتیجه دستور \lr{x = x + j} در آن تکرار اجرا نخواهد شد. 
+	اما قبل از بررسی دوباره شرط حلقه، بخش به‌روزرسانی یعنی \lr{j = j + 1} باید اجرا شود.
+	
+	کد ورودی \lr{Hash} برای این تست به صورت زیر است:
+	
+	\begin{latin}
+		\begin{lstlisting}[style=hashstyle]
+			adad x = 0;
+			
+			baraye (adad j = 0; j < 3; j = j + 1) {
+				age (j == 1) bood {
+					edame;
+				} vagarna {
+					x = x + j;
+				}
+			}
+			
+			bechap(x);
+		\end{lstlisting}
+	\end{latin}
+	
+	خروجی تولیدشده توسط مترجم در فایل \lr{output.pml} به صورت زیر است:
+	
+	\begin{latin}
+		\begin{lstlisting}[style=codestyle]
+			bool divByZero = false;
+			bool inLoop = false;
+			bool exitLoop = false;
+			bool endReached = false;
+			int activeLoopCount = 0;
+			
+			int x;
+			
+			active proctype main() {
+				x = 0;
+				int j;
+				j = 0;
+				activeLoopCount = activeLoopCount + 1;
+				do
+				:: (j < 3) ->
+				inLoop = true;
+				exitLoop = false;
+				if
+				:: (j == 1) ->
+				goto loopUpdate_1;
+				:: else ->
+				x = x + j;
+				fi
+				loopUpdate_1:
+				j = j + 1;
+				:: else -> break
+				od
+				activeLoopCount = activeLoopCount - 1;
+				exitLoop = true;
+				if
+				:: (activeLoopCount == 0) ->
+				inLoop = false;
+				:: else ->
+				inLoop = true;
+				fi
+				printf("%d\n", x);
+				endReachedLabel:
+				endReached = true;
+				skip;
+			}
+		\end{lstlisting}
+	\end{latin}
+	
+	
+	در این خروجی، متغیر \lr{x} به صورت سراسری تعریف شده و مقدار اولیه آن داخل \lr{active proctype main} قرار گرفته است. 
+	متغیر \lr{j} که مربوط به حلقه \lr{baraye} است، داخل \lr{main} تعریف و سپس با مقدار صفر مقداردهی شده است. 
+	بعد از مقداردهی اولیه، مقدار \lr{activeLoopCount} یک واحد افزایش می‌یابد تا ورود به یک حلقه فعال ثبت شود.
+	
+	ساختار حلقه \lr{baraye} به صورت یک \lr{do/od} در \lr{Promela} تولید شده است. 
+	شرط \lr{j < 3} در شاخه اصلی حلقه قرار گرفته و در صورتی که این شرط برقرار باشد، بدنه حلقه اجرا می‌شود. 
+	اگر شرط برقرار نباشد، شاخه \lr{else -> break} فعال شده و اجرای حلقه پایان می‌یابد.
+	
+	نکته اصلی این تست در ترجمه دستور \lr{edame} دیده می‌شود. 
+	در خروجی، دستور \lr{edame} به صورت \lr{goto loopUpdate\_1} ترجمه شده است. 
+	این یعنی اگر شرط \lr{j == 1} برقرار شود، برنامه مستقیماً به برچسب \lr{loopUpdate\_1} می‌رود و ابتدا دستور \lr{j = j + 1} اجرا می‌شود. 
+	سپس اجرای حلقه ادامه پیدا می‌کند و شرط حلقه دوباره بررسی می‌شود. 
+	این رفتار دقیقاً معادل رفتار \lr{continue} در حلقه \lr{for} است.
+	
+	پس از خروج از حلقه، مقدار \lr{activeLoopCount} کاهش می‌یابد و مقدار \lr{exitLoop} برابر \lr{true} قرار می‌گیرد. 
+	سپس بررسی می‌شود که آیا هنوز حلقه فعال دیگری وجود دارد یا نه. 
+	اگر مقدار \lr{activeLoopCount} برابر صفر باشد، مقدار \lr{inLoop} برابر \lr{false} می‌شود؛ در غیر این صورت، \lr{inLoop} برابر \lr{true} باقی می‌ماند. 
+	این بخش برای پشتیبانی از حلقه‌های تودرتو و بررسی ویژگی \lr{Liveness} در فاز دوم استفاده می‌شود.
+	
+	این تست نشان می‌دهد که مترجم می‌تواند حلقه \lr{baraye}، مقداردهی اولیه، شرط، بدنه، بخش به‌روزرسانی و رفتار صحیح \lr{edame} در حلقه \lr{for} را به درستی به مدل \lr{Promela} تبدیل کند.
+	
 	\section{متد visitTryStmt - ترجمه ساختار try-catch}
 	
 	از آنجا که \lr{Promela} از مفهوم استثنا پشتیبانی نمی‌کند، این ساختار با استفاده از پرچم‌ها و برچسب‌ها شبیه‌سازی می‌شود:
@@ -873,6 +970,73 @@ Path = fonts/ ]
 		fi
 	\end{lstlisting}
 	\setRTL
+	
+	برای بررسی صحت تولید گارد تقسیم بر صفر، تست پنجم با نام \lr{test05\_division\_guard.hash} طراحی شد. 
+	هدف این تست آن است که نشان دهد اگر در برنامه \lr{Hash} یک عملیات تقسیم وجود داشته باشد، مترجم قبل از اجرای تقسیم، مقدار مقسوم‌علیه را بررسی می‌کند. 
+	در این تست، مقدار متغیر \lr{y} از ابتدا برابر صفر قرار داده شده است؛ بنابراین مسیر خطای تقسیم بر صفر باید در خروجی \lr{Promela} قابل مشاهده باشد.
+	
+	
+	کد ورودی \lr{Hash} برای این تست به صورت زیر است:
+	
+	\begin{latin}
+		\begin{lstlisting}[style=hashstyle]
+			adad x = 10;
+			adad y = 0;
+			adad z = 0;
+			
+			z = x / y;
+			
+			bechap(z);
+		\end{lstlisting}
+	\end{latin}
+	
+	خروجی تولیدشده توسط مترجم در فایل \lr{output.pml} به صورت زیر است:
+	
+	\begin{latin}
+		\begin{lstlisting}[style=codestyle]
+			bool divByZero = false;
+			bool inLoop = false;
+			bool exitLoop = false;
+			bool endReached = false;
+			int activeLoopCount = 0;
+			
+			int x;
+			int y;
+			int z;
+			
+			active proctype main() {
+				x = 10;
+				y = 0;
+				z = 0;
+				if
+				:: ((y == 0)) ->
+				divByZero = true;
+				:: else ->
+				z = x / y;
+				fi
+				printf("%d\n", z);
+				endReachedLabel:
+				endReached = true;
+				skip;
+			}
+		\end{lstlisting}
+	\end{latin}
+	
+	در این خروجی، متغیرهای \lr{x}، \lr{y} و \lr{z} به صورت سراسری تعریف شده‌اند و مقداردهی اولیه آن‌ها داخل \lr{active proctype main} انجام شده است. 
+	نکته اصلی این تست در ترجمه دستور \lr{z = x / y} دیده می‌شود. 
+	از آنجا که این دستور شامل عملگر تقسیم است، مترجم آن را مستقیم به \lr{z = x / y} تبدیل نکرده، بلکه ابتدا یک ساختار شرطی برای بررسی صفر بودن مقسوم‌علیه تولید کرده است.
+	
+	در شاخه اول، شرط \lr{y == 0} بررسی می‌شود. 
+	اگر این شرط برقرار باشد، مقدار \lr{divByZero} برابر \lr{true} قرار می‌گیرد. 
+	در این حالت دستور تقسیم اجرا نمی‌شود و بنابراین مدل به صورت مستقیم وارد عملیات نامعتبر تقسیم بر صفر نمی‌شود. 
+	در شاخه \lr{else}، یعنی زمانی که \lr{y} صفر نباشد، دستور اصلی \lr{z = x / y} اجرا می‌شود.
+	
+	این تست نشان می‌دهد که تابع \lr{guardDivisionByZero} به درستی برای assignmentهایی که شامل تقسیم هستند اعمال می‌شود. 
+	همچنین چون این تقسیم خارج از ساختار \lr{emtehan/gereftar} قرار دارد، در خروجی فقط متغیر \lr{divByZero} فعال می‌شود و خبری از \lr{errFlag} یا پرش به \lr{catchCheck} نیست. 
+	این رفتار با طراحی مترجم سازگار است، زیرا \lr{errFlag} فقط زمانی لازم است که تقسیم بر صفر داخل بلوک \lr{emtehan} رخ دهد.
+	
+	این خروجی برای فاز دوم نیز مهم است، چون ویژگی \lr{Safety} با استفاده از متغیر \lr{divByZero} بررسی می‌شود. 
+	در این تست، چون مقدار \lr{y} برابر صفر است، انتظار می‌رود اگر فرمول \lr{noDivByZero} روی این مدل اجرا شود، \lr{SPIN} یک نقض پیدا کند.
 	
 	\section{findZeroDivisors - یافتن مقسوم‌علیه‌های صفر}
 	

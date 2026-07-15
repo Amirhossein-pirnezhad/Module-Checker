@@ -1,0 +1,11 @@
+adad x = 0;
+
+baraye (adad j = 0; j < 3; j = j + 1) {
+    age (j == 1) bood {
+        edame;
+    } vagarna {
+        x = x + j;
+    }
+}
+
+bechap(x);

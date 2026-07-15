@@ -1,0 +1,7 @@
+adad x = 10;
+adad y = 0;
+adad z = 0;
+
+z = x / y;
+
+bechap(z);
