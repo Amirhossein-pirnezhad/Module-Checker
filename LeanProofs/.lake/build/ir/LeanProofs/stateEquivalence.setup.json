@@ -1,0 +1,9 @@
+{"plugins": [],
+ "package": "LeanProofs",
+ "options": {},
+ "name": "LeanProofs.stateEquivalence",
+ "isModule": false,
+ "importArts":
+ {"LeanProofs.Basic":
+  ["C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\lib\\lean\\LeanProofs\\Basic.olean"]},
+ "dynlibs": []}

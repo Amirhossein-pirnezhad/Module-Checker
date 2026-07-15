@@ -2,3 +2,5 @@
 -- Import modules here that should be built as part of the library.
 import LeanProofs.Basic
 import LeanProofs.Hash
+import LeanProofs.exprDeterminism
+import LeanProofs.stateEquivalence

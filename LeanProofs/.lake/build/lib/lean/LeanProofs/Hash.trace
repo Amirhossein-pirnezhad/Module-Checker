@@ -1,0 +1,40 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["4ce711facc7288e5.olean"],
+  "m": false,
+  "i": "4607803316aaf636.ilean",
+  "c": "987a0bcb366d2e15.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\lib\\lean c:\\Users\\Lenovo\\.elan\\toolchains\\leanprover--lean4---v4.31.0\\bin\\lean.exe C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\LeanProofs\\Hash.lean -o C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\lib\\lean\\LeanProofs\\Hash.olean -i C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\lib\\lean\\LeanProofs\\Hash.ilean -c C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\ir\\LeanProofs\\Hash.c --setup C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\ir\\LeanProofs\\Hash.setup.json --json",
+   "level": "trace"},
+  {"message":
+   "LeanProofs/Hash.lean:76:0: BigStep : Stmt → State → State → Prop",
+   "level": "info"},
+  {"message":
+   "LeanProofs/Hash.lean:77:0: loopInvariant {b : Expr} {body : Stmt} {P : State → Prop}\n  (bodyPreservesInvariant : ∀ (s s1 : State), P s → evalExpr b s ≠ 0 → BigStep body s s1 → P s1) (s sFinal : State) :\n  P s → BigStep (Stmt.while b body) s sFinal → P sFinal",
+   "level": "info"}],
+ "inputs":
+ [["LeanProofs.Hash:deps",
+   [["deps",
+     [["LeanProofs/LeanProofs:extraDep",
+       [["@LeanProofs:extraDep", "00000000000006bb"]]],
+      ["imports",
+       [["LeanProofs.Basic transitive imports (legacy)", "00000000000006bb"],
+        ["LeanProofs.Basic:importAllArts", "3dde13bcbb67f14c"]]]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.31.0, commit 68218e876d2a38b1985b8590fff244a83c321783",
+   "fc45ac412f28501c"],
+  ["C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\LeanProofs\\Hash.lean",
+   "85a7a3932b3ff62c"],
+  ["options", "00000000000006bb"],
+  ["isModule: false", "feefd2a0d3a1847e"],
+  ["Module.name: LeanProofs.Hash", "8f26f47118831789"],
+  ["Package.id?: (some LeanProofs)", "bc40728eea5c6c37"],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "f6090015a699bca4"}

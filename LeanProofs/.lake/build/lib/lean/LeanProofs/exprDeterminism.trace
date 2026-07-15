@@ -1,0 +1,37 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["d8d104fbfe20368d.olean"],
+  "m": false,
+  "i": "e0a860d1ba26a34e.ilean",
+  "c": "970fde03a7fe219d.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\lib\\lean c:\\Users\\Lenovo\\.elan\\toolchains\\leanprover--lean4---v4.31.0\\bin\\lean.exe C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\LeanProofs\\exprDeterminism.lean -o C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\lib\\lean\\LeanProofs\\exprDeterminism.olean -i C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\lib\\lean\\LeanProofs\\exprDeterminism.ilean -c C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\ir\\LeanProofs\\exprDeterminism.c --setup C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\ir\\LeanProofs\\exprDeterminism.setup.json --json",
+   "level": "trace"},
+  {"message":
+   "LeanProofs/exprDeterminism.lean:180:0: stateEquivalence (S : Stmt) (s1 s2 s1' : State) :\n  (∀ (x : Var), freeVars S x → s1 x = s2 x) →\n    BigStep S s1 s1' → ∃ s2', BigStep S s2 s2' ∧ ∀ (x : Var), freeVars S x → s1' x = s2' x",
+   "level": "info"}],
+ "inputs":
+ [["LeanProofs.exprDeterminism:deps",
+   [["deps",
+     [["LeanProofs/LeanProofs:extraDep",
+       [["@LeanProofs:extraDep", "00000000000006bb"]]],
+      ["imports",
+       [["LeanProofs.Basic transitive imports (legacy)", "00000000000006bb"],
+        ["LeanProofs.Basic:importAllArts", "3dde13bcbb67f14c"]]]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.31.0, commit 68218e876d2a38b1985b8590fff244a83c321783",
+   "fc45ac412f28501c"],
+  ["C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\LeanProofs\\exprDeterminism.lean",
+   "69a00dad4ad7fe48"],
+  ["options", "00000000000006bb"],
+  ["isModule: false", "feefd2a0d3a1847e"],
+  ["Module.name: LeanProofs.exprDeterminism", "9ddcd804997f91cd"],
+  ["Package.id?: (some LeanProofs)", "bc40728eea5c6c37"],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "d4c59cd9b0f09c9e"}

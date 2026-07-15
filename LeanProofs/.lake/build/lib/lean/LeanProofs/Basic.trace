@@ -1,0 +1,32 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["6eb81bbaaaae52e7.olean"],
+  "m": false,
+  "i": "0f991e3baab641b0.ilean",
+  "c": "b5851fb7f7d1b8e3.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\lib\\lean c:\\Users\\Lenovo\\.elan\\toolchains\\leanprover--lean4---v4.31.0\\bin\\lean.exe C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\LeanProofs\\Basic.lean -o C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\lib\\lean\\LeanProofs\\Basic.olean -i C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\lib\\lean\\LeanProofs\\Basic.ilean -c C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\ir\\LeanProofs\\Basic.c --setup C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\ir\\LeanProofs\\Basic.setup.json --json",
+   "level": "trace"}],
+ "inputs":
+ [["LeanProofs.Basic:deps",
+   [["deps",
+     [["LeanProofs/LeanProofs:extraDep",
+       [["@LeanProofs:extraDep", "00000000000006bb"]]],
+      ["imports", "00000000000006bb"]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.31.0, commit 68218e876d2a38b1985b8590fff244a83c321783",
+   "fc45ac412f28501c"],
+  ["C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\LeanProofs\\Basic.lean",
+   "3ce1c62ea8703340"],
+  ["options", "00000000000006bb"],
+  ["isModule: false", "feefd2a0d3a1847e"],
+  ["Module.name: LeanProofs.Basic", "10e188d9285a8af1"],
+  ["Package.id?: (some LeanProofs)", "bc40728eea5c6c37"],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "2e69a19bf3806807"}
