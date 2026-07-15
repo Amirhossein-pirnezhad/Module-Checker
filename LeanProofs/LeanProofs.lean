@@ -3,4 +3,3 @@
 import LeanProofs.Basic
 import LeanProofs.Hash
 import LeanProofs.exprDeterminism
-import LeanProofs.stateEquivalence
