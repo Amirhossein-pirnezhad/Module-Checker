@@ -1,0 +1,37 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["77d841cd94858887.olean"],
+  "m": false,
+  "i": "d3bb16fc1002d3b2.ilean",
+  "c": "e700d399c1fd26b4.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\lib\\lean c:\\Users\\Lenovo\\.elan\\toolchains\\leanprover--lean4---v4.31.0\\bin\\lean.exe C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\LeanProofs\\stateEquivalence.lean -o C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\lib\\lean\\LeanProofs\\stateEquivalence.olean -i C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\lib\\lean\\LeanProofs\\stateEquivalence.ilean -c C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\ir\\LeanProofs\\stateEquivalence.c --setup C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\ir\\LeanProofs\\stateEquivalence.setup.json --json",
+   "level": "trace"},
+  {"message":
+   "LeanProofs/stateEquivalence.lean:139:0: stateEquivalence {S : Stmt} {s1 s2 s1' : State} (hagree : Agree S.freeVars s1 s2) (hstep : BigStep S s1 s1') :\n  ∃ s2', BigStep S s2 s2' ∧ Agree S.freeVars s1' s2'",
+   "level": "info"}],
+ "inputs":
+ [["LeanProofs.stateEquivalence:deps",
+   [["deps",
+     [["LeanProofs/LeanProofs:extraDep",
+       [["@LeanProofs:extraDep", "00000000000006bb"]]],
+      ["imports",
+       [["LeanProofs.Basic transitive imports (legacy)", "00000000000006bb"],
+        ["LeanProofs.Basic:importAllArts", "3dde13bcbb67f14c"]]]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.31.0, commit 68218e876d2a38b1985b8590fff244a83c321783",
+   "fc45ac412f28501c"],
+  ["C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\LeanProofs\\stateEquivalence.lean",
+   "a0c621ebcfb5b1d3"],
+  ["options", "00000000000006bb"],
+  ["isModule: false", "feefd2a0d3a1847e"],
+  ["Module.name: LeanProofs.stateEquivalence", "477957d85f430236"],
+  ["Package.id?: (some LeanProofs)", "bc40728eea5c6c37"],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "1fd3a55be3a53011"}

@@ -1,10 +1,10 @@
 {"synthetic": false,
  "schemaVersion": "2025-09-10",
  "outputs":
- {"o": ["6cde47ed5ad2ba43.olean"],
+ {"o": ["b26f4b49ea85326b.olean"],
   "m": false,
-  "i": "86e105a4c73cc631.ilean",
-  "c": "e58e4085aa3e4270.c"},
+  "i": "5ae21f268a18de56.ilean",
+  "c": "3e475e8337057311.c"},
  "log":
  [{"message":
    ".> LEAN_PATH=C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\lib\\lean c:\\Users\\Lenovo\\.elan\\toolchains\\leanprover--lean4---v4.31.0\\bin\\lean.exe C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\LeanProofs.lean -o C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\lib\\lean\\LeanProofs.olean -i C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\lib\\lean\\LeanProofs.ilean -c C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\ir\\LeanProofs.c --setup C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\ir\\LeanProofs.setup.json --json",
@@ -19,9 +19,9 @@
         ["LeanProofs.Basic:importAllArts", "3dde13bcbb67f14c"],
         ["LeanProofs.Hash transitive imports (legacy)", "5ea7d1d65486122d"],
         ["LeanProofs.Hash:importAllArts", "c7b2c84511295b97"],
-        ["LeanProofs.exprDeterminism transitive imports (legacy)",
+        ["LeanProofs.stateEquivalence transitive imports (legacy)",
          "5ea7d1d65486122d"],
-        ["LeanProofs.exprDeterminism:importAllArts", "f9309c1fc6d5d3c4"]]]]],
+        ["LeanProofs.stateEquivalence:importAllArts", "7ee11a7ea6c906fe"]]]]],
     ["libs",
      [["import dynlibs", "00000000000006bb"],
       ["package external libraries", "00000000000006bb"],
@@ -30,10 +30,10 @@
   ["Lean 4.31.0, commit 68218e876d2a38b1985b8590fff244a83c321783",
    "fc45ac412f28501c"],
   ["C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\LeanProofs.lean",
-   "640e0b41b6e05eef"],
+   "23cb0b488fbbc43e"],
   ["options", "00000000000006bb"],
   ["isModule: false", "feefd2a0d3a1847e"],
   ["Module.name: LeanProofs", "068e019838c4f777"],
   ["Package.id?: (some LeanProofs)", "bc40728eea5c6c37"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "6205925baacf66d7"}
+ "depHash": "10944fd73c947fa9"}

@@ -1,6 +1,6 @@
 // Lean compiler output
 // Module: LeanProofs
-// Imports: public import Init public meta import Init public import LeanProofs.Basic public import LeanProofs.Hash public import LeanProofs.exprDeterminism
+// Imports: public import Init public meta import Init public import LeanProofs.Basic public import LeanProofs.Hash public import LeanProofs.stateEquivalence
 #include <lean/lean.h>
 #if defined(__clang__)
 #pragma clang diagnostic ignored "-Wunused-parameter"
@@ -17,7 +17,7 @@ lean_object* initialize_Init(uint8_t builtin);
 lean_object* initialize_Init(uint8_t builtin);
 lean_object* initialize_LeanProofs_LeanProofs_Basic(uint8_t builtin);
 lean_object* initialize_LeanProofs_LeanProofs_Hash(uint8_t builtin);
-lean_object* initialize_LeanProofs_LeanProofs_exprDeterminism(uint8_t builtin);
+lean_object* initialize_LeanProofs_LeanProofs_stateEquivalence(uint8_t builtin);
 static bool _G_initialized = false;
 LEAN_EXPORT lean_object* initialize_LeanProofs_LeanProofs(uint8_t builtin) {
 lean_object * res;
@@ -35,7 +35,7 @@ lean_dec_ref(res);
 res = initialize_LeanProofs_LeanProofs_Hash(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
-res = initialize_LeanProofs_LeanProofs_exprDeterminism(builtin);
+res = initialize_LeanProofs_LeanProofs_stateEquivalence(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
 return lean_io_result_mk_ok(lean_box(0));

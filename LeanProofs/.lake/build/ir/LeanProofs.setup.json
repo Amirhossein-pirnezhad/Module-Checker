@@ -4,8 +4,8 @@
  "name": "LeanProofs",
  "isModule": false,
  "importArts":
- {"LeanProofs.exprDeterminism":
-  ["C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\lib\\lean\\LeanProofs\\exprDeterminism.olean"],
+ {"LeanProofs.stateEquivalence":
+  ["C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\lib\\lean\\LeanProofs\\stateEquivalence.olean"],
   "LeanProofs.Hash":
   ["C:\\Users\\Lenovo\\Desktop\\Module-Checker\\LeanProofs\\.lake\\build\\lib\\lean\\LeanProofs\\Hash.olean"],
   "LeanProofs.Basic":

@@ -1,1 +1,1 @@
-{"decls":{},"directImports":[["LeanProofs.Basic",false,false,false],["LeanProofs.Hash",false,false,false],["LeanProofs.exprDeterminism",false,false,false]],"module":"LeanProofs","references":{},"version":5}
+{"decls":{},"directImports":[["LeanProofs.Basic",false,false,false],["LeanProofs.Hash",false,false,false],["LeanProofs.stateEquivalence",false,false,false]],"module":"LeanProofs","references":{},"version":5}
