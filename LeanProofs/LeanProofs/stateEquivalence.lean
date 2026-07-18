@@ -1,8 +1,5 @@
 import LeanProofs.Basic
 
-/-
-  Free variables of an expression: every variable that is read while evaluating it.
--/
 def Expr.freeVars : Expr -> List Var
   | Expr.num _     => []
   | Expr.var x     => [x]
@@ -16,27 +13,13 @@ def Stmt.freeVars : Stmt -> List Var
   | Stmt.ifElse b S1 S2  => b.freeVars ++ S1.freeVars ++ S2.freeVars
   | Stmt.while b body    => b.freeVars ++ body.freeVars
 
-/-
-  Two states "agree" on a list of variables if they assign the
-  same value to every variable in that list.
--/
-
 def Agree (vs : List Var) (s1 s2 : State) : Prop :=
   ∀ x ∈ vs, s1 x = s2 x
 
-/-
-  Agreement is monotone: if we know a state agrees on a bigger
-  list vs, it certainly agrees on any sub-list vs' of vs.
--/
 theorem agree_subset {vs vs' : List Var} {s1 s2 : State}
     (hsub : ∀ x ∈ vs', x ∈ vs) (h : Agree vs s1 s2) : Agree vs' s1 s2 :=
   fun x hx => h x (hsub x hx)
 
-/-
-  Coincidence lemma for expressions: if two states agree on all
-  free variables of e, then e evaluates to the same value in
-  both states. Proved by structural induction on e.
--/
 theorem exprCoincidence {e : Expr} {s1 s2 : State} :
     Agree e.freeVars s1 s2 → evalExpr e s1 = evalExpr e s2 := by
   induction e with
@@ -64,19 +47,7 @@ theorem exprCoincidence {e : Expr} {s1 s2 : State} :
          = (if evalExpr e1 s2 < evalExpr e2 s2 then (1 : Int) else 0)
       rw [ih1 h1, ih2 h2]
 
-/-
-  Strengthened (generalized) coincidence lemma for statements.
 
-  Instead of only tracking agreement on S.freeVars, we track
-  agreement on an arbitrary list `vs` that is a superset of
-  S.freeVars. This is what makes the `seq` and `whileTrue` cases
-  go through: after running the first sub-statement, agreement
-  must still hold on the free variables of the *second*
-  sub-statement, not just the first one's — and both are
-  guaranteed to be subsets of the same fixed `vs`.
-
-  This is proved by induction on the BigStep derivation.
--/
 theorem coincidence_aux {S : Stmt} {s1 s1' : State}
     (hstep : BigStep S s1 s1') :
     ∀ (vs : List Var) (s2 : State),
@@ -85,9 +56,6 @@ theorem coincidence_aux {S : Stmt} {s1 s1' : State}
       ∃ s2', BigStep S s2 s2' ∧ Agree vs s1' s2' := by
   induction hstep with
   | assign =>
-      -- constructor `assign` has only implicit args {x e s} and no
-      -- explicit hypotheses, so 0 names go in the pattern; recover
-      -- x, e, s with rename_i (in their declaration order)
       rename_i x e s
       intro vs s2 hsub hagree
       have hx : x ∈ vs := hsub x (List.mem_cons.mpr (Or.inl rfl))
@@ -104,8 +72,6 @@ theorem coincidence_aux {S : Stmt} {s1 s1' : State}
         exact hagree y hy
 
   | seq hstep1 hstep2 ih1 ih2 =>
-      -- explicit hyps (hstep1, hstep2) + 2 generated IHs = 4 names;
-      -- implicit {S1 S2 s sMid sFinal} recovered via rename_i
       rename_i S1 S2 s sMid sFinal
       intro vs s2 hsub hagree
       have hsub1 : ∀ y ∈ S1.freeVars, y ∈ vs :=
@@ -117,8 +83,6 @@ theorem coincidence_aux {S : Stmt} {s1 s1' : State}
       exact ⟨s2', BigStep.seq hstepMid hstepFinal, hagreeFinal⟩
 
   | ifTrue hb hstep ih =>
-      -- explicit hyp (hb, hstep) + 1 generated IH = 3 names;
-      -- implicit {b S1 S2 s sFinal} recovered via rename_i
       rename_i b S1 S2 s sFinal
       intro vs s2 hsub hagree
       have hsubb : ∀ y ∈ b.freeVars, y ∈ vs :=
@@ -145,8 +109,6 @@ theorem coincidence_aux {S : Stmt} {s1 s1' : State}
       exact ⟨s2', BigStep.ifFalse hb2 hstep2, hagree2⟩
 
   | whileFalse hb =>
-      -- explicit hyp (hb) + 0 IH (no recursive premise) = 1 name;
-      -- implicit {b body s} recovered via rename_i
       rename_i b body s
       intro vs s2 hsub hagree
       have hsubb : ∀ y ∈ b.freeVars, y ∈ vs :=
@@ -157,8 +119,6 @@ theorem coincidence_aux {S : Stmt} {s1 s1' : State}
       exact ⟨s2, BigStep.whileFalse hb2, hagree⟩
 
   | whileTrue hb hstep1 hstep2 ih1 ih2 =>
-      -- explicit hyps (hb, hstep1, hstep2) + 2 generated IHs = 5 names;
-      -- implicit {b body s sMid sFinal} recovered via rename_i
       rename_i b body s sMid sFinal
       intro vs s2 hsub hagree
       have hsubb : ∀ y ∈ b.freeVars, y ∈ vs :=
@@ -169,21 +129,10 @@ theorem coincidence_aux {S : Stmt} {s1 s1' : State}
       have hbval : evalExpr b s = evalExpr b s2 := exprCoincidence hagreeb
       have hb2 : evalExpr b s2 ≠ 0 := by rw [← hbval]; exact hb
       obtain ⟨sMid', hstepBody, hagreeMid⟩ := ih1 vs s2 hsubbody hagree
-      -- reuse `hsub` as-is: it is stated for (while b body), which
-      -- is exactly the statement the recursive derivation hstep2 is about
       obtain ⟨s2', hstepWhile, hagreeFinal⟩ := ih2 vs sMid' hsub hagreeMid
       exact ⟨s2', BigStep.whileTrue hb2 hstepBody hstepWhile, hagreeFinal⟩
 
-/-
-  If two states agree on all free variables of S, and S evaluates
-  s1 to s1', then S also evaluates s2 to some s2', and the two
-  resulting states still agree on all free variables of S.
 
-  This is the provable, correct formulation of the property; it
-  replaces the assignment's literal "sigma1' = sigma2'" statement,
-  which does not hold in general (S may leave many variables
-  outside freeVars(S) completely untouched and unconstrained).
--/
 theorem stateEquivalence {S : Stmt} {s1 s2 s1' : State}
     (hagree : Agree S.freeVars s1 s2)
     (hstep : BigStep S s1 s1') :
