@@ -243,7 +243,7 @@ Path = fonts/ ]
 	
 	\section{زیرمجموعه زبان Hash پشتیبانی شده}
 	
- زیرمجموعه مورد نظر شامل موارد زیر است:
+	زیرمجموعه مورد نظر شامل موارد زیر است:
 	
 	\begin{itemize}
 		\item متغیرهای از نوع \lr{adad} و \lr{boole}
@@ -670,62 +670,62 @@ Path = fonts/ ]
 	برای عملگر \lr{/=}، بررسی تقسیم بر صفر اضافه می‌شود.
 	
 	
-
 	
-    برای بررسی صحت ترجمه assignment و expressionهای حسابی، یک تست ساده با نام \lr{test01\_basic.hash} در نظر گرفته شد.
-    هدف این تست آن است که نشان دهد تعریف متغیرهای عددی، مقداردهی اولیه، assignment و تقدم عملگرهای حسابی به درستی در خروجی \lr{Promela} حفظ می‌شوند.
-    در این مثال، سه متغیر عددی تعریف شده و سپس مقدار متغیر \lr{z} با عبارت \lr{x + y * 3} محاسبه می‌شود.
-    از آنجا که ضرب نسبت به جمع تقدم دارد، انتظار داریم همین ساختار در خروجی حفظ شود.
-
-    کد ورودی \lr{Hash} برای این تست به صورت زیر است:
-
-    \begin{latin}
-    \begin{lstlisting}[style=hashstyle]
-    adad x = 1;
-    adad y = 2;
-    adad z = 0;
-
-    z = x + y * 3;
-
-    bechap(z);
-    \end{lstlisting}
-    \end{latin}
-
-    خروجی تولیدشده توسط مترجم در فایل \lr{output.pml} به صورت زیر است:
-
-    \begin{latin}
-    \begin{lstlisting}[style=codestyle]
-    bool divByZero = false;
-    bool inLoop = false;
-    bool exitLoop = false;
-    bool endReached = false;
-    int activeLoopCount = 0;
-
-    int x;
-    int y;
-    int z;
-
-    active proctype main() {
-        x = 1;
-        y = 2;
-        z = 0;
-        z = x + y * 3;
-        printf("%d\n", z);
-    endReachedLabel:
-        endReached = true;
-        skip;
-    }
-    \end{lstlisting}
-    \end{latin}
-
-    در این خروجی، نوع \lr{adad} به نوع \lr{int} در \lr{Promela} تبدیل شده است.
-    متغیرهای \lr{x}، \lr{y} و \lr{z} به صورت سراسری تعریف شده‌اند و مقداردهی اولیه آن‌ها داخل \lr{active proctype main} انجام شده است.
-    همچنین assignment مربوط به \lr{z} به صورت \lr{z = x + y * 3} تولید شده و معنای expression حفظ شده است.
-    این خروجی نشان می‌دهد که مترجم در این تست، تعریف متغیر، مقداردهی اولیه، assignment و expression حسابی را به درستی ترجمه کرده است.
-
-    متغیرهای کمکی \lr{divByZero}، \lr{inLoop}، \lr{exitLoop}، \lr{endReached} و \lr{activeLoopCount} نیز طبق طراحی کلی مترجم در ابتدای مدل اضافه شده‌اند.
-    این متغیرها اگرچه در این تست ساده مستقیماً فعال نمی‌شوند، اما برای بررسی ویژگی‌های \lr{Safety}، \lr{Liveness} و \lr{Reachability} در فاز دوم استفاده می‌شوند.
-    در انتهای \lr{main} نیز مقدار \lr{endReached} برابر \lr{true} می‌شود تا رسیدن اجرای برنامه به انتها در فاز دوم قابل بررسی باشد.
+	
+	برای بررسی صحت ترجمه assignment و expressionهای حسابی، یک تست ساده با نام \lr{test01\_basic.hash} در نظر گرفته شد.
+	هدف این تست آن است که نشان دهد تعریف متغیرهای عددی، مقداردهی اولیه، assignment و تقدم عملگرهای حسابی به درستی در خروجی \lr{Promela} حفظ می‌شوند.
+	در این مثال، سه متغیر عددی تعریف شده و سپس مقدار متغیر \lr{z} با عبارت \lr{x + y * 3} محاسبه می‌شود.
+	از آنجا که ضرب نسبت به جمع تقدم دارد، انتظار داریم همین ساختار در خروجی حفظ شود.
+	
+	کد ورودی \lr{Hash} برای این تست به صورت زیر است:
+	
+	\begin{latin}
+		\begin{lstlisting}[style=hashstyle]
+			adad x = 1;
+			adad y = 2;
+			adad z = 0;
+			
+			z = x + y * 3;
+			
+			bechap(z);
+		\end{lstlisting}
+	\end{latin}
+	
+	خروجی تولیدشده توسط مترجم در فایل \lr{output.pml} به صورت زیر است:
+	
+	\begin{latin}
+		\begin{lstlisting}[style=codestyle]
+			bool divByZero = false;
+			bool inLoop = false;
+			bool exitLoop = false;
+			bool endReached = false;
+			int activeLoopCount = 0;
+			
+			int x;
+			int y;
+			int z;
+			
+			active proctype main() {
+				x = 1;
+				y = 2;
+				z = 0;
+				z = x + y * 3;
+				printf("%d\n", z);
+				endReachedLabel:
+				endReached = true;
+				skip;
+			}
+		\end{lstlisting}
+	\end{latin}
+	
+	در این خروجی، نوع \lr{adad} به نوع \lr{int} در \lr{Promela} تبدیل شده است.
+	متغیرهای \lr{x}، \lr{y} و \lr{z} به صورت سراسری تعریف شده‌اند و مقداردهی اولیه آن‌ها داخل \lr{active proctype main} انجام شده است.
+	همچنین assignment مربوط به \lr{z} به صورت \lr{z = x + y * 3} تولید شده و معنای expression حفظ شده است.
+	این خروجی نشان می‌دهد که مترجم در این تست، تعریف متغیر، مقداردهی اولیه، assignment و expression حسابی را به درستی ترجمه کرده است.
+	
+	متغیرهای کمکی \lr{divByZero}، \lr{inLoop}، \lr{exitLoop}، \lr{endReached} و \lr{activeLoopCount} نیز طبق طراحی کلی مترجم در ابتدای مدل اضافه شده‌اند.
+	این متغیرها اگرچه در این تست ساده مستقیماً فعال نمی‌شوند، اما برای بررسی ویژگی‌های \lr{Safety}، \lr{Liveness} و \lr{Reachability} در فاز دوم استفاده می‌شوند.
+	در انتهای \lr{main} نیز مقدار \lr{endReached} برابر \lr{true} می‌شود تا رسیدن اجرای برنامه به انتها در فاز دوم قابل بررسی باشد.
 	
 	\section{متد visitIfStmt - ترجمه دستور شرطی}
 	
@@ -742,148 +742,148 @@ Path = fonts/ ]
 	\setRTL
 	
 	همچنین، اگر شرط شامل عملیات تقسیم باشد، یک شرط اضافی برای بررسی تقسیم بر صفر قبل از شرط اصلی اضافه می‌شود.
-
+	
 	\noindent
-    برای بررسی صحت ترجمه دستور شرطی، تستی با نام \lr{test02\_if\_else.hash} در نظر گرفته شد.
-    هدف این تست آن است که نشان دهد ساختار شرطی \lr{age/bood/vagarna} در زبان \lr{Hash} به درستی به ساختار شرطی \lr{if/fi} در \lr{Promela} تبدیل می‌شود.
-    در این مثال، مقدار متغیر \lr{x} برابر ۳ است و شرط \lr{x > 0} بررسی می‌شود.
-    اگر شرط برقرار باشد، مقدار \lr{y} برابر ۱ می‌شود و در غیر این صورت مقدار آن برابر ۲ قرار می‌گیرد.
-
-    کد ورودی \lr{Hash} برای این تست به صورت زیر است:
-
-    \begin{latin}
-    \begin{lstlisting}[style=hashstyle]
-    adad x = 3;
-    adad y = 0;
-
-    age (x > 0) bood {
-        y = 1;
-    } vagarna {
-        y = 2;
-    }
-
-    bechap(y);
-    \end{lstlisting}
-    \end{latin}
-
-    خروجی تولیدشده توسط مترجم در فایل \lr{output.pml} به صورت زیر است:
-
-    \begin{latin}
-    \begin{lstlisting}[style=codestyle]
-    bool divByZero = false;
-    bool inLoop = false;
-    bool exitLoop = false;
-    bool endReached = false;
-    int activeLoopCount = 0;
-
-    int x;
-    int y;
-
-    active proctype main() {
-        x = 3;
-        y = 0;
-        if
-        :: (x > 0) ->
-            y = 1;
-        :: else ->
-            y = 2;
-        fi
-        printf("%d\n", y);
-    endReachedLabel:
-        endReached = true;
-        skip;
-    }
-    \end{lstlisting}
-    \end{latin}
-
-    در این خروجی، نوع \lr{adad} برای متغیرهای \lr{x} و \lr{y} به نوع \lr{int} در \lr{Promela} تبدیل شده است.
-    همچنین مقداردهی اولیه متغیرها داخل \lr{active proctype main} انجام شده است.
-    ساختار شرطی \lr{age/bood/vagarna} نیز به ساختار guarded command در \lr{Promela} تبدیل شده است؛ به این صورت که شرط \lr{x > 0} در شاخه اول قرار گرفته و در صورت برقرار بودن آن، دستور \lr{y = 1} اجرا می‌شود.
-    شاخه \lr{else} نیز معادل بخش \lr{vagarna} در زبان \lr{Hash} است و در صورت برقرار نبودن شرط، مقدار \lr{y} را برابر ۲ قرار می‌دهد.
-
-    این تست نشان می‌دهد که مترجم می‌تواند ساختار شرطی ساده را بدون تغییر معنایی به \lr{Promela} منتقل کند.
-    همچنین وجود \lr{printf} نشان می‌دهد که دستور \lr{bechap(y)} به خروجی متنی مناسب در \lr{Promela} تبدیل شده است.
-    مانند سایر خروجی‌ها، متغیرهای کمکی \lr{divByZero}، \lr{inLoop}، \lr{exitLoop}، \lr{endReached} و \lr{activeLoopCount} نیز در ابتدای مدل اضافه شده‌اند تا در فاز دوم برای بررسی ویژگی‌های مختلف استفاده شوند.
-    در انتهای \lr{main} نیز مقدار \lr{endReached} برابر \lr{true} می‌شود تا رسیدن برنامه به انتها قابل بررسی باشد.
-    
-    برای بررسی صحت مدیریت تقسیم داخل شرط، تست هفتم با نام \lr{test07\_division\_in\_condition.hash} طراحی شد. 
-    هدف این تست آن است که نشان دهد مترجم فقط تقسیم‌های داخل assignment را بررسی نمی‌کند، بلکه اگر عملیات تقسیم داخل شرط یک دستور \lr{age} نیز قرار داشته باشد، قبل از ارزیابی شرط اصلی، گارد تقسیم بر صفر تولید می‌شود. 
-    این موضوع مهم است، زیرا شرط‌های برنامه نیز در زمان اجرا ارزیابی می‌شوند و می‌توانند باعث خطای تقسیم بر صفر شوند.
-    
-    
-    در این برنامه، مقدار متغیر \lr{y} برابر صفر است و شرط دستور \lr{age} شامل عبارت \lr{x / y > 1} است. 
-    بنابراین اگر شرط بدون بررسی قبلی اجرا شود، تقسیم بر صفر رخ می‌دهد. 
-    انتظار داریم مترجم ابتدا صفر بودن \lr{y} را بررسی کند و فقط در صورتی که \lr{y} صفر نباشد، شرط اصلی را ارزیابی کند.
-    
-    کد ورودی \lr{Hash} برای این تست به صورت زیر است:
-    
-    \begin{latin}
-    	\begin{lstlisting}[style=hashstyle]
-    		adad x = 10;
-    		adad y = 0;
-    		adad z = 0;
-    		
-    		age (x / y > 1) bood {
-    			z = 1;
-    		} vagarna {
-    			z = 2;
-    		}
-    		
-    		bechap(z);
-    	\end{lstlisting}
-    \end{latin}
-    
-    خروجی تولیدشده توسط مترجم در فایل \lr{output.pml} به صورت زیر است:
-    
-    \begin{latin}
-    	\begin{lstlisting}[style=codestyle]
-    		bool divByZero = false;
-    		bool inLoop = false;
-    		bool exitLoop = false;
-    		bool endReached = false;
-    		int activeLoopCount = 0;
-    		
-    		int x;
-    		int y;
-    		int z;
-    		
-    		active proctype main() {
-    			x = 10;
-    			y = 0;
-    			z = 0;
-    			if
-    			:: ((y == 0)) ->
-    			divByZero = true;
-    			:: else ->
-    			if
-    			:: (x / y > 1) ->
-    			z = 1;
-    			:: else ->
-    			z = 2;
-    			fi
-    			fi
-    			printf("%d\n", z);
-    			endReachedLabel:
-    			endReached = true;
-    			skip;
-    		}
-    	\end{lstlisting}
-    \end{latin}
-    
-    در این خروجی، متغیرهای \lr{x}، \lr{y} و \lr{z} به صورت سراسری تعریف شده‌اند و مقداردهی اولیه آن‌ها داخل \lr{active proctype main} انجام شده است. 
-    نکته اصلی این تست در ساختار شرطی تولیدشده دیده می‌شود. 
-    چون شرط \lr{x / y > 1} شامل عملیات تقسیم است، مترجم ابتدا یک \lr{if} بیرونی برای بررسی صفر بودن مقسوم‌علیه تولید کرده است.
-    
-    در شاخه اول، شرط \lr{y == 0} بررسی می‌شود. 
-    اگر این شرط برقرار باشد، مقدار \lr{divByZero} برابر \lr{true} قرار می‌گیرد و شرط اصلی \lr{x / y > 1} اصلاً ارزیابی نمی‌شود. 
-    این کار باعث می‌شود که مدل مستقیماً وارد عملیات نامعتبر تقسیم بر صفر نشود.
-    
-    در شاخه \lr{else}، یعنی زمانی که \lr{y} صفر نباشد، شرط اصلی برنامه بررسی می‌شود. 
-    در این بخش، ساختار شرطی اصلی \lr{Hash} به یک \lr{if/fi} داخلی در \lr{Promela} تبدیل شده است. 
-    اگر شرط \lr{x / y > 1} برقرار باشد، مقدار \lr{z} برابر ۱ قرار می‌گیرد و در غیر این صورت مقدار \lr{z} برابر ۲ می‌شود.
-    
-    این تست نشان می‌دهد که تابع \lr{guardDivisionByZero} فقط برای assignmentها استفاده نمی‌شود، بلکه در شرط‌های کنترلی نیز به کار می‌رود. 
-    بنابراین اگر یک عبارت خطرناک مانند تقسیم داخل شرط \lr{age} قرار داشته باشد، مترجم قبل از اجرای شرط اصلی، مسیر خطا را جدا می‌کند و با فعال کردن \lr{divByZero} امکان بررسی ویژگی \lr{Safety} را در فاز دوم فراهم می‌سازد.
+	برای بررسی صحت ترجمه دستور شرطی، تستی با نام \lr{test02\_if\_else.hash} در نظر گرفته شد.
+	هدف این تست آن است که نشان دهد ساختار شرطی \lr{age/bood/vagarna} در زبان \lr{Hash} به درستی به ساختار شرطی \lr{if/fi} در \lr{Promela} تبدیل می‌شود.
+	در این مثال، مقدار متغیر \lr{x} برابر ۳ است و شرط \lr{x > 0} بررسی می‌شود.
+	اگر شرط برقرار باشد، مقدار \lr{y} برابر ۱ می‌شود و در غیر این صورت مقدار آن برابر ۲ قرار می‌گیرد.
+	
+	کد ورودی \lr{Hash} برای این تست به صورت زیر است:
+	
+	\begin{latin}
+		\begin{lstlisting}[style=hashstyle]
+			adad x = 3;
+			adad y = 0;
+			
+			age (x > 0) bood {
+				y = 1;
+			} vagarna {
+				y = 2;
+			}
+			
+			bechap(y);
+		\end{lstlisting}
+	\end{latin}
+	
+	خروجی تولیدشده توسط مترجم در فایل \lr{output.pml} به صورت زیر است:
+	
+	\begin{latin}
+		\begin{lstlisting}[style=codestyle]
+			bool divByZero = false;
+			bool inLoop = false;
+			bool exitLoop = false;
+			bool endReached = false;
+			int activeLoopCount = 0;
+			
+			int x;
+			int y;
+			
+			active proctype main() {
+				x = 3;
+				y = 0;
+				if
+				:: (x > 0) ->
+				y = 1;
+				:: else ->
+				y = 2;
+				fi
+				printf("%d\n", y);
+				endReachedLabel:
+				endReached = true;
+				skip;
+			}
+		\end{lstlisting}
+	\end{latin}
+	
+	در این خروجی، نوع \lr{adad} برای متغیرهای \lr{x} و \lr{y} به نوع \lr{int} در \lr{Promela} تبدیل شده است.
+	همچنین مقداردهی اولیه متغیرها داخل \lr{active proctype main} انجام شده است.
+	ساختار شرطی \lr{age/bood/vagarna} نیز به ساختار guarded command در \lr{Promela} تبدیل شده است؛ به این صورت که شرط \lr{x > 0} در شاخه اول قرار گرفته و در صورت برقرار بودن آن، دستور \lr{y = 1} اجرا می‌شود.
+	شاخه \lr{else} نیز معادل بخش \lr{vagarna} در زبان \lr{Hash} است و در صورت برقرار نبودن شرط، مقدار \lr{y} را برابر ۲ قرار می‌دهد.
+	
+	این تست نشان می‌دهد که مترجم می‌تواند ساختار شرطی ساده را بدون تغییر معنایی به \lr{Promela} منتقل کند.
+	همچنین وجود \lr{printf} نشان می‌دهد که دستور \lr{bechap(y)} به خروجی متنی مناسب در \lr{Promela} تبدیل شده است.
+	مانند سایر خروجی‌ها، متغیرهای کمکی \lr{divByZero}، \lr{inLoop}، \lr{exitLoop}، \lr{endReached} و \lr{activeLoopCount} نیز در ابتدای مدل اضافه شده‌اند تا در فاز دوم برای بررسی ویژگی‌های مختلف استفاده شوند.
+	در انتهای \lr{main} نیز مقدار \lr{endReached} برابر \lr{true} می‌شود تا رسیدن برنامه به انتها قابل بررسی باشد.
+	
+	برای بررسی صحت مدیریت تقسیم داخل شرط، تست هفتم با نام \lr{test07\_division\_in\_condition.hash} طراحی شد. 
+	هدف این تست آن است که نشان دهد مترجم فقط تقسیم‌های داخل assignment را بررسی نمی‌کند، بلکه اگر عملیات تقسیم داخل شرط یک دستور \lr{age} نیز قرار داشته باشد، قبل از ارزیابی شرط اصلی، گارد تقسیم بر صفر تولید می‌شود. 
+	این موضوع مهم است، زیرا شرط‌های برنامه نیز در زمان اجرا ارزیابی می‌شوند و می‌توانند باعث خطای تقسیم بر صفر شوند.
+	
+	
+	در این برنامه، مقدار متغیر \lr{y} برابر صفر است و شرط دستور \lr{age} شامل عبارت \lr{x / y > 1} است. 
+	بنابراین اگر شرط بدون بررسی قبلی اجرا شود، تقسیم بر صفر رخ می‌دهد. 
+	انتظار داریم مترجم ابتدا صفر بودن \lr{y} را بررسی کند و فقط در صورتی که \lr{y} صفر نباشد، شرط اصلی را ارزیابی کند.
+	
+	کد ورودی \lr{Hash} برای این تست به صورت زیر است:
+	
+	\begin{latin}
+		\begin{lstlisting}[style=hashstyle]
+			adad x = 10;
+			adad y = 0;
+			adad z = 0;
+			
+			age (x / y > 1) bood {
+				z = 1;
+			} vagarna {
+				z = 2;
+			}
+			
+			bechap(z);
+		\end{lstlisting}
+	\end{latin}
+	
+	خروجی تولیدشده توسط مترجم در فایل \lr{output.pml} به صورت زیر است:
+	
+	\begin{latin}
+		\begin{lstlisting}[style=codestyle]
+			bool divByZero = false;
+			bool inLoop = false;
+			bool exitLoop = false;
+			bool endReached = false;
+			int activeLoopCount = 0;
+			
+			int x;
+			int y;
+			int z;
+			
+			active proctype main() {
+				x = 10;
+				y = 0;
+				z = 0;
+				if
+				:: ((y == 0)) ->
+				divByZero = true;
+				:: else ->
+				if
+				:: (x / y > 1) ->
+				z = 1;
+				:: else ->
+				z = 2;
+				fi
+				fi
+				printf("%d\n", z);
+				endReachedLabel:
+				endReached = true;
+				skip;
+			}
+		\end{lstlisting}
+	\end{latin}
+	
+	در این خروجی، متغیرهای \lr{x}، \lr{y} و \lr{z} به صورت سراسری تعریف شده‌اند و مقداردهی اولیه آن‌ها داخل \lr{active proctype main} انجام شده است. 
+	نکته اصلی این تست در ساختار شرطی تولیدشده دیده می‌شود. 
+	چون شرط \lr{x / y > 1} شامل عملیات تقسیم است، مترجم ابتدا یک \lr{if} بیرونی برای بررسی صفر بودن مقسوم‌علیه تولید کرده است.
+	
+	در شاخه اول، شرط \lr{y == 0} بررسی می‌شود. 
+	اگر این شرط برقرار باشد، مقدار \lr{divByZero} برابر \lr{true} قرار می‌گیرد و شرط اصلی \lr{x / y > 1} اصلاً ارزیابی نمی‌شود. 
+	این کار باعث می‌شود که مدل مستقیماً وارد عملیات نامعتبر تقسیم بر صفر نشود.
+	
+	در شاخه \lr{else}، یعنی زمانی که \lr{y} صفر نباشد، شرط اصلی برنامه بررسی می‌شود. 
+	در این بخش، ساختار شرطی اصلی \lr{Hash} به یک \lr{if/fi} داخلی در \lr{Promela} تبدیل شده است. 
+	اگر شرط \lr{x / y > 1} برقرار باشد، مقدار \lr{z} برابر ۱ قرار می‌گیرد و در غیر این صورت مقدار \lr{z} برابر ۲ می‌شود.
+	
+	این تست نشان می‌دهد که تابع \lr{guardDivisionByZero} فقط برای assignmentها استفاده نمی‌شود، بلکه در شرط‌های کنترلی نیز به کار می‌رود. 
+	بنابراین اگر یک عبارت خطرناک مانند تقسیم داخل شرط \lr{age} قرار داشته باشد، مترجم قبل از اجرای شرط اصلی، مسیر خطا را جدا می‌کند و با فعال کردن \lr{divByZero} امکان بررسی ویژگی \lr{Safety} را در فاز دوم فراهم می‌سازد.
 	
 	\section{متد visitWhileStmt - ترجمه حلقه while}
 	
@@ -898,16 +898,16 @@ Path = fonts/ ]
 		\item \textbf{پس از خروج}: پس از خروج از حلقه، \lr{activeLoopCount} کاهش یافته و پرچم‌ها به‌روز می‌شوند.
 	\end{enumerate}
 	
-برای بررسی صحت ترجمه حلقه \lr{ta} و همچنین دستورات \lr{shekan} و \lr{edame}، تست سوم  با نام \lr{test03\_while\_break\_continue.hash}طراحی شد. 
-هدف این تست آن است که نشان دهد حلقه \lr{ta} به ساختار \lr{do/od} در \lr{Promela} تبدیل می‌شود و دستورات \lr{edame} و \lr{shekan} نیز به ترتیب با \lr{goto} و \lr{break} مدل می‌شوند.
-
-نام فایل این تست به صورت زیر است:
-
-در این برنامه، متغیر \lr{i} در هر تکرار یک واحد افزایش می‌یابد. 
-اگر مقدار \lr{i} برابر ۲ شود، دستور \lr{edame} اجرا می‌شود و اجرای باقی بدنه همان تکرار متوقف شده و کنترل به ابتدای حلقه بازمی‌گردد. 
-همچنین اگر مقدار \lr{i} برابر ۴ شود، دستور \lr{shekan} اجرا شده و حلقه خاتمه می‌یابد.
-
-کد ورودی \lr{Hash} برای این تست به صورت زیر است:
+	برای بررسی صحت ترجمه حلقه \lr{ta} و همچنین دستورات \lr{shekan} و \lr{edame}، تست سوم  با نام \lr{test03\_while\_break\_continue.hash}طراحی شد. 
+	هدف این تست آن است که نشان دهد حلقه \lr{ta} به ساختار \lr{do/od} در \lr{Promela} تبدیل می‌شود و دستورات \lr{edame} و \lr{shekan} نیز به ترتیب با \lr{goto} و \lr{break} مدل می‌شوند.
+	
+	نام فایل این تست به صورت زیر است:
+	
+	در این برنامه، متغیر \lr{i} در هر تکرار یک واحد افزایش می‌یابد. 
+	اگر مقدار \lr{i} برابر ۲ شود، دستور \lr{edame} اجرا می‌شود و اجرای باقی بدنه همان تکرار متوقف شده و کنترل به ابتدای حلقه بازمی‌گردد. 
+	همچنین اگر مقدار \lr{i} برابر ۴ شود، دستور \lr{shekan} اجرا شده و حلقه خاتمه می‌یابد.
+	
+	کد ورودی \lr{Hash} برای این تست به صورت زیر است:
 	
 	\begin{latin}
 		\begin{lstlisting}[style=hashstyle]
@@ -1119,7 +1119,7 @@ Path = fonts/ ]
 	هدف این تست آن است که نشان دهد مترجم می‌تواند ساختار \lr{try-catch} زبان \lr{Hash} را در \lr{Promela} با استفاده از پرچم خطا، برچسب و دستور \lr{goto} شبیه‌سازی کند. 
 	از آنجا که \lr{Promela} مفهوم exception را به صورت مستقیم پشتیبانی نمی‌کند، در این پروژه برای هر بلوک \lr{emtehan} یک متغیر کمکی مانند \lr{errFlag\_1} ساخته می‌شود. 
 	اگر خطایی مانند تقسیم بر صفر داخل این بلوک رخ دهد، این پرچم فعال شده و اجرا به برچسب مربوط به \lr{catch} منتقل می‌شود.
-
+	
 	
 	در این برنامه، مقدار متغیر \lr{y} برابر صفر است و دستور \lr{safe = x / y} داخل بلوک \lr{emtehan} قرار دارد. 
 	بنابراین انتظار داریم که مترجم قبل از اجرای تقسیم، صفر بودن \lr{y} را بررسی کند. 
@@ -1464,7 +1464,23 @@ Path = fonts/ ]
 	\end{latin}
 	در این برنامه، شرط حلقه‌ی اول (\lr{i<5}) هیچ‌گاه به \lr{false} نمی‌رسد چون \lr{i} هرگز افزایش نمی‌یابد؛ بنابراین اجرای برنامه برای همیشه در حلقه‌ی اول باقی می‌ماند و به بدنه‌ی حلقه‌ی دوم یا خط \lr{bechap} هرگز نمی‌رسد. نکته‌ی مهم اینجاست که در هر تکرار، \lr{x} یک واحد کم می‌شود؛ یعنی علاوه بر نامتناهی‌بودن حلقه، مقدار متغیر \lr{x} هم هیچ‌گاه تکرار نمی‌شود (به سمت منفی بی‌نهایت می‌رود).
 	
-	\textbf{برنامه (ج-۲) --- حلقه‌ی نامتناهی با \lr{state} ثابت (برای بررسی مکمل \lr{Reachability}):}
+	\textbf{برنامه (ج-۲) --- حلقه‌ی نامتناهی با حالت ثابت (برای نقض \lr{Liveness}):}
+	\begin{latin}
+		\begin{lstlisting}[style=hashstyle]
+			adad i = 0;
+			adad x = 0;
+			
+			ta (i < 5) {
+				i = i;
+			}
+			
+			bechap(x);
+		\end{lstlisting}
+	\end{latin}
+	
+	در این برنامه نیز شرط حلقه‌ی اول (\lr{i<5}) هیچ‌گاه به \lr{false} نمی‌رسد، زیرا دستور \lr{i=i;} مقدار متغیر \lr{i} را تغییر نمی‌دهد. در نتیجه اجرای برنامه برای همیشه در همان حلقه باقی می‌ماند و دستور \lr{bechap(x)} هرگز اجرا نمی‌شود. تفاوت اصلی این برنامه با برنامه‌ی (ج-۱) آن است که در بدنه‌ی حلقه هیچ متغیری تغییر نمی‌کند؛ بنابراین پس از اولین تکرار، وضعیت کلی برنامه دقیقاً مشابه تکرار قبل است و یک \lr{self-loop} (چرخه‌ی تکرارشونده) در فضای حالت ایجاد می‌شود. به همین دلیل \lr{SPIN} می‌تواند به‌سرعت یک \lr{acceptance cycle} را شناسایی کرده و نقض خصوصیت \lr{Liveness} را مستقیماً گزارش کند.
+	
+	\textbf{برنامه (د) --- حلقه‌ی نامتناهی با \lr{state} ثابت (برای بررسی مکمل \lr{Reachability}):}
 	\begin{latin}
 		\begin{lstlisting}[style=hashstyle]
 			adad i = 0;
@@ -1601,12 +1617,21 @@ Path = fonts/ ]
 	\section{خصوصیت دوم --- \lr{Liveness}}
 	
 	\subsection{فرمول LTL}
-	\ltlbox{\square\,(\mathit{inLoop} \rightarrow \Diamond\, \mathit{exitLoop})}
-	معادل آن در \lr{properties.ltl}: \lr{ltl loopExit: [] ((! (inLoop)) || (<> (exitLoop)))}
+	
+	\ltlbox{\square,(\mathit{inLoop} \rightarrow \Diamond, \mathit{exitLoop})}
+	
+	معادل آن در \lr{properties.ltl}:
+	
+	\lr{ltl loopExit: [] ((! (inLoop)) || (<> (exitLoop)))}
+	
 	\subsection{چرا فرمول به این شکل است؟}
 	
 	خصوصیت‌های \lr{Liveness} معمولاً به صورت
-	$\square(P \rightarrow \Diamond Q)$
+	
+	\[
+	\square(P \rightarrow \Diamond Q)
+	\]
+	
 	بیان می‌شوند. مفهوم این فرمول آن است که هرگاه شرط $P$ برقرار شود، سیستم موظف است در ادامه اجرای خود نهایتاً به حالتی برسد که $Q$ برقرار باشد.
 	
 	در پروژه حاضر، پس از ورود به یک حلقه، انتظار می‌رود که اجرای برنامه در نهایت از آن حلقه خارج شود. به همین دلیل از فرمول
@@ -1625,9 +1650,11 @@ Path = fonts/ ]
 	
 	این فرمول فقط بیان می‌کرد که «در یکی از مسیرهای اجرا ممکن است از حلقه خارج شویم» و هیچ تضمینی درباره تمام دفعات ورود به حلقه ارائه نمی‌داد. استفاده همزمان از $\square$ و $\Diamond$ تضمین می‌کند که خروج از حلقه برای تمام دفعات ورود به آن در نهایت رخ خواهد داد.
 	
+	%==========================================================
 	\subsection{سناریوی تایید --- مدل پایه}
 	
 	\subsubsection{دستور اجرا}
+	
 	\begin{latin}
 		\begin{lstlisting}[style=codestyle]
 			spin -search -ltl loopExit verify.pml
@@ -1635,10 +1662,12 @@ Path = fonts/ ]
 	\end{latin}
 	
 	\subsubsection{خروجی ترمینال}
+	
 	\begin{latin}
 		\begin{lstlisting}[style=termstyle]
 			(Spin Version 6.5.1 -- 31 July 2020)
-			+ Partial Order Reduction
+			
+			* Partial Order Reduction
 			
 			Full statespace search for:
 			never claim             + (loopExit)
@@ -1667,11 +1696,14 @@ Path = fonts/ ]
 	\end{latin}
 	
 	\subsubsection{تفسیر}
-	هیچ اجرایی پیدا نشد که در آن \lr{inLoop} برقرار شود ولی \lr{exitLoop} هرگز به‌دنبالش نیاید (\lr{errors: 0}). چون هر دو حلقه‌ی مدل پایه (\lr{i<5} و \lr{j<3}) کراندارند و همیشه با \lr{break} خاتمه می‌یابند، این نتیجه \textbf{تا حدی بدیهی} است: در این برنامه‌ی خاص اساساً امکان ورود به یک حلقه‌ی نامتناهی وجود ندارد. برای بررسی غیر بدیهی، سناریوی نقض زیر با برنامه (ج) طراحی شد.
 	
-	\subsection{سناریوی نقض (تلاش) --- برنامه (ج-۱)}
+	هیچ اجرایی پیدا نشد که در آن \lr{inLoop} برقرار شود ولی \lr{exitLoop} هرگز به‌دنبالش نیاید (\lr{errors: 0}). چون هر دو حلقه‌ی مدل پایه (\lr{i<5} و \lr{j<3}) کراندارند و همیشه با \lr{break} خاتمه می‌یابند، این نتیجه \textbf{تا حدی بدیهی} است؛ زیرا در این برنامه اساساً امکان ایجاد یک حلقه‌ی نامتناهی وجود ندارد. به همین دلیل، برای بررسی غیر بدیهی این خصوصیت، دو سناریوی نقض مستقل نیز طراحی شدند.
+	
+	%==========================================================
+	\subsection{سناریوی نقض (اول) --- برنامه (ج-۱)}
 	
 	\subsubsection{دستور اجرا}
+	
 	\begin{latin}
 		\begin{lstlisting}[style=codestyle]
 			spin -search -ltl loopExit example/liveness.pml
@@ -1679,13 +1711,15 @@ Path = fonts/ ]
 	\end{latin}
 	
 	\subsubsection{خروجی ترمینال}
+	
 	\begin{latin}
 		\begin{lstlisting}[style=termstyle]
 			pan: ltl formula loopExit
 			error: max search depth too small
 			
 			(Spin Version 6.5.1 -- 31 July 2020)
-			+ Partial Order Reduction
+			
+			* Partial Order Reduction
 			
 			Full statespace search for:
 			never claim             + (loopExit)
@@ -1707,22 +1741,94 @@ Path = fonts/ ]
 			example/liveness.pml:54, state 44, "printf('%d\n',safe)"
 			example/liveness.pml:56, state 45, "endReached = 1"
 			example/liveness.pml:58, state 47, "-end-"
-			(19 of 47 states)
-			unreached in claim loopExit
-			_spin_nvr.tmp:19, state 13, "-end-"
-			(1 of 13 states)
 			
 			pan: elapsed time 0.011 seconds
-			pan: rate 1362181.8 states/second
 		\end{lstlisting}
 	\end{latin}
 	
 	\subsubsection{تفسیر}
-	این اجرا با پیغام \lr{error: max search depth too small} متوقف شد؛ یعنی عمق جستجوی پیش‌فرض \lr{SPIN} (پارامتر \lr{-m}، با مقدار پیش‌فرض ۹۹۹۹) قبل از تکمیل جستجوی تودرتو (\lr{nested DFS}) برای یافتن \lr{accepting cycle} تمام شد. بنابراین \lr{errors: 0} در اینجا \textbf{به‌هیچ‌وجه به معنای تأیید خصوصیت نیست}؛ نتیجه صرفاً \textbf{ناقص} است.
 	
-	با این حال، بخش \lr{unreached} شاهد غیرمستقیم قوی‌ای ارائه می‌دهد: تمام دستورات بعد از حلقه‌ی اول (شامل کل حلقه‌ی دوم، \lr{printf} و برچسب پایانی) در طول ۹۹۹۲ حالت کاوش‌شده هرگز اجرا نشده‌اند. این کاملاً با طراحی برنامه سازگار است: چون \lr{i} هرگز افزایش نمی‌یابد، اجرا برای همیشه در حلقه‌ی اول گیر می‌کند و \lr{inLoop} بدون رسیدن متناظر \lr{exitLoop} برقرار می‌ماند.
+	در این برنامه، شرط حلقه همواره برقرار باقی می‌ماند، زیرا مقدار متغیر \lr{i} هرگز تغییر نمی‌کند. علاوه بر آن، در هر تکرار مقدار متغیر \lr{x} یک واحد کاهش می‌یابد؛ بنابراین هر بار یک حالت جدید تولید می‌شود و بردار حالت هیچ‌گاه تکرار نمی‌شود.
 	
-	دلیل فنی رشد بزرگ فضای حالت (۹۹۹۲ حالت به‌جای یک \lr{self-loop} کوچک) هم قابل توضیح است: در بدنه‌ی حلقه در این برنامه، دستور \lr{x = x - 1;} در هر تکرار اجرا می‌شود، پس علاوه بر نامتناهی‌بودن خود حلقه، مقدار \lr{x} هم هرگز تکرار نمی‌شود (هر تکرار یک \lr{state} برداری جدید تولید می‌کند، چون \lr{x} جزئی از بردار حالت است). در نتیجه \lr{SPIN} مجبور است پیش از رسیدن به یک حالت تکراری، مسیر رو به رشدی از حالت‌های یکتا را کاوش کند که در عمل به سقف عمق پیش‌فرض (\lr{-m 9999}) برخورد می‌کند. برای دریافت یک \lr{counterexample} رسمی، لازم است جستجو با عمق بزرگ‌تر تکرار شود؛ این مورد به‌عنوان محدودیت شناخته‌شده و کار آتی ثبت می‌شود.
+	در نتیجه، \lr{SPIN} پیش از آنکه بتواند یک چرخه‌ی پذیرش (\lr{acceptance cycle}) را شناسایی کند، به محدودیت عمق پیش‌فرض جستجو (\lr{-m 9999}) برخورد می‌کند و پیغام
+	
+	\begin{center}
+		\lr{error: max search depth too small}
+	\end{center}
+	
+	را نمایش می‌دهد. بنابراین مقدار \lr{errors: 0} در این آزمایش به معنای تأیید خصوصیت نیست، بلکه صرفاً نشان می‌دهد جستجو پیش از تکمیل خاتمه یافته است.
+	
+	با این وجود، قسمت \lr{unreached} نشان می‌دهد هیچ‌یک از دستورات بعد از حلقه، شامل حلقه دوم، دستور \lr{bechap} و برچسب پایانی، هرگز اجرا نشده‌اند که این موضوع با تحلیل نظری برنامه کاملاً سازگار است.
+	
+	%==========================================================
+	\subsection{سناریوی نقض (دوم) --- برنامه (ج-۲)}
+	
+	در این سناریو، نسخه‌ی دیگری از برنامه طراحی شد که همچنان دارای یک حلقه‌ی نامتناهی است، اما برخلاف برنامه‌ی قبل، هیچ متغیری درون حلقه تغییر نمی‌کند.
+	
+	\begin{latin}
+		\begin{lstlisting}[style=hashstyle]
+			adad i = 0;
+			adad x = 0;
+			
+			ta (i < 5) {
+				i = i;
+			}
+			
+			bechap(x);
+		\end{lstlisting}
+	\end{latin}
+	
+	\subsubsection{دستور اجرا}
+	
+	\begin{latin}
+		\begin{lstlisting}[style=codestyle]
+			spin -search -ltl liveness verify.pml
+		\end{lstlisting}
+	\end{latin}
+	
+	\subsubsection{خروجی ترمینال}
+	
+	\begin{latin}
+		\begin{lstlisting}[style=termstyle]
+			pan: ltl formula liveness
+			pan:1: acceptance cycle (at depth 12)
+			pan: wrote verify.pml.trail
+			
+			(Spin Version 6.5.1 -- 31 July 2020)
+			Warning: Search not completed
+			+ Partial Order Reduction
+			
+			Full statespace search for:
+			never claim             + (liveness)
+			assertion violations    + (if within scope of claim)
+			acceptance   cycles     + (fairness disabled)
+			invalid end states      - (disabled by never claim)
+			
+			State-vector 36 byte, depth reached 19, errors: 1
+			10 states, stored
+			0 states, matched
+			10 transitions (= stored+matched)
+			0 atomic steps
+			hash conflicts: 0 (resolved)
+			
+			pan: elapsed time 0.002 seconds
+		\end{lstlisting}
+	\end{latin}
+	
+	\subsubsection{تفسیر}
+	
+	در این برنامه نیز شرط حلقه همواره برقرار باقی می‌ماند، زیرا دستور \lr{i = i;} مقدار متغیر \lr{i} را تغییر نمی‌دهد. تفاوت اصلی این مثال با سناریوی قبل آن است که در بدنه‌ی حلقه هیچ متغیر دیگری نیز تغییر نمی‌کند؛ بنابراین پس از اولین تکرار، بردار حالت برنامه دقیقاً تکرار می‌شود و یک \lr{self-loop} واقعی در فضای حالت ایجاد می‌شود.
+	
+	به همین دلیل، \lr{SPIN} بدون نیاز به افزایش عمق جستجو، تنها پس از بررسی ۱۰ حالت موفق به یافتن یک \lr{acceptance cycle} شده و خصوصیت \lr{Liveness} را نقض‌شده گزارش می‌کند (\lr{errors: 1}). این نتیجه نشان می‌دهد که پس از برقرار شدن \lr{inLoop}، رویداد \lr{exitLoop} هرگز رخ نمی‌دهد و در نتیجه فرمول
+	
+	\[
+	\square(\mathit{inLoop}\rightarrow\Diamond\mathit{exitLoop})
+	\]
+	
+	برقرار نیست.
+	
+	مقایسه‌ی دو سناریوی نقض نیز نکته‌ی مهمی را نشان می‌دهد. در برنامه‌ی (ج-۱)، تغییر مداوم مقدار \lr{x} باعث ایجاد تعداد بسیار زیادی حالت یکتا می‌شود و جستجو پیش از کشف چرخه به محدودیت عمق برخورد می‌کند؛ اما در برنامه‌ی (ج-۲)، ثابت ماندن تمام متغیرها موجب تشکیل سریع یک چرخه‌ی تکرارشونده شده و \lr{SPIN} می‌تواند مستقیماً با گزارش \lr{acceptance cycle} نقض واقعی خصوصیت \lr{Liveness} را اثبات کند. بنابراین این دو آزمایش در کنار یکدیگر، هم محدودیت‌های عملی جستجوی فضای حالت و هم توانایی \lr{SPIN} در تشخیص قطعی نقض خصوصیت‌های زنده‌بودن را به‌خوبی نشان می‌دهند.
+	
 	
 	% ==========================================================
 	\section{خصوصیت سوم --- \lr{Reachability}}
@@ -1790,8 +1896,8 @@ Path = fonts/ ]
 	\subsubsection{تفسیر}
 	\lr{SPIN} در عمق ۱۳۲ یک نقض برای فرمول نقیض‌شده پیدا کرد (\lr{errors: 1})؛ یعنی مسیر اجرایی یافت که در آن \lr{endReached} برقرار می‌شود. طبق نکته‌ی بالا، این نتیجه دقیقاً همان چیزی است که انتظار می‌رفت: مدل پایه یک برنامه‌ی خطی و \lr{deterministic} است که همیشه به انتهای خود می‌رسد، پس برچسب پایانی حتماً باید \lr{reachable} باشد. یافتن این \lr{counterexample} تأیید می‌کند که خصوصیت \lr{Reachability} برقرار است.
 	
-	\subsection{سناریوی مکمل --- برنامه (ج-۲) (انتظار: نقض یافت نشود)}
-	برای اینکه نشان دهیم \lr{SPIN} می‌تواند بین «قابل‌دسترس» و «غیرقابل‌دسترس» تمایز واقعی قائل شود (نه اینکه صرفاً همیشه یک \lr{counterexample} پیدا کند)، همین بررسی روی برنامه (ج-۲) که حلقه‌ی اولش نامتناهی است تکرار شد. توجه شود که این برنامه با برنامه (ج-۱) که برای \lr{Liveness} استفاده شد \textbf{متفاوت} است؛ در (ج-۲) بدنه‌ی حلقه هیچ متغیری را تغییر نمی‌دهد (\lr{safe = safe;})، به همین دلیل \lr{state} برنامه خیلی زود تکرار می‌شود و جستجو، برخلاف (ج-۱)، به‌طور کامل و بدون برخورد به سقف عمق به پایان می‌رسد.
+	\subsection{سناریوی مکمل --- برنامه (د) (انتظار: نقض یافت نشود)}
+	برای اینکه نشان دهیم \lr{SPIN} می‌تواند بین «قابل‌دسترس» و «غیرقابل‌دسترس» تمایز واقعی قائل شود (نه اینکه صرفاً همیشه یک \lr{counterexample} پیدا کند)، همین بررسی روی برنامه (د) که حلقه‌ی اولش نامتناهی است تکرار شد. توجه شود که این برنامه با برنامه (ج-۱) که برای \lr{Liveness} استفاده شد \textbf{متفاوت} است؛ در (د) بدنه‌ی حلقه هیچ متغیری را تغییر نمی‌دهد (\lr{safe = safe;})، به همین دلیل \lr{state} برنامه خیلی زود تکرار می‌شود و جستجو، برخلاف (ج-۱)، به‌طور کامل و بدون برخورد به سقف عمق به پایان می‌رسد.
 	
 	\subsubsection{دستور اجرا}
 	\begin{latin}
@@ -1987,332 +2093,415 @@ Path = fonts/ ]
 	در این برنامه \lr{x} از ۳ شروع می‌شود و در طول ۱۰ تکرار حلقه (\lr{i<10}) به‌طور پیوسته کاهش می‌یابد. \lr{SPIN} در عمق ۴۴ یک نقض واقعی پیدا کرد (\lr{errors: 1})، یعنی مقدار \lr{x} در جایی از اجرا منفی شده است. این تأیید می‌کند که فرمول \lr{[](x>=0)} واقعاً توسط \lr{SPIN} روی مقادیر پویا بررسی می‌شود، نه اینکه نتیجه‌ی مدل پایه به این دلیل بود که \lr{invariant} همیشه برقرار است.
 	
 	% ==========================================================
-\chapter*{فاز سوم}
-\addcontentsline{toc}{chapter}{فاز سوم}
-
-\section{مقدمه فاز سوم}
-
-در فاز دوم، پنج خصوصیت مشخص را با استفاده از \lr{SPIN} روی چند برنامه‌ی \emph{مشخص و متناهی} \lr{Hash} بررسی کردیم. نتیجه‌ی هر بار اجرای \lr{SPIN} تنها درباره‌ی همان یک برنامه‌ی خاص حرف می‌زد؛ برای مثال، خصوصیت \lr{Invariant} (\lr{nonNegativeX}) فقط ثابت کرد که در \emph{مدل پایه‌ی مشخصِ فاز اول}، متغیر \lr{x} هرگز منفی نمی‌شود --- نه اینکه در \emph{هر} برنامه‌ی \lr{Hash} که از الگوی مشابهی پیروی کند، همین اتفاق می‌افتد.
-
-هدف فاز سوم رفتن از این نتیجه‌ی موردی به یک تضمین کلی و ریاضی است: می‌خواهیم ثابت کنیم که اگر یک شرط \lr{invariant} قبل از شروع یک حلقه برقرار باشد و بدنه‌ی حلقه آن را حفظ کند، آنگاه بعد از پایان کامل حلقه --- برای \textbf{هر} برنامه، \textbf{هر} شرط حلقه، و \textbf{هر} تعداد تکرار --- آن \lr{invariant} همچنان برقرار خواهد بود. 
-
-برای بیان چنین ادعای کلی‌ای، برخلاف فاز دوم که یک مدل متناهی کافی بود، به یک تعریف \textbf{صوری و کامل} از معنای اجرای هر دستور \lr{Hash} نیاز داریم؛ یعنی \lr{Operational Semantics}. سپس ادعا را به عنوان یک قضیه‌ی ریاضی درباره‌ی این تعریف بیان و در \lr{Lean 4} اثبات می‌کنیم.
-\section{اثبات ریاضی قضیه با استقرا روی اشتقاق}
-
-پیش از رفتن سراغ کد \lr{Lean}، ابتدا قضیه را به‌طور کاملاً مستقل و روی کاغذ، با استقرا روی \textbf{ساختار اشتقاق} (derivation) اثبات می‌کنیم. همین منطق در بخش بعد، خط‌به‌خط به کد \lr{Lean} ترجمه می‌شود.
-
-\subsection{بیان دقیق قضیه}
-
-فرض کنید $P$ یک گزاره (\lr{predicate}) روی حالت‌هاست. ادعا می‌کنیم:
-
-\ltlbox{P(\sigma) \;\land\; \bigl(\forall \sigma_1 \sigma_2,\; P(\sigma_1) \land \langle b,\sigma_1 \rangle \Downarrow \text{dorost} \land \langle S,\sigma_1 \rangle \Downarrow \sigma_2 \;\Rightarrow\; P(\sigma_2)\bigr) \;\land\; \bigl(\langle \text{ta}(b)\,\{S\}, \sigma \rangle \Downarrow \sigma' \;\Rightarrow\; P(\sigma')\bigr)}
-
-یعنی: اگر $P$ قبل از حلقه برقرار باشد و بدنه‌ی حلقه آن را حفظ کند ، آنگاه در هر اشتقاقی که $\langle \mathit{ta}(b)\{S\},\sigma\rangle \Downarrow \sigma'$ را نتیجه بدهد، $P(\sigma')$ برقرار است.
-
-\subsection{چرا استقرا روی اشتقاق، نه روی عدد تکرار؟}
-
-نکته‌ی مهم این است که در تعریف \lr{Big-Step}، هیچ‌جا عدد تکرار حلقه به‌صراحت شمرده نمی‌شود. آنچه داریم فقط یک \textbf{درخت اشتقاق} است که فرضیه‌ی $\langle \mathit{ta}(b)\{S\},\sigma\rangle \Downarrow \sigma'$ را نتیجه می‌دهد. طبق قوانین استنتاجی سند پروژه، تنها \textbf{دو} قانون وجود دارد که نتیجه‌شان می‌تواند به این شکل باشد: \lr{While-F} و \lr{While-T} (چهار قانون دیگر --- \lr{Assign}، \lr{Seq}، \lr{If-T}، \lr{If-F} --- نتیجه‌شان همیشه دستوری غیر از \lr{ta} است و اصلاً نمی‌توانند این حکم را تولید کنند). پس اثبات با \textbf{استقرا روی ساختار همین اشتقاق} انجام می‌شود: دقیقاً دو حالت داریم که باید بررسی شوند --- یکی به‌عنوان پایه‌ی استقرا و دیگری به‌عنوان گام استقرا.
-
-\subsection{پایه‌ی استقرا --- قانون While-F}
-
-فرض کنید آخرین قانون استفاده‌شده در اشتقاق، \lr{While-F} باشد:
-
-\[
-\dfrac{\langle b,\sigma\rangle \Downarrow \mathit{ghalat}}
-{\langle \mathit{ta}(b)\{S\},\sigma\rangle \Downarrow \sigma}\;\text{(While-F)}
-\]
-
-طبق این قانون، حالت پایانی دقیقاً همان حالت شروع است، یعنی $\sigma' = \sigma$. پس باید نشان دهیم $P(\sigma')$ برقرار است، که با جای‌گذاری برابر است با نشان‌دادن $P(\sigma)$. اما این دقیقاً همان مقدمه‌ی اول قضیه است که از پیش داریم:
-
-\[
-P(\sigma) \;\Rightarrow\; P(\sigma') \quad (\text{چون } \sigma'=\sigma)
-\]
-
-پس پایه‌ی استقرا بدون نیاز به هیچ استدلال اضافه‌ای برقرار است.
-
-\subsection{گام استقرا --- قانون While-T}
-
-فرض کنید آخرین قانون استفاده‌شده، \lr{While-T} باشد:
-
-\[
-\dfrac{\langle b,\sigma\rangle \Downarrow \mathit{dorost}
-	\qquad \langle S,\sigma\rangle \Downarrow \sigma''
-	\qquad \langle \mathit{ta}(b)\{S\},\sigma''\rangle \Downarrow \sigma'}
-{\langle \mathit{ta}(b)\{S\},\sigma\rangle \Downarrow \sigma'}\;\text{(While-T)}
-\]
-
-این قانون سه مقدمه دارد. سومین مقدمه، یعنی $\langle \mathit{ta}(b)\{S\},\sigma''\rangle \Downarrow \sigma'$، خودش یک اشتقاق کامل و \textbf{مستقل} برای همان حکم $ ta (b) {S} $ است، با این تفاوت که حالت شروعش $\sigma''$ است نه $\sigma$؛ و چون این زیر\nobreakdash-اشتقاق زیرمجموعه‌ای از اشتقاق اصلی است، \textbf{فرض استقرا} (\lr{IH}) برایش صدق می‌کند:
-
-\[
-\text{(IH)}\qquad P(\sigma'') \;\land\; \langle \mathit{ta}(b)\{S\},\sigma''\rangle \Downarrow \sigma' \;\Rightarrow\; P(\sigma')
-\]
-
-پس کافی است نشان دهیم $P(\sigma'')$ برقرار است؛ آنگاه با اعمال \lr{IH}، مستقیماً $P(\sigma')$ نتیجه می‌شود. برای اثبات $P(\sigma'')$، از سه چیزی که در این حالت در دسترس داریم استفاده می‌کنیم:
-
-\begin{itemize}
-	\item $P(\sigma)$ (فرض قضیه، چون هنوز روی حالت شروع $\sigma$ هستیم)،
-	\item $\langle b,\sigma\rangle \Downarrow \mathit{dorost}$ (اولین مقدمه‌ی \lr{While-T})،
-	\item $\langle S,\sigma\rangle \Downarrow \sigma''$ (دومین مقدمه‌ی \lr{While-T})،
-\end{itemize}
-
-که دقیقاً سه شرط مقدمه‌ی دوم قضیه (پایستگی $P$ توسط بدنه) هستند. با اعمال مستقیم آن مقدمه:
-
-\[
-P(\sigma) \;\land\; \langle b,\sigma\rangle{\Downarrow}\mathit{dorost} \;\land\; \langle S,\sigma\rangle{\Downarrow}\sigma'' \;\Rightarrow\; P(\sigma'')
-\]
-
-نتیجه می‌گیریم $P(\sigma'')$. حال با جای‌گذاری در \lr{IH} بالا:
-
-\[
-P(\sigma'') \;\Rightarrow\; P(\sigma')
-\]
-
-و در نهایت $P(\sigma')$ اثبات می‌شود.
-
-\subsection{جمع‌بندی اثبات}
-
-چون هر اشتقاقِ $\langle \mathit{ta}(b)\{S\},\sigma\rangle \Downarrow \sigma'$ فقط می‌تواند با یکی از دو قانون \lr{While-F} یا \lr{While-T} ساخته شده باشد، و در \textbf{هر دو} حالت نشان دادیم $P(\sigma')$ برقرار است (در پایه به‌طور مستقیم، در گام با کمک فرض استقرا)، طبق اصل استقرا روی ساختار اشتقاق، قضیه برای \textbf{هر} اشتقاق ممکنی از $\langle \mathit{ta}(b)\{S\},\sigma\rangle \Downarrow \sigma'$ درست است. 
-
-\subsection*{پیوند با کد Lean}
-این دقیقاً همان دو شاخه‌ای است که در تابع \lr{aux} بخش بعد، پس از باز کردن \lr{cases hEq}، تحت نام‌های \lr{whileFalse} و \lr{whileTrue} ظاهر می‌شوند: شاخه‌ی \lr{whileFalse} معادل «پایه‌ی استقرا» بالاست (\lr{exact hInv} دقیقاً همان استفاده از $P(\sigma)$ به‌جای $P(\sigma')$ است)، و شاخه‌ی \lr{whileTrue} معادل «گام استقرا» است (\lr{bodyPreservesInvariant} همان اعمال مقدمه‌ی دوم برای رسیدن به $P(\sigma'')$ است، و \lr{ihRest} همان استفاده از فرض استقرا \lr{IH} روی زیر\nobreakdash-اشتقاق کوچکتر است). چهار قانون دیگر (\lr{Assign}، \lr{Seq}، \lr{If-T}، \lr{If-F}) هم در اثبات ریاضی بالا اصلاً ظاهر نشدند، دقیقاً به همان دلیلی که در کد \lr{Lean} با \lr{cases hEq} بلافاصله رد می‌شوند: نتیجه‌ی آن‌ها هرگز از شکل $\langle \mathit{ta}(b)\{S\},\sigma\rangle \Downarrow \sigma'$ نیست.
-
-\section{بازنگری مفاهیم کلیدی}
-
-\subsection{Big-Step}
-در این پروژه از رویکرد \lr{Big-Step} (یا \lr{Natural Semantics}) استفاده شده است. نماد اصلی آن:
-\[
-\langle S, \sigma \rangle \Downarrow \sigma'
-\]
-خوانده می‌شود: «دستور $S$ در محیط $\sigma$ اجرا می‌شود و به محیط $\sigma'$ می‌رسد.» برخلاف \lr{Small-Step} که هر قدم اجرا را جداگانه نشان می‌دهد، \lr{Big-Step} فقط رابطه‌ی بین \emph{حالت شروع} و \emph{حالت پایان کامل اجرا} را بیان می‌کند --- دقیقاً همان چیزی که برای اثبات این قضیه لازم است.
-
-\subsection*{توجه:}
-در فایل \lr{Lean}، \lr{BigStep} به صورت یک \lr{Prop} استقرایی سه‌آرگومانی تعریف شده، نه یک تابع. دلیل این انتخاب این است که اجرای یک حلقه‌ی \lr{ta} (\lr{while}) ممکن است برای برخی ورودی‌ها هرگز خاتمه نیابد؛ یک رابطه به‌سادگی اجازه می‌دهد در چنین حالتی هیچ $\sigma'$ ای با $S$ و $\sigma$ در رابطه نباشد، بدون نیاز به تعریف یک «مقدار خطا» یا «مقدار بی‌نهایت» مصنوعی.
-
-\section{تعریف انواع پایه در Lean}
-
-اولین گام، تعریف صوری نحو (\lr{syntax}) زیرمجموعه‌ی \lr{Hash} است --- دقیقاً همان چیزی که \lr{Parser} فاز اول از روی گرامر \lr{Hash.g4} می‌ساخت، اما این‌ بار به شکل یک نوع داده‌ی \lr{Lean}:
-
-\begin{latin}
-	\begin{lstlisting}[style=leanstyle]
-		abbrev Var := String
-		abbrev State := Var -> Int
+	\chapter*{فاز سوم}
+	\addcontentsline{toc}{chapter}{فاز سوم}
+	
+	\section{مقدمه فاز سوم}
+	
+	در فاز دوم، پنج خصوصیت مشخص را با استفاده از \lr{SPIN} روی چند برنامه‌ی \emph{مشخص و متناهی} \lr{Hash} بررسی کردیم. نتیجه‌ی هر بار اجرای \lr{SPIN} تنها درباره‌ی همان یک برنامه‌ی خاص حرف می‌زد؛ برای مثال، خصوصیت \lr{Invariant} (\lr{nonNegativeX}) فقط ثابت کرد که در \emph{مدل پایه‌ی مشخصِ فاز اول}، متغیر \lr{x} هرگز منفی نمی‌شود --- نه اینکه در \emph{هر} برنامه‌ی \lr{Hash} که از الگوی مشابهی پیروی کند، همین اتفاق می‌افتد.
+	
+	هدف فاز سوم رفتن از این نتیجه‌ی موردی به یک تضمین کلی و ریاضی است: می‌خواهیم ثابت کنیم که اگر یک شرط \lr{invariant} قبل از شروع یک حلقه برقرار باشد و بدنه‌ی حلقه آن را حفظ کند، آنگاه بعد از پایان کامل حلقه --- برای \textbf{هر} برنامه، \textbf{هر} شرط حلقه، و \textbf{هر} تعداد تکرار --- آن \lr{invariant} همچنان برقرار خواهد بود. 
+	
+	برای بیان چنین ادعای کلی‌ای، برخلاف فاز دوم که یک مدل متناهی کافی بود، به یک تعریف \textbf{صوری و کامل} از معنای اجرای هر دستور \lr{Hash} نیاز داریم؛ یعنی \lr{Operational Semantics}. سپس ادعا را به عنوان یک قضیه‌ی ریاضی درباره‌ی این تعریف بیان و در \lr{Lean 4} اثبات می‌کنیم.
+	\section{اثبات ریاضی قضیه با استقرا روی اشتقاق}
+	
+	پیش از رفتن سراغ کد \lr{Lean}، ابتدا قضیه را به‌طور کاملاً مستقل و روی کاغذ، با استقرا روی \textbf{ساختار اشتقاق} (derivation) اثبات می‌کنیم. همین منطق در بخش بعد، خط‌به‌خط به کد \lr{Lean} ترجمه می‌شود.
+	
+	\subsection{بیان دقیق قضیه}
+	
+	فرض کنید $P$ یک گزاره (\lr{predicate}) روی حالت‌هاست. ادعا می‌کنیم:
+	
+	\ltlbox{P(\sigma) \;\land\; \bigl(\forall \sigma_1 \sigma_2,\; P(\sigma_1) \land \langle b,\sigma_1 \rangle \Downarrow \text{dorost} \land \langle S,\sigma_1 \rangle \Downarrow \sigma_2 \;\Rightarrow\; P(\sigma_2)\bigr) \;\land\; \bigl(\langle \text{ta}(b)\,\{S\}, \sigma \rangle \Downarrow \sigma' \;\Rightarrow\; P(\sigma')\bigr)}
+	
+	یعنی: اگر $P$ قبل از حلقه برقرار باشد و بدنه‌ی حلقه آن را حفظ کند ، آنگاه در هر اشتقاقی که $\langle \mathit{ta}(b)\{S\},\sigma\rangle \Downarrow \sigma'$ را نتیجه بدهد، $P(\sigma')$ برقرار است.
+	
+	\subsection{چرا استقرا روی اشتقاق، نه روی عدد تکرار؟}
+	
+	نکته‌ی مهم این است که در تعریف \lr{Big-Step}، هیچ‌جا عدد تکرار حلقه به‌صراحت شمرده نمی‌شود. آنچه داریم فقط یک \textbf{درخت اشتقاق} است که فرضیه‌ی $\langle \mathit{ta}(b)\{S\},\sigma\rangle \Downarrow \sigma'$ را نتیجه می‌دهد. طبق قوانین استنتاجی سند پروژه، تنها \textbf{دو} قانون وجود دارد که نتیجه‌شان می‌تواند به این شکل باشد: \lr{While-F} و \lr{While-T} (چهار قانون دیگر --- \lr{Assign}، \lr{Seq}، \lr{If-T}، \lr{If-F} --- نتیجه‌شان همیشه دستوری غیر از \lr{ta} است و اصلاً نمی‌توانند این حکم را تولید کنند). پس اثبات با \textbf{استقرا روی ساختار همین اشتقاق} انجام می‌شود: دقیقاً دو حالت داریم که باید بررسی شوند --- یکی به‌عنوان پایه‌ی استقرا و دیگری به‌عنوان گام استقرا.
+	
+	\subsection{پایه‌ی استقرا --- قانون While-F}
+	
+	فرض کنید آخرین قانون استفاده‌شده در اشتقاق، \lr{While-F} باشد:
+	
+	\[
+	\dfrac{\langle b,\sigma\rangle \Downarrow \mathit{ghalat}}
+	{\langle \mathit{ta}(b)\{S\},\sigma\rangle \Downarrow \sigma}\;\text{(While-F)}
+	\]
+	
+	طبق این قانون، حالت پایانی دقیقاً همان حالت شروع است، یعنی $\sigma' = \sigma$. پس باید نشان دهیم $P(\sigma')$ برقرار است، که با جای‌گذاری برابر است با نشان‌دادن $P(\sigma)$. اما این دقیقاً همان مقدمه‌ی اول قضیه است که از پیش داریم:
+	
+	\[
+	P(\sigma) \;\Rightarrow\; P(\sigma') \quad (\text{چون } \sigma'=\sigma)
+	\]
+	
+	پس پایه‌ی استقرا بدون نیاز به هیچ استدلال اضافه‌ای برقرار است.
+	
+	\subsection{گام استقرا --- قانون While-T}
+	
+	فرض کنید آخرین قانون استفاده‌شده، \lr{While-T} باشد:
+	
+	\[
+	\dfrac{\langle b,\sigma\rangle \Downarrow \mathit{dorost}
+		\qquad \langle S,\sigma\rangle \Downarrow \sigma''
+		\qquad \langle \mathit{ta}(b)\{S\},\sigma''\rangle \Downarrow \sigma'}
+	{\langle \mathit{ta}(b)\{S\},\sigma\rangle \Downarrow \sigma'}\;\text{(While-T)}
+	\]
+	
+	این قانون سه مقدمه دارد. سومین مقدمه، یعنی $\langle \mathit{ta}(b)\{S\},\sigma''\rangle \Downarrow \sigma'$، خودش یک اشتقاق کامل و \textbf{مستقل} برای همان حکم $ ta (b) {S} $ است، با این تفاوت که حالت شروعش $\sigma''$ است نه $\sigma$؛ و چون این زیر\nobreakdash-اشتقاق زیرمجموعه‌ای از اشتقاق اصلی است، \textbf{فرض استقرا} (\lr{IH}) برایش صدق می‌کند:
+	
+	\[
+	\text{(IH)}\qquad P(\sigma'') \;\land\; \langle \mathit{ta}(b)\{S\},\sigma''\rangle \Downarrow \sigma' \;\Rightarrow\; P(\sigma')
+	\]
+	
+	پس کافی است نشان دهیم $P(\sigma'')$ برقرار است؛ آنگاه با اعمال \lr{IH}، مستقیماً $P(\sigma')$ نتیجه می‌شود. برای اثبات $P(\sigma'')$، از سه چیزی که در این حالت در دسترس داریم استفاده می‌کنیم:
+	
+	\begin{itemize}
+		\item $P(\sigma)$ (فرض قضیه، چون هنوز روی حالت شروع $\sigma$ هستیم)،
+		\item $\langle b,\sigma\rangle \Downarrow \mathit{dorost}$ (اولین مقدمه‌ی \lr{While-T})،
+		\item $\langle S,\sigma\rangle \Downarrow \sigma''$ (دومین مقدمه‌ی \lr{While-T})،
+	\end{itemize}
+	
+	که دقیقاً سه شرط مقدمه‌ی دوم قضیه (پایستگی $P$ توسط بدنه) هستند. با اعمال مستقیم آن مقدمه:
+	
+	\[
+	P(\sigma) \;\land\; \langle b,\sigma\rangle{\Downarrow}\mathit{dorost} \;\land\; \langle S,\sigma\rangle{\Downarrow}\sigma'' \;\Rightarrow\; P(\sigma'')
+	\]
+	
+	نتیجه می‌گیریم $P(\sigma'')$. حال با جای‌گذاری در \lr{IH} بالا:
+	
+	\[
+	P(\sigma'') \;\Rightarrow\; P(\sigma')
+	\]
+	
+	و در نهایت $P(\sigma')$ اثبات می‌شود.
+	
+	\subsection{جمع‌بندی اثبات}
+	
+	چون هر اشتقاقِ $\langle \mathit{ta}(b)\{S\},\sigma\rangle \Downarrow \sigma'$ فقط می‌تواند با یکی از دو قانون \lr{While-F} یا \lr{While-T} ساخته شده باشد، و در \textbf{هر دو} حالت نشان دادیم $P(\sigma')$ برقرار است (در پایه به‌طور مستقیم، در گام با کمک فرض استقرا)، طبق اصل استقرا روی ساختار اشتقاق، قضیه برای \textbf{هر} اشتقاق ممکنی از $\langle \mathit{ta}(b)\{S\},\sigma\rangle \Downarrow \sigma'$ درست است. 
+	
+	\subsection*{پیوند با کد Lean}
+	این دقیقاً همان دو شاخه‌ای است که در تابع \lr{aux} بخش بعد، پس از باز کردن \lr{cases hEq}، تحت نام‌های \lr{whileFalse} و \lr{whileTrue} ظاهر می‌شوند: شاخه‌ی \lr{whileFalse} معادل «پایه‌ی استقرا» بالاست (\lr{exact hInv} دقیقاً همان استفاده از $P(\sigma)$ به‌جای $P(\sigma')$ است)، و شاخه‌ی \lr{whileTrue} معادل «گام استقرا» است (\lr{bodyPreservesInvariant} همان اعمال مقدمه‌ی دوم برای رسیدن به $P(\sigma'')$ است، و \lr{ihRest} همان استفاده از فرض استقرا \lr{IH} روی زیر\nobreakdash-اشتقاق کوچکتر است). چهار قانون دیگر (\lr{Assign}، \lr{Seq}، \lr{If-T}، \lr{If-F}) هم در اثبات ریاضی بالا اصلاً ظاهر نشدند، دقیقاً به همان دلیلی که در کد \lr{Lean} با \lr{cases hEq} بلافاصله رد می‌شوند: نتیجه‌ی آن‌ها هرگز از شکل $\langle \mathit{ta}(b)\{S\},\sigma\rangle \Downarrow \sigma'$ نیست.
+	
+	\section{بازنگری مفاهیم کلیدی}
+	
+	\subsection{Big-Step}
+	در این پروژه از رویکرد \lr{Big-Step} (یا \lr{Natural Semantics}) استفاده شده است. نماد اصلی آن:
+	\[
+	\langle S, \sigma \rangle \Downarrow \sigma'
+	\]
+	خوانده می‌شود: «دستور $S$ در محیط $\sigma$ اجرا می‌شود و به محیط $\sigma'$ می‌رسد.» برخلاف \lr{Small-Step} که هر قدم اجرا را جداگانه نشان می‌دهد، \lr{Big-Step} فقط رابطه‌ی بین \emph{حالت شروع} و \emph{حالت پایان کامل اجرا} را بیان می‌کند --- دقیقاً همان چیزی که برای اثبات این قضیه لازم است.
+	
+	\subsection*{توجه:}
+	در فایل \lr{Lean}، \lr{BigStep} به صورت یک \lr{Prop} استقرایی سه‌آرگومانی تعریف شده، نه یک تابع. دلیل این انتخاب این است که اجرای یک حلقه‌ی \lr{ta} (\lr{while}) ممکن است برای برخی ورودی‌ها هرگز خاتمه نیابد؛ یک رابطه به‌سادگی اجازه می‌دهد در چنین حالتی هیچ $\sigma'$ ای با $S$ و $\sigma$ در رابطه نباشد، بدون نیاز به تعریف یک «مقدار خطا» یا «مقدار بی‌نهایت» مصنوعی.
+	
+	\section{تعریف انواع پایه در Lean}
+	
+	اولین گام، تعریف صوری نحو (\lr{syntax}) زیرمجموعه‌ی \lr{Hash} است --- دقیقاً همان چیزی که \lr{Parser} فاز اول از روی گرامر \lr{Hash.g4} می‌ساخت، اما این‌ بار به شکل یک نوع داده‌ی \lr{Lean}:
+	
+	\begin{latin}
+		\begin{lstlisting}[style=leanstyle]
+			abbrev Var := String
+			abbrev State := Var -> Int
+			
+			inductive Expr where
+			| num : Int -> Expr
+			| var : Var -> Expr
+			| add : Expr -> Expr -> Expr
+			| lt : Expr -> Expr -> Expr
+			
+			inductive Stmt where
+			| assign : Var -> Expr -> Stmt
+			| seq : Stmt -> Stmt -> Stmt
+			| ifElse : Expr -> Stmt -> Stmt -> Stmt
+			| while : Expr -> Stmt -> Stmt
+		\end{lstlisting}
+	\end{latin}
+	
+	\begin{itemize}
+		\item \lr{State} همان $\sigma$ در فرمول‌های ریاضی است: یک تابع از نام متغیر به مقدار صحیح آن. هیچ نوع جداگانه‌ای برای \lr{Bool} تعریف نشده؛ مقادیر بولی زبان \lr{Hash} (\lr{dorost}/\lr{ghalat}) با اعداد صحیح شبیه‌سازی می‌شوند (غیرصفر = درست، صفر = نادرست) --- همان الگویی که در فاز اول برای ترجمه به \lr{Promela} هم استفاده شد.
+		\item \lr{Stmt} همان چهار دستور اصلی مثال راهنما را دارد (\lr{assign}، \lr{seq}، \lr{ifElse}، \lr{while}) که برای اثبات این قضیه کافی‌اند؛ ساختارهای \lr{baraye}، \lr{shekan}/\lr{edame} و \lr{gereftar}/\lr{emtehan} طبق صورت پروژه لازم نیست در این فاز صوری‌سازی شوند.
+	\end{itemize}
+	
+	\section{ارزیابی عبارات و به‌روزرسانی State}
+	
+	\begin{latin}
+		\begin{lstlisting}[style=leanstyle]
+			def evalExpr (e : Expr) (s : State) : Int :=
+			match e with
+			| Expr.num n => n
+			| Expr.var x => s x
+			| Expr.add e1 e2 => evalExpr e1 s + evalExpr e2 s
+			| Expr.lt e1 e2 =>
+			if evalExpr e1 s < evalExpr e2 s then 1 else 0
+			
+			def update (s : State) (x : Var) (v : Int) : State :=
+			fun y => if y = x then v else s y
+		\end{lstlisting}
+	\end{latin}
+	
+	\lr{evalExpr} به‌جای اینکه (مثل قوانین استنتاجی سند پروژه) به شکل یک رابطه‌ی جداگانه با قوانین \lr{Num}، \lr{Var}، \lr{Add} و \ldots تعریف شود، مستقیماً به صورت یک \textbf{تابع بازگشتی} نوشته شده است. برخلاف \lr{BigStep}، ارزیابی عبارات (\lr{Expr}) هیچ‌وقت با مشکل عدم‌خاتمه روبه‌رو نیست — هر عبارت، هرچقدر هم تودرتو، در یک تعداد قدم محدود و ثابت به یک مقدار می‌رسد و هیچ دو مسیر اجرای متفاوتی هم برایش وجود ندارد. به همین دلیل نوشتن \lr{evalExpr} به‌صورت یک تابع معمولی (نه یک رابطه‌ی استقرایی مثل \lr{BigStep}) کاملاً بلامانع است. این تابع همان چیزی را می‌گوید که قوانین استنتاجی سند پروژه (\lr{Num}، \lr{Var}، \lr{Add} و \ldots) می‌گفتند، با یک مزیت اضافه: چون خروجی تابع همیشه به‌خودی‌خود یکتاست (طبق تعریف خودِ تابع در \lr{Lean})، دیگر لازم نیست قطعیت عبارات را جداگانه اثبات کنیم — چیزی که اگر عبارات را هم مثل دستورات با یک رابطه تعریف می‌کردیم، لازم می‌شد (همان گزینه‌ی اول صورت پروژه: \lr{Expression Determinism}).
+	
+	\lr{update} همان نماد $\sigma[x \mapsto v]$ است: یک تابع (\lr{State}) جدید که با \lr{s} یکسان است مگر روی \lr{x}، که مقدار \lr{v} را می‌گیرد.
+	
+	\section{رابطه‌ی BigStep}
+	
+	\begin{latin}
+		\begin{lstlisting}[style=leanstyle]
+			inductive BigStep : Stmt -> State -> State -> Prop where
+			
+			| assign {x : Var} {e : Expr} {s : State} :
+			BigStep
+			(Stmt.assign x e)
+			s
+			(update s x (evalExpr e s))
+			
+			| seq {S1 S2 : Stmt} {s sMid sFinal : State} :
+			BigStep S1 s sMid ->
+			BigStep S2 sMid sFinal ->
+			BigStep (Stmt.seq S1 S2) s sFinal
+			
+			| ifTrue {b : Expr} {S1 S2 : Stmt} {s sFinal : State} :
+			evalExpr b s ≠ 0 ->
+			BigStep S1 s sFinal ->
+			BigStep (Stmt.ifElse b S1 S2) s sFinal
+			
+			| ifFalse {b : Expr} {S1 S2 : Stmt} {s sFinal : State} :
+			evalExpr b s = 0 ->
+			BigStep S2 s sFinal ->
+			BigStep (Stmt.ifElse b S1 S2) s sFinal
+			
+			| whileFalse {b : Expr} {body : Stmt} {s : State} :
+			evalExpr b s = 0 ->
+			BigStep (Stmt.while b body) s s
+			
+			| whileTrue {b : Expr} {body : Stmt} {s sMid sFinal : State} :
+			evalExpr b s ≠ 0 ->
+			BigStep body s sMid ->
+			BigStep (Stmt.while b body) sMid sFinal ->
+			BigStep (Stmt.while b body) s sFinal
+		\end{lstlisting}
+	\end{latin}
+	
+	هر سازنده (\lr{constructor}) این نوع استقرایی دقیقاً معادل یکی از قوانین استنتاجیِ ذکرشده در سند پروژه است (\lr{Assign}، \lr{Seq}، \lr{If-T}/\lr{If-F}، \lr{While-F}/\lr{While-T}). تنها تفاوت نحوی نسبت به مثال راهنمای \lr{determinism} این است که به‌جای \lr{forall x e s, ...}، از آرگومان‌های \textbf{ضمنی} (\lr{implicit}) با آکولاد \lr{\{\}} استفاده شده است؛ از نظر معنایی هیچ تفاوتی ندارد --- \lr{Lean} مقدار این آرگومان‌ها را خودش از روی زمینه (\lr{context}) استنتاج می‌کند --- و فقط کد را کوتاه‌تر و خواناتر می‌کند.
+	
+	نکته‌ی مهمی که در سازنده‌ی \lr{whileTrue} دیده می‌شود این است که خودش را در سومین مقدمه صدا می‌زند (\lr{BigStep (Stmt.while b body) sMid sFinal})؛ این بازگشتی‌بودن دقیقاً معنای «حلقه = یک بار اجرای بدنه + ادامه‌ی همان حلقه از حالت جدید» را می‌رساند و پایه‌ی اصلی روش اثبات قضیه در بخش بعد است.
+	
+	\section{قضیه‌ی انتخابی --- Loop Invariant}
+	
+	از میان سه گزینه‌ی صورت پروژه، \textbf{گزینه‌ی دوم (پایستگی ناوردای حلقه)} انتخاب و اثبات شده است.
+	
+	\subsection{صورت رسمی قضیه}
+	\ltlbox{P(\sigma) \;\land\; \big(\forall\, \sigma_1\,\sigma_2,\; P(\sigma_1) \land \langle b,\sigma_1\rangle{\Downarrow}\text{dorost} \land \langle S,\sigma_1\rangle{\Downarrow}\sigma_2 \Rightarrow P(\sigma_2)\big) \;\land\; \langle \mathit{ta}(b)\,\{S\}, \sigma\rangle \Downarrow \sigma' \;\Rightarrow\; P(\sigma')}
+	
+	\paragraph{نکته‌ای درباره‌ی سور مقدمه‌ی دوم.}
+	صورت پروژه مقدمه‌ی دوم را به شکل فشرده $P(\sigma) \land \langle S,\sigma\rangle{\Downarrow}\sigma'' \land P(\sigma'') \Rightarrow \cdots$ نوشته است، یعنی روی حالت‌های \emph{ثابت} $\sigma$ و $\sigma''$. در فرمول بالا، این مقدمه عمداً با یک سور همگانی $\forall\,\sigma_1\,\sigma_2$ بازنویسی شده است، به این دلیل که اثبات با استقرا روی تعداد دلخواه تکرار حلقه پیش می‌رود: در تکرار دوم به بعد، بدنه‌ی حلقه دیگر از همان $\sigma$ اولیه شروع نمی‌شود، بلکه از حالت میانیِ حاصل از تکرار قبلی آغاز می‌گردد. برای این‌که بتوان «حفظ‌شدن $P$ توسط بدنه» را در \emph{هر} یک از این تکرارها --- نه فقط تکرار اول --- به کار برد، این خاصیت باید برای تمام جفت‌حالت‌های ممکن برقرار فرض شود، نه فقط برای یک جفت خاص. همین سور همگانی است که در کد \lr{Lean} به‌صورت \lr{forall s s1, ...} در فرض \lr{bodyPreservesInvariant} ظاهر شده و امکان فراخوانی مکرر آن در هر لایه از استقرا (در شاخه‌ی \lr{whileTrue}) را فراهم می‌کند؛ بدون این تعمیم، اثبات تنها برای حلقه‌هایی با \textbf{دقیقاً یک بار} تکرار درست از آب درمی‌آمد. علاوه بر این، شرط $\langle b,\sigma_1\rangle{\Downarrow}\mathit{dorost}$ (که در نگارش فشرده‌ی صورت پروژه نیامده) نیز به‌صراحت اضافه شده تا مشخص باشد این پایستگی فقط وقتی لازم است که شرط حلقه واقعاً برقرار بوده و بدنه اجرا شده باشد.
+	
+	به زبان ساده: اگر
+	\begin{enumerate}
+		\item ناوردای $P$ قبل از شروع حلقه روی $\sigma$ برقرار باشد، و
+		\item بدنه‌ی حلقه $S$، هر بار که با شرط برقرار ($b$ درست) از حالتی که $P$ در آن صادق است اجرا شود، $P$ را حفظ کند،
+	\end{enumerate}
+	آنگاه بعد از پایان \emph{کامل} حلقه‌ی \lr{ta}$(b)\{S\}$ (یعنی وقتی شرط سرانجام نادرست شد و حلقه با \lr{whileFalse} تمام شد)، $P$ روی حالت نهایی $\sigma'$ هم برقرار است.
+	
+	\subsection{چرا این قضیه؟}
+	دلیل انتخاب این گزینه ارتباط مستقیم آن با خصوصیت \lr{Invariant} فاز دوم است. در فاز دوم، با \lr{SPIN} فقط نشان دادیم که در \emph{یک برنامه‌ی خاص} با یک حلقه‌ی مشخص، متغیر \lr{x} منفی نمی‌شود --- نتیجه‌ای که به‌درستی در گزارش فاز دوم «تا حدی بدیهی» توصیف شد، چون وابسته به مقادیر اولیه‌ی همان برنامه بود. قضیه‌ی \lr{loopInvariant} این محدودیت را برمی‌دارد: به‌جای بررسی یک برنامه با \lr{Model Checking}، ثابت می‌کند که \textbf{اگر} بدنه‌ی هر حلقه‌ای طوری نوشته شده باشد که یک شرط را حفظ کند، \textbf{آنگاه} بدون توجه به تعداد تکرار یا مقادیر اولیه، آن شرط بعد از حلقه هم برقرار می‌ماند. این دقیقاً همان قاعده‌ی استنتاج حلقه در منطق هُور است و پایه‌ی اثبات صحت هر برنامه‌ی حاوی \lr{while} به‌شمار می‌رود.
+	
+	\section{کد کامل اثبات و توضیح هر قدم}
+	
+	\begin{latin}
+		\begin{lstlisting}[style=leanstyle]
+			theorem loopInvariant
+			{b : Expr}
+			{body : Stmt}
+			{P : State -> Prop}
+			(bodyPreservesInvariant :
+			forall s s1,
+			P s ->
+			evalExpr b s ≠ 0 ->
+			BigStep body s s1 ->
+			P s1)
+			:
+			forall s sFinal,
+			P s ->
+			BigStep (Stmt.while b body) s sFinal ->
+			P sFinal := by
+			
+			intro s sFinal hP hRun
+			
+			have aux :
+			forall {S : Stmt} {s sFinal : State},
+			BigStep S s sFinal ->
+			S = Stmt.while b body ->
+			P s ->
+			P sFinal := by
+			
+			intro S s0 s1 h
+			induction h with
+			
+			| assign =>
+			intro hEq
+			cases hEq
+			
+			| seq hFirst hSecond ihFirst ihSecond =>
+			intro hEq
+			cases hEq
+			
+			| ifTrue hCond hThen ih =>
+			intro hEq
+			cases hEq
+			
+			| ifFalse hCond hElse ih =>
+			intro hEq
+			cases hEq
+			
+			| whileFalse hCond =>
+			intro hEq hInv
+			cases hEq
+			exact hInv
+			
+			| whileTrue hCond hBody hRest ihBody ihRest =>
+			intro hEq hInv
+			cases hEq
+			have hInvAfterBody : P _ :=
+			bodyPreservesInvariant _ _ hInv hCond hBody
+			exact ihRest rfl hInvAfterBody
+			
+			exact aux hRun rfl hP
+		\end{lstlisting}
+	\end{latin}
+	
+	\subsection{صورت‌بندی قضیه و ورود مقدمات}
+	سه آرگومان ضمنی $b$، $body$ و $P$، و یک فرض اصلی به نام \lr{bodyPreservesInvariant} گرفته می‌شوند که دقیقاً مقدمه‌ی شماره‌ی ۲ از صورت ریاضی بالا را بیان می‌کند: «برای هر دو حالت $s$ و $s_1$، اگر $P(s)$ برقرار باشد، شرط حلقه روی $s$ درست باشد، و بدنه از $s$ به $s_1$ برسد، آنگاه $P(s_1)$.» خط \lr{intro s sFinal hP hRun} هم بقیه‌ی مقدمات (حالت اولیه، حالت نهایی، برقراری $P$ در ابتدا، و خودِ اشتقاق اجرای حلقه) را وارد می‌کند.
+	
+	\subsection{چرا یک لم کمکی (aux) لازم است؟}
+	اینجا مهم‌ترین تفاوت این اثبات با مثال راهنمای \lr{determinism} است. در مثال راهنما، فرض \lr{h1 : BigStep S s s'} روی یک متغیر \textbf{عمومی} $S$ بود، پس می‌شد مستقیماً \lr{induction h1} زد. اما اینجا فرض \lr{hRun} روی یک دستور \textbf{خاص و ثابت}، یعنی دقیقاً \lr{Stmt.while b body}، است. اگر بخواهیم مستقیم روی \lr{hRun} استقرا بزنیم، \lr{Lean} برای هر یک از شش سازنده‌ی \lr{BigStep} (نه فقط \lr{whileFalse} و \lr{whileTrue}) یک شاخه می‌سازد، اما نمی‌تواند به‌طور خودکار متوجه شود که آرگومان اول در چهار سازنده‌ی دیگر (\lr{assign}، \lr{seq}، \lr{ifTrue}، \lr{ifFalse}) هرگز نمی‌تواند برابر \lr{Stmt.while b body} باشد.
+	
+	راه‌حل استاندارد (که در اثبات‌های \lr{Big-Step} در \lr{Lean} و \lr{Coq} بسیار رایج است) این است که به‌جای استقرا مستقیم روی \lr{hRun}، یک گزاره‌ی کمکی \lr{aux} تعریف می‌کنیم که روی یک دستور \textbf{عمومی} \lr{S} بیان شده، به‌همراه یک فرض تساوی جداگانه \lr{S = Stmt.while b body}. حالا می‌توان روی اشتقاق \lr{h : BigStep S s0 s1} به‌طور کاملاً عمومی استقرا زد (چون \lr{S} دیگر ثابت نیست)، و در هر شاخه، فرض تساوی را با \lr{cases hEq} باز کرد:
+	\begin{itemize}
+		\item در چهار شاخه‌ی \lr{assign}، \lr{seq}، \lr{ifTrue} و \lr{ifFalse}، فرض \lr{hEq} چیزی از این جنس است: \lr{Stmt.assign x e = Stmt.while b body}. چون این دو طرف تساوی از دو سازنده‌ی \textbf{متفاوت} یک نوع استقرایی ساخته شده‌اند، چنین تساوی‌ای اساساً \textbf{غیرممکن} است. تاکتیک \lr{cases hEq} این تناقض را تشخیص می‌دهد و بلافاصله آن شاخه را می‌بندد --- به همین دلیل بعد از \lr{cases hEq} در این چهار مورد هیچ خط دیگری لازم نیست؛ هدف با صفر اثبات باقی‌مانده بسته می‌شود.
 		
-		inductive Expr where
-		| num : Int -> Expr
-		| var : Var -> Expr
-		| add : Expr -> Expr -> Expr
-		| mul : Expr -> Expr -> Expr
-		| lt : Expr -> Expr -> Expr
-		| equal : Expr -> Expr -> Expr
+		\item در شاخه‌ی \lr{whileFalse}، \lr{hEq} از نوع \lr{Stmt.while b' body' = Stmt.while b body} است. اینجا \lr{cases hEq} تساوی \lr{b' = b} و \lr{body' = body} را استخراج و در کل هدف جایگزین می‌کند. طبق تعریف سازنده‌ی \lr{whileFalse}، حالت پایانی همان حالت شروع است (\lr{s1 = s0})، پس هدف باقی‌مانده دقیقاً \lr{P s0} می‌شود که همان \lr{hInv} است.
 		
-		inductive Stmt where
-		| assign : Var -> Expr -> Stmt
-		| seq : Stmt -> Stmt -> Stmt
-		| ifElse : Expr -> Stmt -> Stmt -> Stmt
-		| while : Expr -> Stmt -> Stmt
-	\end{lstlisting}
-\end{latin}
-
-\begin{itemize}
-	\item \lr{State} همان $\sigma$ در فرمول‌های ریاضی است: یک تابع از نام متغیر به مقدار صحیح آن. هیچ نوع جداگانه‌ای برای \lr{Bool} تعریف نشده؛ مقادیر بولی زبان \lr{Hash} (\lr{dorost}/\lr{ghalat}) با اعداد صحیح شبیه‌سازی می‌شوند (غیرصفر = درست، صفر = نادرست) --- همان الگویی که در فاز اول برای ترجمه به \lr{Promela} هم استفاده شد.
-	\item \lr{Expr} علاوه بر چهار سازنده‌ی مثال راهنما (\lr{num}، \lr{var}، \lr{add}، \lr{lt})، دو سازنده‌ی \lr{mul} و \lr{equal} هم اضافه شده تا زیرمجموعه‌ی پوشش داده شده به عملگرهای محاسباتی و مقایسه‌ای فاز اول نزدیک‌تر باشد.
-	\item \lr{Stmt} همان چهار دستور اصلی مثال راهنما را دارد (\lr{assign}، \lr{seq}، \lr{ifElse}، \lr{while}) که برای اثبات این قضیه کافی‌اند؛ ساختارهای \lr{baraye}، \lr{shekan}/\lr{edame} و \lr{gereftar}/\lr{emtehan} طبق صورت پروژه لازم نیست در این فاز صوری‌سازی شوند.
-\end{itemize}
-
-\section{ارزیابی عبارات و به‌روزرسانی State}
-
-\begin{latin}
-	\begin{lstlisting}[style=leanstyle]
-		def evalExpr (e : Expr) (s : State) : Int :=
-		match e with
-		| Expr.num n => n
-		| Expr.var x => s x
-		| Expr.add e1 e2 => evalExpr e1 s + evalExpr e2 s
-		| Expr.mul e1 e2 => evalExpr e1 s * evalExpr e2 s
-		| Expr.lt e1 e2 =>
-		if evalExpr e1 s < evalExpr e2 s then 1 else 0
-		| Expr.equal e1 e2 =>
-		if evalExpr e1 s = evalExpr e2 s then 1 else 0
+		\item در شاخه‌ی \lr{whileTrue}، بعد از \lr{cases hEq} همان جایگزینی رخ می‌دهد. حالا از \lr{bodyPreservesInvariant} (با سه آرگومان \lr{hInv}، \lr{hCond} و \lr{hBody}) نتیجه می‌گیریم که ناوردا بعد از \textbf{یک بار} اجرای بدنه هم برقرار است: \lr{hInvAfterBody : P sMid}. سپس فرض استقرای مربوط به «ادامه‌ی حلقه» یعنی \lr{ihRest} را با دو آرگومان 
+		\lr{rfl} (اثبات بدیهی تساوی \lr{Stmt.while b body = Stmt.while b body}) و \lr{hInvAfterBody} صدا می‌زنیم تا \lr{P sFinal} نتیجه شود.
 		
-		def update (s : State) (x : Var) (v : Int) : State :=
-		fun y => if y = x then v else s y
-	\end{lstlisting}
-\end{latin}
-
-\lr{evalExpr} به‌جای اینکه (مثل قوانین استنتاجی سند پروژه) به شکل یک رابطه‌ی جداگانه با قوانین \lr{Num}، \lr{Var}، \lr{Add} و \ldots تعریف شود، مستقیماً به صورت یک \textbf{تابع بازگشتی} نوشته شده است. برخلاف \lr{BigStep}، ارزیابی عبارات (\lr{Expr}) هیچ‌وقت با مشکل عدم‌خاتمه روبه‌رو نیست — هر عبارت، هرچقدر هم تودرتو، در یک تعداد قدم محدود و ثابت به یک مقدار می‌رسد و هیچ دو مسیر اجرای متفاوتی هم برایش وجود ندارد. به همین دلیل نوشتن \lr{evalExpr} به‌صورت یک تابع معمولی (نه یک رابطه‌ی استقرایی مثل \lr{BigStep}) کاملاً بلامانع است. این تابع همان چیزی را می‌گوید که قوانین استنتاجی سند پروژه (\lr{Num}، \lr{Var}، \lr{Add} و \ldots) می‌گفتند، با یک مزیت اضافه: چون خروجی تابع همیشه به‌خودی‌خود یکتاست (طبق تعریف خودِ تابع در \lr{Lean})، دیگر لازم نیست قطعیت عبارات را جداگانه اثبات کنیم — چیزی که اگر عبارات را هم مثل دستورات با یک رابطه تعریف می‌کردیم، لازم می‌شد (همان گزینه‌ی اول صورت پروژه: \lr{Expression Determinism}).
-
-\lr{update} همان نماد $\sigma[x \mapsto v]$ است: یک تابع (\lr{State}) جدید که با \lr{s} یکسان است مگر روی \lr{x}، که مقدار \lr{v} را می‌گیرد.
-
-\section{رابطه‌ی BigStep}
-
-\begin{latin}
-	\begin{lstlisting}[style=leanstyle]
-		inductive BigStep : Stmt -> State -> State -> Prop where
-		
-		| assign {x : Var} {e : Expr} {s : State} :
-		BigStep
-		(Stmt.assign x e)
-		s
-		(update s x (evalExpr e s))
-		
-		| seq {S1 S2 : Stmt} {s sMid sFinal : State} :
-		BigStep S1 s sMid ->
-		BigStep S2 sMid sFinal ->
-		BigStep (Stmt.seq S1 S2) s sFinal
-		
-		| ifTrue {b : Expr} {S1 S2 : Stmt} {s sFinal : State} :
-		evalExpr b s ≠ 0 ->
-		BigStep S1 s sFinal ->
-		BigStep (Stmt.ifElse b S1 S2) s sFinal
-		
-		| ifFalse {b : Expr} {S1 S2 : Stmt} {s sFinal : State} :
-		evalExpr b s = 0 ->
-		BigStep S2 s sFinal ->
-		BigStep (Stmt.ifElse b S1 S2) s sFinal
-		
-		| whileFalse {b : Expr} {body : Stmt} {s : State} :
-		evalExpr b s = 0 ->
-		BigStep (Stmt.while b body) s s
-		
-		| whileTrue {b : Expr} {body : Stmt} {s sMid sFinal : State} :
-		evalExpr b s ≠ 0 ->
-		BigStep body s sMid ->
-		BigStep (Stmt.while b body) sMid sFinal ->
-		BigStep (Stmt.while b body) s sFinal
-	\end{lstlisting}
-\end{latin}
-
-هر سازنده (\lr{constructor}) این نوع استقرایی دقیقاً معادل یکی از قوانین استنتاجیِ ذکرشده در سند پروژه است (\lr{Assign}، \lr{Seq}، \lr{If-T}/\lr{If-F}، \lr{While-F}/\lr{While-T}). تنها تفاوت نحوی نسبت به مثال راهنمای \lr{determinism} این است که به‌جای \lr{forall x e s, ...}، از آرگومان‌های \textbf{ضمنی} (\lr{implicit}) با آکولاد \lr{\{\}} استفاده شده است؛ از نظر معنایی هیچ تفاوتی ندارد --- \lr{Lean} مقدار این آرگومان‌ها را خودش از روی زمینه (\lr{context}) استنتاج می‌کند --- و فقط کد را کوتاه‌تر و خواناتر می‌کند.
-
-نکته‌ی مهمی که در سازنده‌ی \lr{whileTrue} دیده می‌شود این است که خودش را در سومین مقدمه صدا می‌زند (\lr{BigStep (Stmt.while b body) sMid sFinal})؛ این بازگشتی‌بودن دقیقاً معنای «حلقه = یک بار اجرای بدنه + ادامه‌ی همان حلقه از حالت جدید» را می‌رساند و پایه‌ی اصلی روش اثبات قضیه در بخش بعد است.
-
-\section{قضیه‌ی انتخابی --- Loop Invariant}
-
-از میان سه گزینه‌ی صورت پروژه، \textbf{گزینه‌ی دوم (پایستگی ناوردای حلقه)} انتخاب و اثبات شده است.
-
-\subsection{صورت رسمی قضیه}
-\ltlbox{P(\sigma) \;\land\; \big(\forall\, \sigma_1\,\sigma_2,\; P(\sigma_1) \land \langle b,\sigma_1\rangle{\Downarrow}\text{dorost} \land \langle S,\sigma_1\rangle{\Downarrow}\sigma_2 \Rightarrow P(\sigma_2)\big) \;\land\; \langle \mathit{ta}(b)\,\{S\}, \sigma\rangle \Downarrow \sigma' \;\Rightarrow\; P(\sigma')}
-
-\paragraph{نکته‌ای درباره‌ی سور مقدمه‌ی دوم.}
-صورت پروژه مقدمه‌ی دوم را به شکل فشرده $P(\sigma) \land \langle S,\sigma\rangle{\Downarrow}\sigma'' \land P(\sigma'') \Rightarrow \cdots$ نوشته است، یعنی روی حالت‌های \emph{ثابت} $\sigma$ و $\sigma''$. در فرمول بالا، این مقدمه عمداً با یک سور همگانی $\forall\,\sigma_1\,\sigma_2$ بازنویسی شده است، به این دلیل که اثبات با استقرا روی تعداد دلخواه تکرار حلقه پیش می‌رود: در تکرار دوم به بعد، بدنه‌ی حلقه دیگر از همان $\sigma$ اولیه شروع نمی‌شود، بلکه از حالت میانیِ حاصل از تکرار قبلی آغاز می‌گردد. برای این‌که بتوان «حفظ‌شدن $P$ توسط بدنه» را در \emph{هر} یک از این تکرارها --- نه فقط تکرار اول --- به کار برد، این خاصیت باید برای تمام جفت‌حالت‌های ممکن برقرار فرض شود، نه فقط برای یک جفت خاص. همین سور همگانی است که در کد \lr{Lean} به‌صورت \lr{forall s s1, ...} در فرض \lr{bodyPreservesInvariant} ظاهر شده و امکان فراخوانی مکرر آن در هر لایه از استقرا (در شاخه‌ی \lr{whileTrue}) را فراهم می‌کند؛ بدون این تعمیم، اثبات تنها برای حلقه‌هایی با \textbf{دقیقاً یک بار} تکرار درست از آب درمی‌آمد. علاوه بر این، شرط $\langle b,\sigma_1\rangle{\Downarrow}\mathit{dorost}$ (که در نگارش فشرده‌ی صورت پروژه نیامده) نیز به‌صراحت اضافه شده تا مشخص باشد این پایستگی فقط وقتی لازم است که شرط حلقه واقعاً برقرار بوده و بدنه اجرا شده باشد.
-
-به زبان ساده: اگر
-\begin{enumerate}
-	\item ناوردای $P$ قبل از شروع حلقه روی $\sigma$ برقرار باشد، و
-	\item بدنه‌ی حلقه $S$، هر بار که با شرط برقرار ($b$ درست) از حالتی که $P$ در آن صادق است اجرا شود، $P$ را حفظ کند،
-\end{enumerate}
-آنگاه بعد از پایان \emph{کامل} حلقه‌ی \lr{ta}$(b)\{S\}$ (یعنی وقتی شرط سرانجام نادرست شد و حلقه با \lr{whileFalse} تمام شد)، $P$ روی حالت نهایی $\sigma'$ هم برقرار است.
-
-\subsection{چرا این قضیه؟}
-دلیل انتخاب این گزینه ارتباط مستقیم آن با خصوصیت \lr{Invariant} فاز دوم است. در فاز دوم، با \lr{SPIN} فقط نشان دادیم که در \emph{یک برنامه‌ی خاص} با یک حلقه‌ی مشخص، متغیر \lr{x} منفی نمی‌شود --- نتیجه‌ای که به‌درستی در گزارش فاز دوم «تا حدی بدیهی» توصیف شد، چون وابسته به مقادیر اولیه‌ی همان برنامه بود. قضیه‌ی \lr{loopInvariant} این محدودیت را برمی‌دارد: به‌جای بررسی یک برنامه با \lr{Model Checking}، ثابت می‌کند که \textbf{اگر} بدنه‌ی هر حلقه‌ای طوری نوشته شده باشد که یک شرط را حفظ کند، \textbf{آنگاه} بدون توجه به تعداد تکرار یا مقادیر اولیه، آن شرط بعد از حلقه هم برقرار می‌ماند. این دقیقاً همان قاعده‌ی استنتاج حلقه در منطق هُور است و پایه‌ی اثبات صحت هر برنامه‌ی حاوی \lr{while} به‌شمار می‌رود.
-
-\section{کد کامل اثبات و توضیح هر قدم}
-
-\begin{latin}
-	\begin{lstlisting}[style=leanstyle]
-		theorem loopInvariant
-		{b : Expr}
-		{body : Stmt}
-		{P : State -> Prop}
-		(bodyPreservesInvariant :
-		forall s s1,
-		P s ->
-		evalExpr b s ≠ 0 ->
-		BigStep body s s1 ->
-		P s1)
-		:
-		forall s sFinal,
-		P s ->
-		BigStep (Stmt.while b body) s sFinal ->
-		P sFinal := by
-		
-		intro s sFinal hP hRun
-		
-		have aux :
-		forall {S : Stmt} {s sFinal : State},
-		BigStep S s sFinal ->
-		S = Stmt.while b body ->
-		P s ->
-		P sFinal := by
-		
-		intro S s0 s1 h
-		induction h with
-		
-		| assign =>
-		intro hEq
-		cases hEq
-		
-		| seq hFirst hSecond ihFirst ihSecond =>
-		intro hEq
-		cases hEq
-		
-		| ifTrue hCond hThen ih =>
-		intro hEq
-		cases hEq
-		
-		| ifFalse hCond hElse ih =>
-		intro hEq
-		cases hEq
-		
-		| whileFalse hCond =>
-		intro hEq hInv
-		cases hEq
-		exact hInv
-		
-		| whileTrue hCond hBody hRest ihBody ihRest =>
-		intro hEq hInv
-		cases hEq
-		have hInvAfterBody : P _ :=
-		bodyPreservesInvariant _ _ hInv hCond hBody
-		exact ihRest rfl hInvAfterBody
-		
-		exact aux hRun rfl hP
-	\end{lstlisting}
-\end{latin}
-
-\subsection{صورت‌بندی قضیه و ورود مقدمات}
-سه آرگومان ضمنی $b$، $body$ و $P$، و یک فرض اصلی به نام \lr{bodyPreservesInvariant} گرفته می‌شوند که دقیقاً مقدمه‌ی شماره‌ی ۲ از صورت ریاضی بالا را بیان می‌کند: «برای هر دو حالت $s$ و $s_1$، اگر $P(s)$ برقرار باشد، شرط حلقه روی $s$ درست باشد، و بدنه از $s$ به $s_1$ برسد، آنگاه $P(s_1)$.» خط \lr{intro s sFinal hP hRun} هم بقیه‌ی مقدمات (حالت اولیه، حالت نهایی، برقراری $P$ در ابتدا، و خودِ اشتقاق اجرای حلقه) را وارد می‌کند.
-
-\subsection{چرا یک لم کمکی (aux) لازم است؟}
-اینجا مهم‌ترین تفاوت این اثبات با مثال راهنمای \lr{determinism} است. در مثال راهنما، فرض \lr{h1 : BigStep S s s'} روی یک متغیر \textbf{عمومی} $S$ بود، پس می‌شد مستقیماً \lr{induction h1} زد. اما اینجا فرض \lr{hRun} روی یک دستور \textbf{خاص و ثابت}، یعنی دقیقاً \lr{Stmt.while b body}، است. اگر بخواهیم مستقیم روی \lr{hRun} استقرا بزنیم، \lr{Lean} برای هر یک از شش سازنده‌ی \lr{BigStep} (نه فقط \lr{whileFalse} و \lr{whileTrue}) یک شاخه می‌سازد، اما نمی‌تواند به‌طور خودکار متوجه شود که آرگومان اول در چهار سازنده‌ی دیگر (\lr{assign}، \lr{seq}، \lr{ifTrue}، \lr{ifFalse}) هرگز نمی‌تواند برابر \lr{Stmt.while b body} باشد.
-
-راه‌حل استاندارد (که در اثبات‌های \lr{Big-Step} در \lr{Lean} و \lr{Coq} بسیار رایج است) این است که به‌جای استقرا مستقیم روی \lr{hRun}، یک گزاره‌ی کمکی \lr{aux} تعریف می‌کنیم که روی یک دستور \textbf{عمومی} \lr{S} بیان شده، به‌همراه یک فرض تساوی جداگانه \lr{S = Stmt.while b body}. حالا می‌توان روی اشتقاق \lr{h : BigStep S s0 s1} به‌طور کاملاً عمومی استقرا زد (چون \lr{S} دیگر ثابت نیست)، و در هر شاخه، فرض تساوی را با \lr{cases hEq} باز کرد:
-
-\begin{itemize}
-	\item در چهار شاخه‌ی \lr{assign}، \lr{seq}، \lr{ifTrue} و \lr{ifFalse}، فرض \lr{hEq} چیزی از این جنس است: \lr{Stmt.assign x e = Stmt.while b body}. چون این دو طرف تساوی از دو سازنده‌ی \textbf{متفاوت} یک نوع استقرایی ساخته شده‌اند، چنین تساوی‌ای اساساً \textbf{غیرممکن} است. تاکتیک \lr{cases hEq} این تناقض را تشخیص می‌دهد و بلافاصله آن شاخه را می‌بندد --- به همین دلیل بعد از \lr{cases hEq} در این چهار مورد هیچ خط دیگری لازم نیست؛ هدف با صفر اثبات باقی‌مانده بسته می‌شود.
-	\item در شاخه‌ی \lr{whileFalse}، \lr{hEq} از نوع \lr{Stmt.while b' body' = Stmt.while b body} است. اینجا \lr{cases hEq} تساوی \lr{b' = b} و \lr{body' = body} را استخراج و در کل هدف جایگزین می‌کند. طبق تعریف سازنده‌ی \lr{whileFalse}، حالت پایانی همان حالت شروع است (\lr{s1 = s0})، پس هدف باقی‌مانده دقیقاً \lr{P s0} می‌شود که همان \lr{hInv} است.
-	\item در شاخه‌ی \lr{whileTrue}، بعد از \lr{cases hEq} همان جایگزینی رخ می‌دهد. حالا از \lr{bodyPreservesInvariant} (با سه آرگومان \lr{hInv}، \lr{hCond} و \lr{hBody}) نتیجه می‌گیریم که ناوردا بعد از \textbf{یک بار} اجرای بدنه هم برقرار است: \lr{hInvAfterBody : P sMid}. سپس فرض استقرای مربوط به «ادامه‌ی حلقه» یعنی \lr{ihRest} را با دو آرگومان \lr{rfl} (اثبات بدیهی تساوی \lr{Stmt.while b body = Stmt.while b body}) و \lr{hInvAfterBody} صدا می‌زنیم تا \lr{P sFinal} نتیجه شود.
-\end{itemize}
-
-این الگو --- عمومی کردن یک گزاره با افزودن یک فرض تساوی صریح، پیش از استقرا --- در ادبیات اثبات‌یارها به «ترفند remember» معروف است (در \lr{Coq} معادل تاکتیک \lr{remember ... as ... eqn:...})، و هر جا بخواهیم از استقرا روی اشتقاق یک رابطه‌ی استقرایی که یکی از آرگومان‌هایش به یک عبارت \textbf{مرکب و ثابت} (نه یک متغیر ساده) گره خورده استفاده کنیم، ضروری است.
-
-\subsection{اتصال نهایی}
-در پایان، قضیه‌ی اصلی \lr{loopInvariant} تنها با یک خط \lr{exact aux hRun rfl hP} بسته می‌شود: \lr{hRun} همان اشتقاق اجرای حلقه است، \lr{rfl} گواهی بدیهی بر تساوی \lr{Stmt.while b body = Stmt.while b body}، و \lr{hP} فرض برقراری ناوردا در ابتدای حلقه.
-
-\subsection{یک نکته‌ی فنی درباره‌ی کامپایل}
-دو دستور \lr{\#check BigStep} و \lr{\#check loopInvariant} --- که صرفاً برای تأیید صحت \lr{type} تعاریف و بدون اثر روی خودِ اثبات هستند --- باید \textbf{بیرون} از بلوک \lr{by} قضیه (یعنی بعد از خط \lr{exact aux hRun rfl hP} و با تورفتگیِ سطح فایل) نوشته شوند، نه داخل بدنه‌ی تاکتیکی. در کد نهایی تحویلی، این دو خط به همین صورت اصلاح و در انتهای فایل، خارج از قضیه، قرار داده شده‌اند.
-
-\section{مثال گام‌به‌گام (شفاف‌سازی رفتار استقرا)}
-
-برای ملموس‌تر شدن مکانیزم بالا، اجرای یک حلقه‌ی فرضی با دقیقاً دو بار تکرار بدنه را در نظر بگیرید. اشتقاق \lr{hRun} به این شکل درخت می‌شود:
-
-\[
-\dfrac{
-	\langle S,\sigma_0\rangle\Downarrow\sigma_1
-	\quad
+	\end{itemize}
+	
+	\subsection{اتصال نهایی}
+	در پایان، قضیه‌ی اصلی \lr{loopInvariant} تنها با یک خط \lr{exact aux hRun rfl hP} بسته می‌شود: \lr{hRun} همان اشتقاق اجرای حلقه است، \lr{rfl} گواهی بدیهی بر تساوی \lr{Stmt.while b body = Stmt.while b body}، و \lr{hP} فرض برقراری ناوردا در ابتدای حلقه.
+	
+	\subsection{یک نکته‌ی فنی درباره‌ی کامپایل}
+	دو دستور \lr{\#check BigStep} و \lr{\#check loopInvariant} --- که صرفاً برای تأیید صحت \lr{type} تعاریف و بدون اثر روی خودِ اثبات هستند --- باید \textbf{بیرون} از بلوک \lr{by} قضیه (یعنی بعد از خط \lr{exact aux hRun rfl hP} و با تورفتگیِ سطح فایل) نوشته شوند، نه داخل بدنه‌ی تاکتیکی. در کد نهایی تحویلی، این دو خط به همین صورت اصلاح و در انتهای فایل، خارج از قضیه، قرار داده شده‌اند.
+	
+	\section{مثال گام‌به‌گام (شفاف‌سازی رفتار استقرا)}
+	
+	برای ملموس‌تر شدن مکانیزم بالا، اجرای یک حلقه‌ی فرضی با دقیقاً دو بار تکرار بدنه را در نظر بگیرید. اشتقاق \lr{hRun} به این شکل درخت می‌شود:
+	
+	\[
 	\dfrac{
-		\langle S,\sigma_1\rangle\Downarrow\sigma_2
+		\langle S,\sigma_0\rangle \Downarrow \sigma_1
 		\quad
-		\dfrac{\text{(شرط نادرست)}}{\langle \mathit{ta}(b)\{S\}, \sigma_2\rangle \Downarrow \sigma_2}\;\text{(whileFalse)}
-	}{\langle \mathit{ta}(b)\{S\}, \sigma_1\rangle \Downarrow \sigma_2}\;\text{(whileTrue)}
-}{\langle \mathit{ta}(b)\{S\}, \sigma_0\rangle \Downarrow \sigma_2}\;\text{(whileTrue)}
-\]
-
+		\dfrac{
+			\langle S,\sigma_1\rangle \Downarrow \sigma_2
+			\quad
+			\dfrac{
+				\text{(شرط نادرست)}
+			}{
+				\langle \mathit{ta}(b)\{S\}, \sigma_2\rangle \Downarrow \sigma_2
+			}\;\text{(whileFalse)}
+		}{
+			\langle \mathit{ta}(b)\{S\}, \sigma_1\rangle \Downarrow \sigma_2
+		}\;\text{(whileTrue)}
+	}{
+		\langle \mathit{ta}(b)\{S\}, \sigma_0\rangle \Downarrow \sigma_2
+	}\;\text{(whileTrue)}
+	\]
+	
 استقرا روی این درخت دقیقاً از پایین (بیرونی‌ترین \lr{whileTrue}) شروع می‌شود: ابتدا با \lr{bodyPreservesInvariant} از $P(\sigma_0)$ به $P(\sigma_1)$ می‌رسیم، سپس \lr{ihRest} روی زیر‌اشتقاق داخلی فراخوانی می‌شود که خودش دوباره یک \lr{whileTrue} است --- پس دوباره با \lr{bodyPreservesInvariant} از $P(\sigma_1)$ به $P(\sigma_2)$ می‌رسیم، و در نهایت با \lr{whileFalse} در عمیق‌ترین لایه، $P(\sigma_2)$ بدون تغییر به عنوان نتیجه‌ی نهایی برگردانده می‌شود. یعنی اثبات به تعداد تکرارهای واقعی حلقه، «باز» می‌شود --- دقیقاً همان چیزی که استقرای ساختاری روی \lr{BigStep} تضمین می‌کند، بدون آنکه لازم باشد تعداد تکرارها را از پیش بدانیم یا در قضیه ذکر کنیم.
-
-\section{جمع‌بندی فاز سوم}
-
-در این فاز، با تعریف صوری \lr{Big-Step} برای زیرمجموعه‌ی \lr{Hash} و اثبات قضیه‌ی پایستگی ناوردای حلقه در \lr{Lean 4}، از سطح بررسی موردیِ فاز دوم (که فقط درباره‌ی یک برنامه‌ی خاص با \lr{SPIN} صحبت می‌کرد) به یک تضمین ریاضی و کلی رسیدیم که برای \textbf{هر} برنامه‌ی \lr{Hash} حاوی یک حلقه‌ی \lr{ta} با بدنه‌ی ناوردا-حفظ‌کننده صادق است. این قضیه نمونه‌ی کوچکی از همان رویکردی است که، طبق مقدمه‌ی صورت پروژه، شرکت‌هایی مانند \lr{Amazon} برای اثبات صحت زیرساخت‌های نرم‌افزاری‌شان به‌کار می‌برند: به‌جای تکیه بر تست‌های موردی، درستی را یک‌بار و برای همیشه، به‌صورت ریاضی، ثابت می‌کنند.
-
+	% ==========================================================
+	
+	\section{قضیه‌ی دوم --- Expression Determinism}
+	
+	علاوه بر قضیه‌ی \lr{Loop Invariant}، گزینه‌ی اول صورت پروژه --- قطعی‌بودن ارزیابی عبارات --- نیز در فایل \lr{exprDeterminism.lean} اثبات شده است.
+	
+	\subsection{چرا این قضیه به یک تعریف جدید نیاز داشت}
+	
+	در \lr{Basic.lean}، تابع \lr{evalExpr} به‌صورت یک \textbf{تابع بازگشتی معمولی} تعریف شده، نه یک رابطه‌ی استقرایی. طبق تعریف خودِ مفهوم تابع در \lr{Lean}، هر تابع برای هر ورودی دقیقاً یک خروجی دارد؛ پس قطعی‌بودنِ این نسخه از ارزیابی یک ادعای بدیهی و بی‌محتواست (اثباتش فقط \lr{rfl} است) و چیزی درباره‌ی درستی معناشناسی زبان به ما نمی‌گوید.
+	
+	برای این‌که این قضیه معنای واقعی خودش --- همان چیزی که در سند پروژه با نماد $\langle e,\sigma\rangle \Downarrow v$ بیان شده --- را داشته باشد، باید ارزیابی عبارات را هم، درست مثل \lr{BigStep}، به‌صورت یک \textbf{رابطه‌ی استقرایی} جداگانه تعریف کرد و قطعی‌بودن \emph{همان رابطه} را اثبات کرد. این دقیقاً همان کاری است که در مثال راهنمای پروژه برای \lr{BigStep} انجام شده بود، با این تفاوت که این‌جا روی \lr{Expr} به‌جای \lr{Stmt} تکرار می‌شود.
+	
+	\subsection{تعریف رابطه‌ی EvalExpr}
+	
+	\begin{latin}
+		\begin{lstlisting}[style=leanstyle]
+			inductive EvalExpr : Expr -> State -> Int -> Prop
+			| num : forall n s, EvalExpr (Expr.num n) s n
+			| var : forall x s, EvalExpr (Expr.var x) s (s x)
+			| add : forall e1 e2 s v1 v2,
+			EvalExpr e1 s v1 -> EvalExpr e2 s v2 ->
+			EvalExpr (Expr.add e1 e2) s (v1 + v2)
+			| lt : forall e1 e2 s v1 v2,
+			EvalExpr e1 s v1 -> EvalExpr e2 s v2 ->
+			EvalExpr (Expr.lt e1 e2) s (if v1 < v2 then 1 else 0)
+		\end{lstlisting}
+	\end{latin}
+	
+	هر سازنده‌ی این نوع دقیقاً معادل یکی از قوانین استنتاجی بخش «ارزیابی عبارات» در سند پروژه است: \lr{num} معادل قانون \lr{(Num)}، \lr{var} معادل \lr{(Var)}، \lr{add} معادل \lr{(Add)}، و \lr{lt} معادل \lr{(Lt)}. تفاوت این تعریف با تابع \lr{evalExpr}، این است که اینجا هیچ‌چیز از پیش تضمین نمی‌کند یک عبارت مشخص فقط به یک مقدار برسد --- ممکن است (تا پیش از اثبات قضیه) دو اشتقاق متفاوت برای \lr{EvalExpr} روی یک عبارت و یک حالت وجود داشته باشد که به دو مقدار متفاوت برسند؛ همین امکانِ (نظری) عدم‌قطعیت است که قضیه‌ی زیر آن را رد می‌کند.
+	
+	\subsection{بیان و اثبات قضیه}
+	
+	\ltlbox{\langle e,\sigma\rangle \Downarrow v_1 \;\land\; \langle e,\sigma\rangle \Downarrow v_2 \;\Rightarrow\; v_1 = v_2}
+	
+	از آن‌جا که در این صورت‌بندی، برخلاف قضیه‌ی \lr{loopInvariant}، عبارت $e$ از ابتدا یک متغیر عمومی است (نه ثابت به شکلی خاص مثل \lr{Stmt.while b body})، نیازی به ترفند \lr{remember}/تساوی کمکی نیست؛ می‌توان مستقیماً روی اشتقاق فرض اول (\lr{h1}) استقرا زد، دقیقاً مثل اثبات \lr{determinism} در مثال راهنما. تنها نکته این است که چون فرض دوم (\lr{h2}) روی متغیر آزاد \lr{v2} است، باید با \lr{generalizing v2} این متغیر را هم در هر گام استقرا آزاد نگه داشت، وگرنه فرض استقرا برای مقدار درستی از \lr{v2} در دسترس نخواهد بود.
+	
+	منطق هر شاخه:
+	\begin{itemize}
+		\item \textbf{num}: چون $e$ به شکل \lr{Expr.num n} ثابت است، تنها قانونی که می‌تواند \lr{h2} را هم تولید کرده باشد \lr{(Num)} است؛ تاکتیک \lr{cases h2} این را تشخیص می‌دهد و بلافاصله هر دو مقدار را برابر با خودِ $n$ قرار می‌دهد، پس هدف با \lr{rfl} بسته می‌شود.
+		\item \textbf{var}: با همان استدلال، تنها قانون ممکن برای \lr{h2} روی \lr{Expr.var x}، قانون \lr{(Var)} است؛ هر دو مقدار برابر $\sigma(x)$ می‌شوند.
+		\item \textbf{add}: \lr{cases h2} نشان می‌دهد اشتقاق دوم هم باید از قانون \lr{(Add)} استفاده کرده باشد (چون $e$ به شکل \lr{add e1 e2} ثابت است)، و دو زیراشتقاق \lr{h2a}, \lr{h2b} برای $e_1$ و $e_2$ به دست می‌آید. با اعمال فرض‌های استقرای \lr{iha} و \lr{ihb} روی این دو زیراشتقاق، برابری مقادیر $e_1$ و $e_2$ در دو اجرا نتیجه می‌شود؛ با \lr{rw} این دو تساوی را در هدف جایگزین می‌کنیم تا $v_1+v_2 = v_1'+v_2'$ به‌صورت خودکار بسته شود.
+		\item \textbf{lt}: کاملاً مشابه \lr{add}، با این تفاوت که در پایان به‌جای جمع، همان عبارت شرطی \lr{if v1 < v2 then 1 else 0} با مقادیر یکسان جایگزین و برابری نتیجه می‌شود.
+	\end{itemize}
+	
+	در هیچ‌کدام از این چهار شاخه امکان تناقض بین دو قانون مختلف مطرح نیست (برخلاف قضیه‌ی \lr{determinism} روی \lr{BigStep} در مثال راهنما، که در آن شاخه‌های \lr{ifTrue}/\lr{ifFalse} و \lr{whileF}/\lr{whileT} می‌توانستند با هم تناقض کنند)، چون \lr{Expr} هیچ سازنده‌ی شرطی (مثل \lr{if} یا \lr{while}) ندارد؛ هر سازنده‌ی \lr{Expr} دقیقاً یک قانون \lr{EvalExpr} متناظر دارد، پس \lr{cases h2} در هر شاخه بلافاصله یک نتیجه‌ی یکتا می‌دهد.
+	
+	\subsection{کد کامل}
+	
+	\begin{latin}
+		\begin{lstlisting}[style=leanstyle]
+			theorem exprDeterminism : forall e s v1 v2,
+			EvalExpr e s v1 -> EvalExpr e s v2 -> v1 = v2 := by
+			intro e s v1 v2 h1 h2
+			induction h1 generalizing v2 with
+			| num n s =>
+			cases h2
+			rfl
+			| var x s =>
+			cases h2
+			rfl
+			| add e1 e2 s va vb _ _ iha ihb =>
+			cases h2 with
+			| add h2a h2b =>
+			have ea := iha _ h2a
+			have eb := ihb _ h2b
+			rw [ea, eb]
+			| lt e1 e2 s va vb _ _ iha ihb =>
+			cases h2 with
+			| lt h2a h2b =>
+			have ea := iha _ h2a
+			have eb := ihb _ h2b
+			rw [ea, eb]
+			
+			#check exprDeterminism
+		\end{lstlisting}
+	\end{latin}
+	
+	\subsection{جمع‌بندی}
+	
+	این قضیه نشان می‌دهد که حتی اگر ارزیابی عبارات را --- برخلاف تعریف تابعی \lr{evalExpr} --- به‌صورت یک رابطه‌ی استقرایی آزاد بیان کنیم، باز هم برای هر عبارت و هر حالت، حداکثر یک مقدار قابل اشتقاق است. این نتیجه مکمل قضیه‌ی \lr{determinism} روی \lr{Stmt}/\lr{BigStep} (مثال راهنمای پروژه) است: در کنار هم، این دو قضیه تضمین می‌کنند که کل معناشناسی \lr{Hash} --- هم روی عبارات و هم روی دستورات --- کاملاً قطعی و بدون ابهام تعریف شده است.
+	
+	\section{جمع‌بندی فاز سوم}
+	
+	در این فاز، با تعریف صوری \lr{Big-Step} برای زیرمجموعه‌ی \lr{Hash} و اثبات قضیه‌ی پایستگی ناوردای حلقه در \lr{Lean 4}، از سطح بررسی موردیِ فاز دوم (که فقط درباره‌ی یک برنامه‌ی خاص با \lr{SPIN} صحبت می‌کرد) به یک تضمین ریاضی و کلی رسیدیم که برای \textbf{هر} برنامه‌ی \lr{Hash} حاوی یک حلقه‌ی \lr{ta} با بدنه‌ی ناوردا-حفظ‌کننده صادق است.
+	
 	
 \end{document}
